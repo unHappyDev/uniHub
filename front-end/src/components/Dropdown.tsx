@@ -12,7 +12,11 @@ export function DropdownDemo() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="lg:hidden" asChild>
-        <Button variant="ghost" size="icon" className="bg-orange-500 cursor-pointer hover:bg-orange-600">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="bg-orange-500 cursor-pointer hover:bg-orange-600"
+        >
           <Menu className="w-6 h-6 text-white" />
         </Button>
       </DropdownMenuTrigger>
@@ -36,44 +40,55 @@ export function DropdownDemo() {
         align="end"
       >
         <DropdownMenuGroup className="space-y-1">
-          <DropdownMenuItem
-            className="
-              px-4 py-2 
-              rounded-md 
-              hover:bg-zinc-800 
-              transition-colors 
-              cursor-pointer 
-              text-sm 
-              font-medium
-            "
-          >
-            Início
+          <DropdownMenuItem asChild>
+            <a
+              href="#"
+              className="
+                block px-4 py-2 
+                rounded-md 
+                hover:bg-zinc-800 
+                transition-colors 
+                cursor-pointer 
+                text-sm 
+                font-medium
+              "
+            >
+              Início
+            </a>
           </DropdownMenuItem>
-          <DropdownMenuItem
-            className="
-              px-4 py-2 
-              rounded-md 
-              hover:bg-zinc-800 
-              transition-colors 
-              cursor-pointer 
-              text-sm 
-              font-medium
-            "
-          >
-            Quem somos
+
+          <DropdownMenuItem asChild>
+            <a
+              href="#about"
+              className="
+                block px-4 py-2 
+                rounded-md 
+                hover:bg-zinc-800 
+                transition-colors 
+                cursor-pointer 
+                text-sm 
+                font-medium
+              "
+            >
+              Quem somos
+            </a>
           </DropdownMenuItem>
-          <DropdownMenuItem
-            className="
-              px-4 py-2 
-              rounded-md 
-              hover:bg-zinc-800 
-              transition-colors 
-              cursor-pointer 
-              text-sm 
-              font-medium
-            "
-          >
-            Serviços
+
+          <DropdownMenuItem asChild>
+            <a
+              href="#services"
+              className="
+                block px-4 py-2 
+                rounded-md 
+                hover:bg-zinc-800 
+                transition-colors 
+                cursor-pointer 
+                text-sm 
+                font-medium
+              "
+            >
+              Serviços
+            </a>
           </DropdownMenuItem>
 
           <div className="pt-2 border-t border-zinc-700 mt-2">
@@ -81,7 +96,7 @@ export function DropdownDemo() {
               variant="default"
               className="
                 w-full 
-               bg-orange-500 hover:bg-orange-600 text-white
+                bg-orange-500 hover:bg-orange-600 text-white
                 font-bold 
                 py-2 
                 rounded-md 
