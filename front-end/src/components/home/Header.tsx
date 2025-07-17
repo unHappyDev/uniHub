@@ -11,7 +11,7 @@ export function Header() {
           </a>
         </div>
 
-        <nav className="text-white hidden lg:block">
+        {/* <nav className="text-white hidden lg:block">
           <ul className="flex items-center gap-16 text-lg font-medium">
             <li>
               <a
@@ -41,16 +41,16 @@ export function Header() {
               </a>
             </li>
           </ul>
-        </nav>
+        </nav> */}
 
         <Button
           variant="default"
-          className="hidden lg:block px-8 cursor-pointer bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm rounded-md transition duration-300 ease-in-out"
+          className=" px-8 cursor-pointer bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm rounded-md transition duration-300 ease-in-out"
         >
           LOGIN
         </Button>
 
-        <DropdownDemo />
+        {/* <DropdownDemo /> */}
       </div>
     </header>
   );

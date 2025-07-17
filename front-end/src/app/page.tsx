@@ -1,6 +1,7 @@
 import { Hero } from "@/components/home/Hero";
 import { Header } from "@/components/home/Header";
 import { About } from "@/components/home/About";
+import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 
 
 export default function Home(){
@@ -9,6 +10,7 @@ export default function Home(){
       <Header />
       <Hero />
       <About />
+      <ScrollToTopButton />
     </div>
     
   )
