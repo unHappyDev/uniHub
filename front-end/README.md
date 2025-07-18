@@ -35,3 +35,4 @@ git push -u origin nome-da-branch
 ```bash
 git branch -d nome-da-branch-antiga
 ```
+
