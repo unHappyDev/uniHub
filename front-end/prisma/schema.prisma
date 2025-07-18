@@ -27,6 +27,9 @@ model User {
   Session            Session[]
   ResetPasswordToken ResetPasswordToken[]
   Event              Event[]
+  students           Student[]
+  professors         Professor[]
+  Post               Post[]
 
   @@index([email])
   @@index([username])
@@ -79,4 +82,126 @@ model Event {
   created_at         DateTime @default(dbgenerated("(now() at time zone 'utc')")) @db.Timestamptz
 
   @@index([originator_user_id])
+}
+
+model Post {
+  post_id    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title      String
+  body       String
+  created_at DateTime @default(dbgenerated("(now() at time zone 'utc')")) @db.Timestamptz
+  owner      String   @db.Uuid
+  user       User     @relation(fields: [owner], references: [id], onDelete: Cascade)
+
+  @@index([owner])
+  @@map("posts")
+}
+
+model Subject {
+  subject_id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  subject_name   String
+  workload_hours Int
+
+  courseSubjects CourseSubject[]
+  classrooms     Classroom[]
+
+  @@map("subjects")
+}
+
+model Course {
+  course_id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  course_name String
+
+  students Student[]
+
+  courseSubjects CourseSubject[]
+
+  @@map("courses")
+}
+
+model CourseSubject {
+  fk_course_id  String @db.Uuid
+  fk_subject_id String @db.Uuid
+
+  course  Course  @relation(fields: [fk_course_id], references: [course_id], onDelete: Cascade)
+  subject Subject @relation(fields: [fk_subject_id], references: [subject_id], onDelete: Cascade)
+
+  @@id([fk_course_id, fk_subject_id])
+  @@map("courses_subjects")
+}
+
+model Student {
+  student_id String @id @db.Uuid
+  course     String @db.Uuid
+  user       User   @relation(fields: [student_id], references: [id])
+  courseRef  Course @relation(fields: [course], references: [course_id])
+
+  classrooms  ClassroomStudent[]
+  attendances Attendance[]
+  grades      Grade[]
+
+  @@map("students")
+}
+
+model Professor {
+  professor_id String @id @db.Uuid
+  user         User   @relation(fields: [professor_id], references: [id])
+
+  classrooms Classroom[]
+
+  @@map("professors")
+}
+
+model Classroom {
+  classroom_id String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  professor    String    @db.Uuid
+  subject      String    @db.Uuid
+  semester     String?
+  start_at     DateTime? @db.Timestamptz
+  end_at       DateTime? @db.Timestamptz
+
+  professorRef Professor @relation(fields: [professor], references: [professor_id])
+  subjectRef   Subject   @relation(fields: [subject], references: [subject_id])
+
+  attendances Attendance[]
+  students    ClassroomStudent[]
+  grades      Grade[]
+
+  @@map("classrooms")
+}
+
+model Attendance {
+  attendance_id   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  student         String   @db.Uuid
+  classroom       String   @db.Uuid
+  attendance_date DateTime @db.Timestamptz(6)
+  presence        Boolean
+
+  studentRef   Student   @relation(fields: [student], references: [student_id])
+  classroomRef Classroom @relation(fields: [classroom], references: [classroom_id])
+
+  @@map("attendances")
+}
+
+model ClassroomStudent {
+  fk_classroom_id String @db.Uuid
+  fk_student_id   String @db.Uuid
+
+  classroom Classroom @relation(fields: [fk_classroom_id], references: [classroom_id])
+  student   Student   @relation(fields: [fk_student_id], references: [student_id])
+
+  @@id([fk_classroom_id, fk_student_id])
+  @@map("classrooms_students")
+}
+
+model Grade {
+  grade_id  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  student   String   @db.Uuid
+  classroom String   @db.Uuid
+  activity  String?
+  grade     Decimal? @db.Decimal(5, 2)
+
+  studentRef   Student   @relation(fields: [student], references: [student_id])
+  classroomRef Classroom @relation(fields: [classroom], references: [classroom_id])
+
+  @@map("grades")
 }

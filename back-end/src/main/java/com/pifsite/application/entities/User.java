@@ -28,11 +28,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Inheritance(strategy = InheritanceType.JOINED)
-@Table(name = "users")
+@Table(name = "User")
 public class User{
     
     @Id
-    @Column(name="user_id")
+    @Column(name="id")
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID userId;
 

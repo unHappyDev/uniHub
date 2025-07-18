@@ -12,6 +12,7 @@ const emailServiceUrl = `http://${process.env.EMAIL_HTTP_HOST}:${process.env.EMA
 
 async function waitForAllServices() {
   await waitForWebServer();
+  await waitForBackend();
   await waitForDatabase();
   await waitForEmailService();
 
@@ -24,6 +25,25 @@ async function waitForAllServices() {
           );
         }
         await fetch(`${webserverUrl}/api/v1/status`);
+      },
+      {
+        retries: 50,
+        minTimeout: 10,
+        maxTimeout: 1000,
+        factor: 1.1,
+      },
+    );
+  }
+
+  async function waitForBackend() {
+    return await retry(
+      async (_bail, tries) => {
+        if (tries >= 25) {
+          console.log(
+            `> Trying to connect to Webserver #${tries}. Are you running the server with "npm run dev"?`,
+          );
+        }
+        await fetch(`http://localhost:8443/user`);
       },
       {
         retries: 50,
