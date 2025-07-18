@@ -31,7 +31,7 @@ git push -u origin nome-da-branch
 
 ### 7) Realizar o Merge da nova branch com a master
 
-### 8) Deletar a branch antiga no GitHub e na máquina(se quiser)
+### 8) Deletar a branch antiga no GitHub e na máquina(se quiser).
 ```bash
 git branch -d nome-da-branch-antiga
 ```
