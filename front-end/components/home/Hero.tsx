@@ -35,9 +35,11 @@ export function Hero() {
             </p>
 
             <div className="flex flex-wrap gap-4">
-              <Button className="py-4 px-6 cursor-pointer bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm rounded-md transition duration-300 ease-in-out">
-                Acessar Portal
-              </Button>
+              <a href="/login">
+                <Button className="py-4 px-6 cursor-pointer bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm rounded-md transition duration-300 ease-in-out">
+                  Acessar Portal
+                </Button>
+              </a>
               <Button
                 variant="outline"
                 className="py-4 px-6 border-white cursor-pointer text-white hover:bg-white hover:text-black font-bold text-sm rounded-md transition duration-300 ease-in-out"

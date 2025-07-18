@@ -7,7 +7,7 @@ import { ThemeProvider } from "@/contexts/ThemeProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "AuthSample",
+  title: "UniHub",
   description: "Authentication Sample",
 };
 
