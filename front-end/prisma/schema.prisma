@@ -1,0 +1,82 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  BLOCKED
+  USER
+  ADMIN
+  MODERATOR
+}
+
+model User {
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username           String               @unique @db.VarChar(30)
+  email              String               @unique @db.VarChar(254)
+  password           String               @db.VarChar(60)
+  role               Role                 @default(USER)
+  is_active          Boolean              @default(false)
+  created_at         DateTime             @default(dbgenerated("(now() at time zone 'utc')")) @db.Timestamptz
+  updated_at         DateTime             @updatedAt @db.Timestamptz
+  ActivationToken    ActivationToken[]
+  Session            Session[]
+  ResetPasswordToken ResetPasswordToken[]
+  Event              Event[]
+
+  @@index([email])
+  @@index([username])
+  @@index([created_at])
+}
+
+model ActivationToken {
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  expires_at DateTime @db.Timestamptz
+  created_at DateTime @default(dbgenerated("(now() at time zone 'utc')")) @db.Timestamptz
+  updated_at DateTime @updatedAt @db.Timestamptz
+
+  @@index([user_id])
+}
+
+model Session {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  token      String   @db.VarChar(96)
+  user_id    String   @db.Uuid
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  expires_at DateTime @db.Timestamptz
+  created_at DateTime @default(dbgenerated("(now() at time zone 'utc')")) @db.Timestamptz
+  updated_at DateTime @updatedAt @db.Timestamptz
+
+  @@index([user_id])
+  @@index([token])
+  @@index([expires_at])
+}
+
+model ResetPasswordToken {
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  expires_at DateTime @db.Timestamptz
+  created_at DateTime @default(dbgenerated("(now() at time zone 'utc')")) @db.Timestamptz
+  updated_at DateTime @updatedAt @db.Timestamptz
+
+  @@index([user_id])
+}
+
+model Event {
+  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  type               String
+  originator_user_id String?  @db.Uuid
+  user               User?    @relation(fields: [originator_user_id], references: [id], onDelete: SetNull)
+  originator_ip      String?  @db.Inet
+  metadata           Json?
+  created_at         DateTime @default(dbgenerated("(now() at time zone 'utc')")) @db.Timestamptz
+
+  @@index([originator_user_id])
+}
