@@ -50,7 +50,7 @@ public class UserService {
 
         User newUser = new User();
         newUser.setEmail(registerUserDTO.email());
-        newUser.setName(registerUserDTO.name());
+        newUser.setUsername(registerUserDTO.name());
         newUser.setRole(UserRoles.fromString(registerUserDTO.role()));
         newUser.setPassword(passwordEncoder.encode(registerUserDTO.password()));
 

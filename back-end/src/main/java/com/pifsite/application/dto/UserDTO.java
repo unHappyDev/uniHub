@@ -4,4 +4,4 @@ import com.pifsite.application.enums.UserRoles;
 
 import java.util.UUID;
 
-public record UserDTO(UUID userId, String name, String email, UserRoles role) {}
+public record UserDTO(UUID id, String username, String email, UserRoles role) {}

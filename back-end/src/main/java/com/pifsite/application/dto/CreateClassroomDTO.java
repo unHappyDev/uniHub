@@ -2,8 +2,8 @@ package com.pifsite.application.dto;
 
 import java.util.UUID;
 import java.util.Set;
-import java.sql.Time;
+import java.time.OffsetDateTime;
 
-public record CreateClassroomDTO(UUID professorId, UUID subjectId, String semester, Time startAt, Time endAt, Set<UUID> studentsIds) {
+public record CreateClassroomDTO(UUID professorId, UUID subjectId, String semester, OffsetDateTime startAt, OffsetDateTime endAt, Set<UUID> studentsIds) {
 
 }

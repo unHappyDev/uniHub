@@ -12,6 +12,7 @@ enum Role {
   USER
   ADMIN
   MODERATOR
+  PROFESSOR
 }
 
 model User {
@@ -22,7 +23,7 @@ model User {
   role               Role                 @default(USER)
   is_active          Boolean              @default(false)
   created_at         DateTime             @default(dbgenerated("(now() at time zone 'utc')")) @db.Timestamptz
-  updated_at         DateTime             @updatedAt @db.Timestamptz
+  updated_at         DateTime             @default(dbgenerated("(now() at time zone 'utc')")) @updatedAt @db.Timestamptz
   ActivationToken    ActivationToken[]
   Session            Session[]
   ResetPasswordToken ResetPasswordToken[]
@@ -34,6 +35,8 @@ model User {
   @@index([email])
   @@index([username])
   @@index([created_at])
+
+  @@map("users")
 }
 
 model ActivationToken {

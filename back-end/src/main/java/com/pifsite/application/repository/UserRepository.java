@@ -14,6 +14,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     
     Optional<User> findByEmail(String email);
 
-    @Query("SELECT new com.pifsite.application.dto.UserDTO(u.userId, u.name, u.email, u.role) FROM User u")
+    @Query("SELECT new com.pifsite.application.dto.UserDTO(u.id, u.username, u.email, u.role) FROM User u")
     List<UserDTO> getAllUsers();
 }

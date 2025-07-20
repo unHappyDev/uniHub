@@ -19,7 +19,7 @@ import lombok.Setter;
 import java.util.HashSet;
 import java.util.UUID;
 import java.util.Set;
-import java.sql.Time;
+import java.time.OffsetDateTime;
 
 @Entity
 @Setter
@@ -44,10 +44,10 @@ public class Classroom {
     private String semester;
 
     @Column(name = "start_at")
-    private Time startAt;
+    private OffsetDateTime startAt;
 
     @Column(name = "end_at")
-    private Time endAt;
+    private OffsetDateTime endAt;
 
     @ManyToMany
     @JoinTable(

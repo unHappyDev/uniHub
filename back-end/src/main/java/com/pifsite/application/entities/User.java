@@ -21,6 +21,9 @@ import lombok.Setter;
 
 import java.util.UUID;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 @Entity
 @Setter
 @Getter
@@ -28,24 +31,25 @@ import java.util.UUID;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Inheritance(strategy = InheritanceType.JOINED)
-@Table(name = "User")
+@Table(name = "users")
 public class User{
     
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID userId;
+    private UUID id;
 
-    private String name;
+    private String username;
     private String email;
     private String password;
     
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private UserRoles role;
 
     @Override
     public String toString() {
-        return "User [userId=" + userId + ", name=" + name + ", email=" + email + ", password=" + password + ", role="
+        return "User [userId=" + id + ", name=" + username + ", email=" + email + ", password=" + password + ", role="
                 + role + "]";
     }
 }
