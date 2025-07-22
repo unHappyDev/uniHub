@@ -48,6 +48,7 @@ model ActivationToken {
   updated_at DateTime @updatedAt @db.Timestamptz
 
   @@index([user_id])
+  
 }
 
 model Session {
@@ -62,6 +63,8 @@ model Session {
   @@index([user_id])
   @@index([token])
   @@index([expires_at])
+
+  @@map("session")
 }
 
 model ResetPasswordToken {

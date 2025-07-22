@@ -20,25 +20,6 @@ public class TokenService {
     @Value("${api.security.token.secret}")
     private String secret;
 
-    public String generateToken(User user){
-        try {
-
-            Algorithm algorithm = Algorithm.HMAC256(secret);
-
-            String token = JWT.create()
-                            .withIssuer("user")
-                            .withSubject(user.getId().toString())
-                            .withClaim("email", user.getEmail())
-                            .withExpiresAt(this.generateExpirationDate())
-                            .sign(algorithm);
-
-            return token;
-
-        }catch(JWTCreationException err){
-            throw new RuntimeException("there was an error generating the token");
-        }
-    }
-
     public String validateToken(String token){
         try {
 
