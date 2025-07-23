@@ -95,3 +95,6 @@ ALTER TABLE "students" ADD CONSTRAINT "students_student_id_fkey" FOREIGN KEY ("s
 
 -- AddForeignKey
 ALTER TABLE "professors" ADD CONSTRAINT "professors_professor_id_fkey" FOREIGN KEY ("professor_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- RenameTableSession
+ALTER TABLE "Session" RENAME TO "session";

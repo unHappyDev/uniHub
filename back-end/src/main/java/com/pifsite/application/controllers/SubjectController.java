@@ -39,7 +39,7 @@ public class SubjectController {
     @PostMapping
     public ResponseEntity<?> createSubject(@RequestBody CreateSubjectDTO subjectDTO){
 
-        subjectService.crateSubject(subjectDTO);
+        subjectService.createSubject(subjectDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Course created");
          
     }
