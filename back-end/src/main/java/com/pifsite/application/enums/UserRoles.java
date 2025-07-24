@@ -1,6 +1,7 @@
 package com.pifsite.application.enums;
 
 public enum UserRoles {
+    USER("user"),
     ADMIN("admin"),
     PROFESSOR("professor"),
     STUDENT("student");

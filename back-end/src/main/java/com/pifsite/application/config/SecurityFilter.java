@@ -37,12 +37,12 @@ public class SecurityFilter extends OncePerRequestFilter {
         
         try{
 
-            String sessionToken = this.recoverToken(request);
-            Session session = sessionService.validateToken(sessionToken);
+            String sessionId = this.recoverToken(request);
+            Session session = sessionService.validateSession(sessionId);
 
             User user = session.getUser();
 
-            var authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole().toString()));
+            var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().toString()));
 
             var authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
 
@@ -51,6 +51,8 @@ public class SecurityFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         }catch(InvalidTokenException | ExpiredTokenException err){
+
+            System.out.println(err.getMessage());
 
             response.sendError(HttpServletResponse.SC_FORBIDDEN, err.getMessage());
             return;
@@ -67,10 +69,11 @@ public class SecurityFilter extends OncePerRequestFilter {
         
         for (Cookie cookie : cookies) {
             if ("session_id".equals(cookie.getName())) {
+    
                 return cookie.getValue(); 
             }
         }
-        
+
         return null; 
     }
 }
