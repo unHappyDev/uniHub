@@ -48,7 +48,8 @@ public class ProfessorService {
             registerProfessorDTO.name(),
             registerProfessorDTO.email(),
             passwordEncoder.encode(registerProfessorDTO.password()),
-            UserRoles.fromString(registerProfessorDTO.role())
+            UserRoles.fromString(registerProfessorDTO.role()),
+            true
         );
 
         Professor Professor = new Professor();
