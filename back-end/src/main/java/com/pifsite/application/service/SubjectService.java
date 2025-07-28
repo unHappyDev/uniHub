@@ -37,7 +37,7 @@ public class SubjectService {
         return subjects;
     }
 
-    public void crateSubject(CreateSubjectDTO subjectDTO){
+    public void createSubject(CreateSubjectDTO subjectDTO){
 
         Authentication userData = SecurityContextHolder.getContext().getAuthentication();
         User user = (User)userData.getPrincipal();

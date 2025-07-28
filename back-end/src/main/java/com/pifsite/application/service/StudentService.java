@@ -53,7 +53,8 @@ public class StudentService {
             registerUser.name(),
             registerUser.email(),
             passwordEncoder.encode(registerUser.password()),
-            UserRoles.fromString(registerUser.role())
+            UserRoles.fromString(registerUser.role()),
+            true
         );
 
         Student student = new Student();

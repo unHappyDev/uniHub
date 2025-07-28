@@ -39,16 +39,16 @@ public class SubjectController {
     @PostMapping
     public ResponseEntity<?> createSubject(@RequestBody CreateSubjectDTO subjectDTO){
 
-        subjectService.crateSubject(subjectDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Course created");
+        subjectService.createSubject(subjectDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Subject created");
          
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
+    public ResponseEntity<String> deleteSubject(@PathVariable UUID id) {
 
         subjectService.deleteOneSubject(id);
-        return ResponseEntity.ok("Course successfully deleted.");
+        return ResponseEntity.ok("Subject successfully deleted.");
 
     }
 }

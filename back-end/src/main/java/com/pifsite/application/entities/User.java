@@ -42,10 +42,13 @@ public class User{
     private String username;
     private String email;
     private String password;
-    
+
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private UserRoles role;
+    
+    @Column(name="is_active")
+    private Boolean isActive;
 
     @Override
     public String toString() {

@@ -40,7 +40,7 @@ public class StudentController {
     public ResponseEntity<?> createStudent(@RequestBody CreateStudentDTO registerStudentDTO){
 
         studentService.createStudent(registerStudentDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Usuário criado");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Estudante created");
 
     }
 

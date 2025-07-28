@@ -39,7 +39,7 @@ public class ProfessorController {
     public ResponseEntity<?> createProfessor(@RequestBody CreateUserDTO registerProfessorDTO){
 
         ProfessorService.createProfessor(registerProfessorDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Usuário criado");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Professor created");
 
     }
 

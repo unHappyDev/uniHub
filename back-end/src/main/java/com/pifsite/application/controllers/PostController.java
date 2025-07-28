@@ -39,7 +39,7 @@ public class PostController {
     public ResponseEntity<?> createPost(@RequestBody CreatePostDTO postDTO){
 
         postService.createPost(postDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Post criado");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Post created");
     }
 
     @DeleteMapping("/{id}")
