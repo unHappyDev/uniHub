@@ -1,6 +1,7 @@
 "use client";
 
 import { About } from "@/components/home/About";
+import { Cards } from "@/components/home/Cards.";
 import { Header } from "@/components/home/Header";
 import { Hero } from "@/components/home/Hero";
 import Navbar from "@/components/layout/Navbar";
@@ -12,6 +13,7 @@ export default function Home() {
       <Header />
       <Hero />
       <About />
+      <Cards />
       <ScrollToTopButton />
     </div>
   );
