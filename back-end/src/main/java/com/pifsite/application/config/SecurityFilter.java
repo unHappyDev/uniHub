@@ -34,11 +34,22 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        String path = request.getRequestURI();
+
+        if (path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api-docs")
+                || path.equals("/swagger-ui.html")
+                || (path.equals("/login") && request.getMethod().equals("POST"))
+                || (path.equals("/user") && request.getMethod().equals("POST"))) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         
         try{
 
-            String sessionId = this.recoverToken(request);
-            Session session = sessionService.validateSession(sessionId);
+            String token = this.recoverToken(request);
+            Session session = sessionService.validateSession(token);
 
             User user = session.getUser();
 
@@ -54,7 +65,9 @@ public class SecurityFilter extends OncePerRequestFilter {
 
             System.out.println(err.getMessage());
 
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, err.getMessage());
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"" + err.getMessage() + "\"}");
             return;
         }
     }

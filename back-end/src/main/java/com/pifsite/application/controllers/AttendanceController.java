@@ -14,11 +14,16 @@ import com.pifsite.application.service.AttendanceService;
 import com.pifsite.application.dto.CreateAttendanceDTO;
 import com.pifsite.application.entities.Attendance;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/attendance")
+@Tag(name = "AttendanceController", description = "Endpoints to get, create, delete and update professors")
 public class AttendanceController {
 
     private final AttendanceService attendanceService;
@@ -28,6 +33,7 @@ public class AttendanceController {
     }
 
     @GetMapping
+    @Operation(summary = "Get Attendance", description = "Get all Attendances from database")
     public ResponseEntity<?> getAllAttendances(){
 
         List<Attendance> attendances = attendanceService.getAllAttendances();
@@ -35,6 +41,7 @@ public class AttendanceController {
     }
 
     @PostMapping
+    @Operation(summary = "Create Attendance", description = "Create a Attendance and save on the database")
     public ResponseEntity<?> createAttendance(@RequestBody CreateAttendanceDTO attendanceDTO){
 
         attendanceService.crateAttendance(attendanceDTO);
@@ -43,6 +50,7 @@ public class AttendanceController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete Attendance", description = "Delete a Attendance on database by its ID")
     public ResponseEntity<String> deleteAttendance(@PathVariable UUID id) {
         
         attendanceService.deleteOneAttendance(id);

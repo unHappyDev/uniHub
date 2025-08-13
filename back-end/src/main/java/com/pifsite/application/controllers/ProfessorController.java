@@ -13,13 +13,16 @@ import org.springframework.http.HttpStatus;
 import com.pifsite.application.service.ProfessorService;
 import com.pifsite.application.entities.Professor;
 import com.pifsite.application.dto.CreateUserDTO;
-// import com.pifsite.application.dto.ProfessorDTO;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/professor")
+@Tag(name = "ProfessorController", description = "Endpoints to get, create, delete and update professors")
 public class ProfessorController {
 
     private final ProfessorService ProfessorService;
@@ -29,6 +32,7 @@ public class ProfessorController {
     }
 
     @GetMapping
+    @Operation(summary = "Get Professor", description = "Get all professors from database")
     public ResponseEntity<?> getAllProfessors(){
 
         List<Professor> professors = ProfessorService.getAllProfessors();
@@ -36,6 +40,7 @@ public class ProfessorController {
     }
 
     @PostMapping
+    @Operation(summary = "Create Professor", description = "Create a professor and save on the database")
     public ResponseEntity<?> createProfessor(@RequestBody CreateUserDTO registerProfessorDTO){
 
         ProfessorService.createProfessor(registerProfessorDTO);
@@ -44,6 +49,7 @@ public class ProfessorController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete Professor", description = "Delete a professor on database by its ID")
     public ResponseEntity<String> deleteProfessor(@PathVariable UUID id) {
 
         ProfessorService.deleteOneProfessor(id);

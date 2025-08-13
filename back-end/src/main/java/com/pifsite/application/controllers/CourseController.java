@@ -16,11 +16,15 @@ import com.pifsite.application.dto.CourseSubjectsDTO;
 import com.pifsite.application.dto.CreateCourseDTO;
 import com.pifsite.application.dto.CourseDTO;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/course")
+@Tag(name = "CourseController", description = "Endpoints to get, create, delete and update professors")
 public class CourseController {
 
     private final CourseService courseService;
@@ -30,6 +34,7 @@ public class CourseController {
     }
 
     @GetMapping
+    @Operation(summary = "Get Course", description = "Get all Courses from database")
     public ResponseEntity<?> getAllCourses(){
 
         List<CourseDTO> course = courseService.getAllCourses();
@@ -38,6 +43,7 @@ public class CourseController {
     }
 
     @PostMapping
+    @Operation(summary = "Create Course without subjects", description = "Create a Course without subjects and save on the database")
     public ResponseEntity<?> createCourse(@RequestBody CreateCourseDTO courseDTO){
 
         courseService.crateCourse(courseDTO);
@@ -46,6 +52,7 @@ public class CourseController {
     }
 
     @PostMapping("/withSubjects")
+    @Operation(summary = "Create Course with subjects", description = "Create a Course with subjects and save on the database")
     public ResponseEntity<?> createCourseWithSubjects(@RequestBody CourseSubjectsDTO courseSubjectsDTO){
 
         courseService.createCourseWithSubjects(courseSubjectsDTO);
@@ -54,6 +61,7 @@ public class CourseController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update Course", description = "Update a Course by its ID on the database")
     public ResponseEntity<String> addSubjects(@PathVariable UUID id, @RequestBody List<UUID> subjectIds) {
         
         courseService.addSubjectToCourse(id, subjectIds);
@@ -62,6 +70,7 @@ public class CourseController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete Course", description = "Delete a Course on database by its ID")
     public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
 
         courseService.deleteOneCourse(id);

@@ -13,11 +13,15 @@ import com.pifsite.application.service.ClassroomService;
 import com.pifsite.application.dto.CreateClassroomDTO;
 import com.pifsite.application.entities.Classroom;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/classroom")
+@Tag(name = "ClassroomController", description = "Endpoints to get, create, delete and update professors")
 public class ClassroomController {
 
     private final ClassroomService classroomService;
@@ -27,6 +31,7 @@ public class ClassroomController {
     }
 
     @GetMapping
+    @Operation(summary = "Get Classroom", description = "Get all Classrooms from database")
     public ResponseEntity<?> getAllClassrooms(){
 
         List<Classroom> Classrooms = classroomService.getAllClassrooms();
@@ -35,6 +40,7 @@ public class ClassroomController {
     }
 
     @PostMapping
+    @Operation(summary = "Create Classroom", description = "Create a Classroom save on the database")
     public ResponseEntity<?> createClassroom(@RequestBody CreateClassroomDTO ClassroomDTO){
 
         classroomService.createClassroom(ClassroomDTO);
@@ -42,6 +48,7 @@ public class ClassroomController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete Classroom", description = "Delete a Classroom on database by its ID")
     public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
 
         classroomService.deleteOneClassroom(id);

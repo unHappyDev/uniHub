@@ -14,11 +14,15 @@ import com.pifsite.application.service.GradeService;
 import com.pifsite.application.dto.CreateGradeDTO;
 import com.pifsite.application.entities.Grade;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/grade")
+@Tag(name = "GradeController", description = "Endpoints to get, create, delete and update professors")
 public class GradeController {
 
     private final GradeService gradeService;
@@ -28,6 +32,7 @@ public class GradeController {
     }
 
     @GetMapping
+    @Operation(summary = "Get Grade", description = "Get all Grades from database")
     public ResponseEntity<?> getAllGrades(){
 
         List<Grade> grades = gradeService.getAllGrades();
@@ -36,6 +41,7 @@ public class GradeController {
     }
 
     @PostMapping
+    @Operation(summary = "Create Grade", description = "Create a Grade and save on the database")
     public ResponseEntity<?> createGrade(@RequestBody CreateGradeDTO gradeDTO){
 
         gradeService.crateGrade(gradeDTO);
@@ -44,6 +50,7 @@ public class GradeController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete Grade", description = "Delete a Grade on database by its ID")
     public ResponseEntity<String> deleteGrade(@PathVariable UUID id) {
 
         gradeService.deleteOneGrade(id);
