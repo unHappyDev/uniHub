@@ -11,11 +11,11 @@ import com.pifsite.application.exceptions.ResourceNotFoundException;
 import com.pifsite.application.repository.AttendanceRepository;
 import com.pifsite.application.repository.ClassroomRepository;
 import com.pifsite.application.repository.StudentRepository;
+import com.pifsite.application.security.UserRoles;
 import com.pifsite.application.dto.CreateAttendanceDTO;
 import com.pifsite.application.entities.Attendance;
 import com.pifsite.application.entities.Classroom;
 import com.pifsite.application.entities.Student;
-import com.pifsite.application.enums.UserRoles;
 import com.pifsite.application.entities.User;
 
 import lombok.RequiredArgsConstructor;

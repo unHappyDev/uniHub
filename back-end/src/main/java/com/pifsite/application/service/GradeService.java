@@ -8,11 +8,11 @@ import com.pifsite.application.exceptions.UnauthorizedActionException;
 import com.pifsite.application.exceptions.ResourceNotFoundException;
 import com.pifsite.application.repository.ClassroomRepository;
 import com.pifsite.application.repository.StudentRepository;
+import com.pifsite.application.security.UserRoles;
 import com.pifsite.application.repository.GradeRepository;
 import com.pifsite.application.dto.CreateGradeDTO;
 import com.pifsite.application.entities.Classroom;
 import com.pifsite.application.entities.Student;
-import com.pifsite.application.enums.UserRoles;
 import com.pifsite.application.entities.Grade;
 import com.pifsite.application.entities.User;
 

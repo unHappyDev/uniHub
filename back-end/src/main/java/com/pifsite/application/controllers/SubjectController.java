@@ -1,5 +1,6 @@
 package com.pifsite.application.controllers;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,7 +23,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/subject")
-
 @Tag(name = "SubjectController", description = "Endpoints to get, create, delete and update professors")
 public class SubjectController {
 
@@ -43,6 +43,7 @@ public class SubjectController {
 
     @PostMapping
     @Operation(summary = "Create Subject", description = "Create a Subject and save on the database")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString())")
     public ResponseEntity<?> createSubject(@RequestBody CreateSubjectDTO subjectDTO){
 
         subjectService.createSubject(subjectDTO);
@@ -52,6 +53,7 @@ public class SubjectController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete Subject", description = "Delete a Subject on database by its ID")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString())")
     public ResponseEntity<String> deleteSubject(@PathVariable UUID id) {
 
         subjectService.deleteOneSubject(id);

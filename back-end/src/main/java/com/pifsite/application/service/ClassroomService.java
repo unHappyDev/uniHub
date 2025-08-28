@@ -12,13 +12,13 @@ import com.pifsite.application.repository.ClassroomRepository;
 import com.pifsite.application.repository.ProfessorRepository;
 import com.pifsite.application.repository.StudentRepository;
 import com.pifsite.application.repository.SubjectRepository;
+import com.pifsite.application.security.UserRoles;
 import com.pifsite.application.dto.CreateClassroomDTO;
 import com.pifsite.application.entities.Classroom;
 import com.pifsite.application.entities.Professor;
 import com.pifsite.application.entities.Student;
 import com.pifsite.application.entities.Subject;
 import com.pifsite.application.entities.User;
-import com.pifsite.application.enums.UserRoles;
 
 import lombok.RequiredArgsConstructor;
 

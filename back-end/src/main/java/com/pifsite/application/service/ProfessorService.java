@@ -4,9 +4,9 @@ import com.pifsite.application.exceptions.EntityInUseException;
 import com.pifsite.application.exceptions.ResourceNotFoundException;
 import com.pifsite.application.repository.ProfessorRepository;
 import com.pifsite.application.repository.UserRepository;
+import com.pifsite.application.security.UserRoles;
 import com.pifsite.application.entities.Professor;
 import com.pifsite.application.dto.CreateUserDTO;
-import com.pifsite.application.enums.UserRoles;
 import com.pifsite.application.entities.User;
 
 import org.springframework.security.core.context.SecurityContextHolder;

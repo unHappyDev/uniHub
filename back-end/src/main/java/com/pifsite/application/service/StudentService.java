@@ -3,11 +3,11 @@ package com.pifsite.application.service;
 import com.pifsite.application.exceptions.EntityInUseException;
 import com.pifsite.application.exceptions.ResourceNotFoundException;
 import com.pifsite.application.repository.StudentRepository;
+import com.pifsite.application.security.UserRoles;
 import com.pifsite.application.repository.CourseRepository;
 import com.pifsite.application.dto.CreateStudentDTO;
 import com.pifsite.application.dto.CreateUserDTO;
 import com.pifsite.application.entities.Student;
-import com.pifsite.application.enums.UserRoles;
 import com.pifsite.application.entities.Course;
 import com.pifsite.application.entities.User;
 
