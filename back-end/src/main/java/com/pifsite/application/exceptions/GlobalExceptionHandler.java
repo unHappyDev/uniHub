@@ -1,6 +1,9 @@
 package com.pifsite.application.exceptions;
 
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,43 +14,85 @@ import org.springframework.http.HttpStatus;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<String> resourceNotFoundException(ResourceNotFoundException ex) {
+    public ResponseEntity<ErrorResponse> resourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        ErrorResponse error = new ErrorResponse(
+            HttpStatus.NOT_FOUND.value(),
+            HttpStatus.NOT_FOUND.getReasonPhrase(),
+            ex.getMessage(),
+            request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<String> badRequestException(BadRequestException ex) {
+    public ResponseEntity<ErrorResponse> badRequestException(BadRequestException ex, HttpServletRequest request) {
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        ErrorResponse error = new ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            HttpStatus.BAD_REQUEST.getReasonPhrase(),
+            ex.getMessage(),
+            request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<String> conflictException(ConflictException ex) {
+    public ResponseEntity<ErrorResponse> conflictException(ConflictException ex, HttpServletRequest request) {
 
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+        ErrorResponse error = new ErrorResponse(
+            HttpStatus.CONFLICT.value(),
+            HttpStatus.CONFLICT.getReasonPhrase(),
+            ex.getMessage(),
+            request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<String> invalidCredentialsException(InvalidCredentialsException ex) {
+    public ResponseEntity<ErrorResponse> invalidCredentialsException(InvalidCredentialsException ex, HttpServletRequest request) {
 
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+        ErrorResponse error = new ErrorResponse(
+            HttpStatus.CONFLICT.value(),
+            HttpStatus.CONFLICT.getReasonPhrase(),
+            ex.getMessage(),
+            request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     @ExceptionHandler(EntityInUseException.class)
-    public ResponseEntity<String> entityInUseException(EntityInUseException ex) {
+    public ResponseEntity<ErrorResponse> entityInUseException(EntityInUseException ex, HttpServletRequest request) {
 
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+        ErrorResponse error = new ErrorResponse(
+            HttpStatus.CONFLICT.value(),
+            HttpStatus.CONFLICT.getReasonPhrase(),
+            ex.getMessage(),
+            request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     @ExceptionHandler(UnauthorizedActionException.class)
-    public ResponseEntity<String> unauthorizedActionException(UnauthorizedActionException ex) {
+    public ResponseEntity<ErrorResponse> unauthorizedActionException(UnauthorizedActionException ex, HttpServletRequest request) {
 
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+        ErrorResponse error = new ErrorResponse(
+            HttpStatus.FORBIDDEN.value(),
+            HttpStatus.FORBIDDEN.getReasonPhrase(),
+            ex.getMessage(),
+            request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<String> methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+    public ResponseEntity<String> methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Argument Type Mismatch");
     }
