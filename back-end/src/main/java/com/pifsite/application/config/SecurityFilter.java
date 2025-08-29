@@ -3,10 +3,12 @@ package com.pifsite.application.config;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.stereotype.Component;
 
+import com.pifsite.application.security.CustomAuthenticationEntryPoint;
 import com.pifsite.application.exceptions.InvalidTokenException;
 import com.pifsite.application.exceptions.ExpiredTokenException;
 import com.pifsite.application.repository.UserRepository;
@@ -31,6 +33,9 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     @Autowired
     SessionService sessionService;
+
+    @Autowired
+    CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -66,11 +71,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         }catch(InvalidTokenException | ExpiredTokenException err){
 
-            System.out.println(err.getMessage());
-
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"" + err.getMessage() + "\"}");
+            authenticationEntryPoint.commence(request, response, new AuthenticationException("Usuário não autenticado") {});
             return;
         }
     }

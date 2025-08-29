@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 
+import com.pifsite.application.security.CustomAuthenticationEntryPoint;
 import com.pifsite.application.security.CustomAccessDeniedHandler;
 import com.pifsite.application.security.UserRoles;
 
@@ -29,6 +30,9 @@ public class SecurityConfig {
 
     @Autowired
     CustomAccessDeniedHandler accessDeniedHandler;
+
+    @Autowired
+    CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -45,7 +49,8 @@ public class SecurityConfig {
                                             .requestMatchers("/swagger-ui.html").permitAll()
                                             .anyRequest().authenticated())
         .exceptionHandling(ex -> ex
-            .accessDeniedHandler(accessDeniedHandler))
+            .accessDeniedHandler(accessDeniedHandler)
+            .authenticationEntryPoint(authenticationEntryPoint))
         .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
