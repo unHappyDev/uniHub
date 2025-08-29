@@ -6,13 +6,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import com.pifsite.application.exceptions.UnauthorizedActionException;
-import com.pifsite.application.exceptions.EntityInUseException;
 import com.pifsite.application.exceptions.ResourceNotFoundException;
+import com.pifsite.application.exceptions.EntityInUseException;
 import com.pifsite.application.repository.SubjectRepository;
-import com.pifsite.application.security.UserRoles;
 import com.pifsite.application.repository.CourseRepository;
 import com.pifsite.application.dto.CourseSubjectsDTO;
 import com.pifsite.application.dto.CreateCourseDTO;
+import com.pifsite.application.security.UserRoles;
 import com.pifsite.application.entities.Subject;
 import com.pifsite.application.entities.Course;
 import com.pifsite.application.dto.CourseDTO;
@@ -56,7 +56,7 @@ public class CourseService {
         return this.courseRepository.save(newCourse);
     }
 
-    public void addSubjectToCourse(UUID courseID, List<UUID> subjectIds){
+    public void addSubjectToCourse(UUID courseId, List<UUID> subjectIds){
 
         Authentication userData = SecurityContextHolder.getContext().getAuthentication();
         User user = (User)userData.getPrincipal();
@@ -65,7 +65,7 @@ public class CourseService {
             throw new UnauthorizedActionException("You can't create courses");
         }
         
-        Course course = this.courseRepository.findById(courseID).orElseThrow(() -> new ResourceNotFoundException("Course with ID " + courseID + " not found"));
+        Course course = this.courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course with ID " + courseId + " not found"));
 
         List<Subject> subjects = subjectRepository.findAllById(subjectIds);
 
@@ -78,6 +78,8 @@ public class CourseService {
 
         CreateCourseDTO newCourseDTO = new CreateCourseDTO(courseSubjectsDTO.courseName());
         UUID courseId = crateCourse(newCourseDTO).getCourseId();
+
+        System.out.println(courseSubjectsDTO.subjects());
 
         addSubjectToCourse(courseId, courseSubjectsDTO.subjects());
     }

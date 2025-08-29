@@ -45,8 +45,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         if (path.startsWith("/swagger-ui")
                 || path.startsWith("/v3/api-docs")
                 || path.equals("/swagger-ui.html")
-                || (path.equals("/login") && request.getMethod().equals("POST"))
-                || (path.equals("/user") && request.getMethod().equals("POST"))) {
+                || (path.equals("/login") && request.getMethod().equals("POST"))) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -71,7 +70,9 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         }catch(InvalidTokenException | ExpiredTokenException err){
 
-            authenticationEntryPoint.commence(request, response, new AuthenticationException("Usuário não autenticado") {});
+            System.out.println("entrou aqui de novo " + err.getMessage());
+
+            authenticationEntryPoint.commence(request, response, new AuthenticationException(err.getMessage()) {});
             return;
         }
     }

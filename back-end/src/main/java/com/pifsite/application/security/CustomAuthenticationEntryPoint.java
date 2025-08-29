@@ -29,11 +29,11 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         ErrorResponse error = new ErrorResponse(
             HttpStatus.UNAUTHORIZED.value(),
             HttpStatus.UNAUTHORIZED.getReasonPhrase(),
-            "Token invalid or not informed",
+            authException.getMessage(),
             request.getRequestURI()
         );
 
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
         response.getWriter().write(objectMapper.writeValueAsString(error));
         

@@ -59,38 +59,48 @@ public class DataSeed implements CommandLineRunner {
             ))
         );
 
-        sessionRepository.findByToken("33333-33333-33333-33333").orElseGet(() ->
-            sessionRepository.save(new Session(
+        sessionRepository.findByToken("33333-33333-33333-33333")
+            .map(session -> {
+                session.setExpiresAt(OffsetDateTime.now().plusHours(3));
+                return sessionRepository.save(session);
+            })
+            .orElseGet(() -> sessionRepository.save(new Session(
                 null,
                 "33333-33333-33333-33333",
                 ds,
                 OffsetDateTime.now().plusHours(3),
                 null,
                 null
-            ))
-        );
+            )));
 
-        sessionRepository.findByToken("22222-22222-22222-22222").orElseGet(() ->
-            sessionRepository.save(new Session(
+        sessionRepository.findByToken("22222-22222-22222-22222")
+            .map(session -> {
+                session.setExpiresAt(OffsetDateTime.now().plusHours(3));
+                return sessionRepository.save(session);
+            })
+            .orElseGet(() -> sessionRepository.save(new Session(
                 null,
                 "22222-22222-22222-22222",
                 dp,
                 OffsetDateTime.now().plusHours(3),
                 null,
                 null
-            ))
-        );
+            )));
 
-        sessionRepository.findByToken("11111-11111-11111-11111").orElseGet(() ->
-            sessionRepository.save(new Session(
+        sessionRepository.findByToken("11111-11111-11111-11111")
+            .map(session -> {
+                session.setExpiresAt(OffsetDateTime.now().plusHours(3));
+                return sessionRepository.save(session);
+            })
+            .orElseGet(() -> sessionRepository.save(new Session(
                 null,
                 "11111-11111-11111-11111",
                 da,
                 OffsetDateTime.now().plusHours(3),
                 null,
                 null
-            ))
-        );
+            )));
+
 
         System.out.println("Usuários e sessões criadas");
     }

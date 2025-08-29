@@ -20,13 +20,15 @@ public class SessionService {
     public Session validateSession(String token){
 
         if(token == null || token.isBlank()){
-            throw new InvalidTokenException("Invalid or not informed token");
+            throw new InvalidTokenException("Token not informed");
         }
 
-        return sessionRepository.findByToken(token)
-            .filter(s -> s.getExpiresAt() != null)
-            .filter(s -> s.getExpiresAt().isAfter(OffsetDateTime.now()))
-            .orElseThrow(() -> new ExpiredTokenException(" Token invalid or expired"));
+        Session session = sessionRepository.findByToken(token).orElseThrow(() -> new InvalidTokenException("Token invalid"));
 
+        if(session.getExpiresAt().isAfter(OffsetDateTime.now())){
+            throw new ExpiredTokenException("Token expired");
+        }
+
+        return session;
     }
 }
