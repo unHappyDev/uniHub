@@ -25,7 +25,10 @@ public class SessionService {
 
         Session session = sessionRepository.findByToken(token).orElseThrow(() -> new InvalidTokenException("Token invalid"));
 
-        if(session.getExpiresAt().isAfter(OffsetDateTime.now())){
+        if(!session.getExpiresAt().isAfter(OffsetDateTime.now())){
+
+            System.out.println(session.getExpiresAt() + " " + OffsetDateTime.now());
+
             throw new ExpiredTokenException("Token expired");
         }
 

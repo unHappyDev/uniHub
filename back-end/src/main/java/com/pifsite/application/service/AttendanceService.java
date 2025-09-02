@@ -27,9 +27,9 @@ public class AttendanceService {
     private final ClassroomRepository classroomRepository;
     private final StudentRepository studentRepository;
 
-    public List<AttendanceDTO> getAllAttendances(){
+    public List<AttendanceDTO> getAll(){
 
-        List<AttendanceDTO> Attendances = this.AttendanceRepository.getAllAttendances();
+        List<AttendanceDTO> Attendances = this.AttendanceRepository.getAll();
 
         if(Attendances.isEmpty()){
             throw new ResourceNotFoundException("there is no Attendances in the database"); // melhorar depois

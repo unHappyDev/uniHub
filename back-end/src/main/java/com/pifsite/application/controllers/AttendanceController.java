@@ -37,8 +37,8 @@ public class AttendanceController {
     @Operation(summary = "Get Attendance", description = "Get all Attendances from database")
     public ResponseEntity<?> getAllAttendances(){
 
-        List<AttendanceDTO> attendances = attendanceService.getAllAttendances();
-        return ResponseEntity.ok(attendances); // não está muito bom ainda tem que arrumar dps
+        List<AttendanceDTO> attendances = attendanceService.getAll();
+        return ResponseEntity.ok(attendances);
     }
 
     @PostMapping

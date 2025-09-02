@@ -15,5 +15,5 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
            "FROM Attendance a " +
            "JOIN a.student s JOIN s.user " + 
            "JOIN a.classroom c JOIN c.subject")
-    List<AttendanceDTO> getAllAttendances();
+    List<AttendanceDTO> getAll();
 }

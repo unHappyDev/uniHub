@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.UUID;
 import java.util.Set;
-import java.time.OffsetDateTime;
 
 @Entity
 @Setter
