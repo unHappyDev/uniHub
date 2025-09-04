@@ -1,7 +1,14 @@
-export default function Aluno() {
+"use client";
+
+import LogoutButton from "@/components/auth/LogoutButton";
+
+export default function Navbar() {
+
+
   return (
-    <div>
+    <nav className="p-4 bg-gray-800 text-white flex justify-between">
       <h1>Aluno</h1>
-    </div>
+      <LogoutButton />
+    </nav>
   );
 }

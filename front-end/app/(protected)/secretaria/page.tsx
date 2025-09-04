@@ -1,10 +1,14 @@
+"use client";
+
 import LogoutButton from "@/components/auth/LogoutButton";
 
-export default function DashboardLayout() {
+export default function Navbar() {
+
+
   return (
-    <header>
-      <h1>Meu Painel</h1>
+    <nav className="p-4 bg-gray-800 text-white flex justify-between">
+      <h1>Secretaria</h1>
       <LogoutButton />
-    </header>
+    </nav>
   );
 }

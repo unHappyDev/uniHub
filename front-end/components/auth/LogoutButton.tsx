@@ -1,22 +1,19 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useContext } from "react";
+import { AuthContext } from "@/contexts/AuthContext";
 
 export default function LogoutButton() {
-  const router = useRouter();
+  const { logout, isAuthenticated } = useContext(AuthContext)!;
 
-  const handleLogout = () => {
-    // Limpa o localStorage (ou cookies, se estiver usando)
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-
-    // Redireciona para a página de login
-    router.push("/login");
-  };
+  if (!isAuthenticated) return null;
 
   return (
-    <button onClick={handleLogout}>
-      Sair
+    <button
+      onClick={logout}
+      className="bg-red-500 px-4 py-2 rounded hover:bg-red-600"
+    >
+      Logout
     </button>
   );
 }

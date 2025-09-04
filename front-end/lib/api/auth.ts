@@ -7,6 +7,7 @@ interface LoginCredentials {
 }
 
 interface LoginResponse {
+  data: any;
   token: string;
   role: "admin" | "professor" | "user";
 }
