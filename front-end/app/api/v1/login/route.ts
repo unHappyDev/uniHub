@@ -4,6 +4,7 @@ import cookieControl from "@/lib/models/cookie-control";
 import login from "@/lib/models/login";
 import validator from "@/lib/models/validator/validator";
 import { NextResponse } from "next/server";
+import  prisma  from "@lib/prisma";
 
 export async function POST(request: Request) {
   try {
@@ -11,9 +12,15 @@ export async function POST(request: Request) {
     const { email, password } = validator.validateLogin(body);
     const newSession = await login.loginUser(email, password);
 
+    const user = await prisma.user.findUnique({
+      where: { id: newSession.user_id },
+      select: { role: true },
+    });
+
     const response = NextResponse.json(
       {
         id: newSession.id,
+        role: user?.role,
         created_at: newSession.created_at,
         updated_at: newSession.updated_at,
         expires_at: newSession.expires_at,

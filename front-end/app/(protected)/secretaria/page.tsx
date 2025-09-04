@@ -1,5 +1,10 @@
-export default function Secretaria(){
-    return(
-        <div><h1>Teste</h1></div>
-    )
+import LogoutButton from "@/components/auth/LogoutButton";
+
+export default function DashboardLayout() {
+  return (
+    <header>
+      <h1>Meu Painel</h1>
+      <LogoutButton />
+    </header>
+  );
 }

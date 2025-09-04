@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -13,14 +16,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff } from "lucide-react";
+
 import EmailSchema from "@/lib/models/validator/schemas/fields/email";
 import PasswordSchema from "@/lib/models/validator/schemas/fields/password";
-import { getErrorObject } from "@/lib/api/auth";
-import { useAuth } from "@/hooks/useAuth";
+import { getErrorObject, authApi } from "@/lib/api/auth";
 
 const formSchema = z.object({
   email: EmailSchema,
@@ -31,21 +32,42 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: "", password: "" },
   });
 
-  const { login } = useAuth();
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setError(null);
+
     try {
-      await login(values);
-      router.push("/dashboard");
-    } catch (err: unknown) {
-      const { message } = getErrorObject(err);
-      setError(message || "Login failed. Please try again.");
+      // Chamada à API
+      const res = await authApi.login(values);
+      // res = { token, role }
+
+      // Salva no localStorage
+      localStorage.setItem("token", res.token);
+      localStorage.setItem("role", res.role);
+
+      const roleRouteMap: Record<string, string> = {
+        admin: "/secretaria",
+        professor: "/professor",
+        user: "/aluno",
+      };
+
+      const role = res.role?.toLowerCase();
+      const route = roleRouteMap[role] ?? "/dashboard";
+
+      router.push(route);
+    } catch (err) {
+      const errorObj = getErrorObject(err);
+      const message =
+        typeof errorObj === "string"
+          ? errorObj
+          : errorObj?.message || "Login failed. Please try again.";
+
+      setError(message);
     }
   }
 
@@ -80,14 +102,15 @@ export default function LoginForm() {
                     className="pr-10"
                   />
                   <button
+                    type="button"
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer"
                     tabIndex={-1}
                     onClick={() => setShowPassword((prev) => !prev)}
                   >
                     {showPassword ? (
-                      <EyeOff className="w-4 h-4"></EyeOff>
+                      <EyeOff className="w-4 h-4" />
                     ) : (
-                      <Eye className="w-4 h-4"></Eye>
+                      <Eye className="w-4 h-4" />
                     )}
                   </button>
                 </div>
@@ -96,6 +119,7 @@ export default function LoginForm() {
             </FormItem>
           )}
         />
+
         {error && (
           <Alert variant="destructive">
             <AlertDescription>{error}</AlertDescription>
