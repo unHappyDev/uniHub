@@ -1,29 +1,28 @@
 package com.pifsite.application.service;
 
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import com.pifsite.application.exceptions.UnauthorizedActionException;
-import com.pifsite.application.exceptions.EntityInUseException;
 import com.pifsite.application.exceptions.ResourceNotFoundException;
+import com.pifsite.application.exceptions.EntityInUseException;
 import com.pifsite.application.repository.ClassroomRepository;
 import com.pifsite.application.repository.ProfessorRepository;
 import com.pifsite.application.repository.StudentRepository;
 import com.pifsite.application.repository.SubjectRepository;
+import com.pifsite.application.dto.ClassroomStudentDTO;
 import com.pifsite.application.dto.CreateClassroomDTO;
 import com.pifsite.application.entities.Classroom;
 import com.pifsite.application.entities.Professor;
+import com.pifsite.application.dto.ClassroomDTO;
 import com.pifsite.application.entities.Student;
 import com.pifsite.application.entities.Subject;
-import com.pifsite.application.entities.User;
-import com.pifsite.application.enums.UserRoles;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.stream.Collectors;
 import java.util.List;
 import java.util.UUID;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -34,15 +33,31 @@ public class ClassroomService {
     private final StudentRepository studentRepository;
     private final SubjectRepository subjectRepository;
 
-    public List<Classroom> getAllClassrooms(){ // trocar para retornar um DTO depois
+    public Set<ClassroomDTO> getAll(){
 
-        List<Classroom> Classrooms = this.classroomRepository.findAll();
+        Set<Classroom> classrooms = this.classroomRepository.getAll();
 
-        if(Classrooms.isEmpty()){
-            throw new ResourceNotFoundException("there is no Classrooms in the database"); // melhorar depois
+        if(classrooms.isEmpty()){
+            throw new ResourceNotFoundException("there is no Classrooms in the database");
         }
 
-        return Classrooms;
+        return classrooms.stream().map(c -> {
+            Set<ClassroomStudentDTO> studentDTOs = c.getStudents().stream()
+                .map(s -> new ClassroomStudentDTO(s.getUser().getUsername(), s.getCourse().getCourseName()))
+                .collect(Collectors.toSet());
+
+                return new ClassroomDTO(
+                    c.getClassroomId(),
+                    c.getProfessor().getUser().getUsername(),
+                    c.getSubject().getSubjectName(),
+                    c.getSemester(),
+                    c.getStartAt(),
+                    c.getEndAt(),
+                    studentDTOs
+                );
+            }
+        ).collect(Collectors.toSet());
+
     }
 
     public void createClassroom(CreateClassroomDTO registerClassroomDTO){
@@ -73,13 +88,6 @@ public class ClassroomService {
 
         this.classroomRepository.findById(ClassroomId).orElseThrow(() -> new ResourceNotFoundException("classroom with ID " + ClassroomId + " not found"));;
 
-        Authentication userData = SecurityContextHolder.getContext().getAuthentication();
-        User reqUser = (User)userData.getPrincipal();
-
-        if(reqUser.getRole() != UserRoles.ADMIN){
-            throw new UnauthorizedActionException("you can't delete this classroom");
-        }
-
         try{
             this.classroomRepository.deleteById(ClassroomId);
 
@@ -91,6 +99,5 @@ public class ClassroomService {
 
             System.out.println("This error was not treated yet: " + err.getClass());
         }
-
     }
 }

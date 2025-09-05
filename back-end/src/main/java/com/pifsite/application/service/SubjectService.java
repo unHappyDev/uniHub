@@ -9,9 +9,9 @@ import com.pifsite.application.exceptions.UnauthorizedActionException;
 import com.pifsite.application.exceptions.EntityInUseException;
 import com.pifsite.application.exceptions.ResourceNotFoundException;
 import com.pifsite.application.repository.SubjectRepository;
+import com.pifsite.application.security.UserRoles;
 import com.pifsite.application.dto.CreateSubjectDTO;
 import com.pifsite.application.entities.Subject;
-import com.pifsite.application.enums.UserRoles;
 import com.pifsite.application.dto.SubjectDTO;
 import com.pifsite.application.entities.User;
 
@@ -26,12 +26,12 @@ public class SubjectService {
 
     private final SubjectRepository subjectRepository;
 
-    public List<SubjectDTO> getAllSubjects(){ // trocar para retornar um DTO depois
+    public List<SubjectDTO> getAllSubjects(){
 
         List<SubjectDTO> subjects = this.subjectRepository.getAllSubjects();
 
         if(subjects.isEmpty()){
-            throw new ResourceNotFoundException("there is no posts in the database"); // melhorar depois
+            throw new ResourceNotFoundException("there is no subjects in the database");
         }
 
         return subjects;

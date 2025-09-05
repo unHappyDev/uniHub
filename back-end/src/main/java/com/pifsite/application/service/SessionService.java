@@ -10,7 +10,6 @@ import com.pifsite.application.entities.Session;
 import lombok.RequiredArgsConstructor;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -18,15 +17,21 @@ public class SessionService {
 
     private final SessionRepository sessionRepository;
 
-    public Session validateSession(String sessionId){
+    public Session validateSession(String token){
 
-        if(sessionId == null || sessionId.isBlank()){
-            throw new InvalidTokenException("Invalid or not informed token");
+        if(token == null || token.isBlank()){
+            throw new InvalidTokenException("Token not informed");
         }
 
-        return sessionRepository.findById(UUID.fromString(sessionId))
-            .filter(s -> s.getExpiresAt() != null)
-            .filter(s -> s.getExpiresAt().isAfter(OffsetDateTime.now()))
-            .orElseThrow(() -> new ExpiredTokenException("Invalid or expired token"));
+        Session session = sessionRepository.findByToken(token).orElseThrow(() -> new InvalidTokenException("Token invalid"));
+
+        if(!session.getExpiresAt().isAfter(OffsetDateTime.now())){
+
+            System.out.println(session.getExpiresAt() + " " + OffsetDateTime.now());
+
+            throw new ExpiredTokenException("Token expired");
+        }
+
+        return session;
     }
 }

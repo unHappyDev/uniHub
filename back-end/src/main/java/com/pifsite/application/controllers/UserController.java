@@ -14,11 +14,15 @@ import com.pifsite.application.service.UserService;
 import com.pifsite.application.dto.CreateUserDTO;
 import com.pifsite.application.dto.UserDTO;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.UUID;
 import java.util.List;
 
 @RestController
 @RequestMapping("/user")
+@Tag(name = "UserController", description = "Endpoints to get, create, delete and update professors")
 public class UserController {
 
     private final UserService userService;
@@ -28,6 +32,7 @@ public class UserController {
     }
 
     @GetMapping
+    @Operation(summary = "Get User", description = "Get all Users from database")
     public ResponseEntity<?> getAllUsers(){
 
         List<UserDTO> users = userService.getAllUsers();
@@ -35,6 +40,7 @@ public class UserController {
     }
 
     @PostMapping
+    @Operation(summary = "Create User", description = "Create a User and save on the database")
     public ResponseEntity<?> createUser(@RequestBody CreateUserDTO registerUserDTO){
 
         userService.createUser(registerUserDTO);
@@ -43,6 +49,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete User", description = "Delete a User on database by its ID")
     public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
 
         userService.deleteOneUser(id);

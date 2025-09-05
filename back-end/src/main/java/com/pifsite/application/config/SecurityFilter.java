@@ -3,10 +3,12 @@ package com.pifsite.application.config;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.stereotype.Component;
 
+import com.pifsite.application.security.CustomAuthenticationEntryPoint;
 import com.pifsite.application.exceptions.InvalidTokenException;
 import com.pifsite.application.exceptions.ExpiredTokenException;
 import com.pifsite.application.repository.UserRepository;
@@ -32,13 +34,29 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Autowired
     SessionService sessionService;
 
+    @Autowired
+    CustomAuthenticationEntryPoint authenticationEntryPoint;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        String path = request.getRequestURI();
+
+        if (path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api-docs")
+                || path.equals("/swagger-ui.html")
+                || (path.equals("/login") && request.getMethod().equals("POST"))) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         
         try{
 
-            String sessionId = this.recoverToken(request);
-            Session session = sessionService.validateSession(sessionId);
+            String token = this.recoverToken(request);
+
+            System.out.println(token);
+
+            Session session = sessionService.validateSession(token);
 
             User user = session.getUser();
 
@@ -52,9 +70,9 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         }catch(InvalidTokenException | ExpiredTokenException err){
 
-            System.out.println(err.getMessage());
+            System.out.println("entrou aqui de novo: " + err.getMessage());
 
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, err.getMessage());
+            authenticationEntryPoint.commence(request, response, new AuthenticationException(err.getMessage()) {});
             return;
         }
     }

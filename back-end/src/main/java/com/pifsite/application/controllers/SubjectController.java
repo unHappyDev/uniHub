@@ -1,5 +1,6 @@
 package com.pifsite.application.controllers;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,12 +15,15 @@ import com.pifsite.application.service.SubjectService;
 import com.pifsite.application.dto.CreateSubjectDTO;
 import com.pifsite.application.dto.SubjectDTO;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/subject")
-
+@Tag(name = "SubjectController", description = "Endpoints to get, create, delete and update professors")
 public class SubjectController {
 
     private final SubjectService subjectService;
@@ -29,6 +33,7 @@ public class SubjectController {
     }
 
     @GetMapping
+    @Operation(summary = "Get Subject", description = "Get all Subjects from database")
     public ResponseEntity<?> getAllSubjects(){
 
         List<SubjectDTO> subject = subjectService.getAllSubjects();
@@ -37,6 +42,8 @@ public class SubjectController {
     }
 
     @PostMapping
+    @Operation(summary = "Create Subject", description = "Create a Subject and save on the database")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString())")
     public ResponseEntity<?> createSubject(@RequestBody CreateSubjectDTO subjectDTO){
 
         subjectService.createSubject(subjectDTO);
@@ -45,6 +52,8 @@ public class SubjectController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete Subject", description = "Delete a Subject on database by its ID")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString())")
     public ResponseEntity<String> deleteSubject(@PathVariable UUID id) {
 
         subjectService.deleteOneSubject(id);

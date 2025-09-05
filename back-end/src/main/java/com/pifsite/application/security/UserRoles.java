@@ -1,4 +1,4 @@
-package com.pifsite.application.enums;
+package com.pifsite.application.security;
 
 public enum UserRoles {
     USER("user"),
