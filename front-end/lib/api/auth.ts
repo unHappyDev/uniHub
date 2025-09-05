@@ -6,24 +6,10 @@ interface LoginCredentials {
   password: string;
 }
 
-interface RegisterData {
-  username: string;
-  email: string;
-  password: string;
-}
-
-interface SessionInfo {
-  user: {
-    username: string;
-    email: string;
-    role: string;
-  };
-  session: {
-    id: string;
-    created_at: string;
-    updated_at: string;
-    expires_at: string;
-  };
+interface LoginResponse {
+  data: any;
+  token: string;
+  role: "admin" | "professor" | "user";
 }
 
 interface ErrorData {
@@ -37,7 +23,7 @@ interface ErrorResponse {
 
 export function getErrorObject(e: unknown): ErrorData {
   const error = e as AxiosError<ErrorResponse>;
-  const defaultErrorResponse = {
+  const defaultErrorResponse: ErrorData = {
     message: "Something went wrong. Please try again later.",
     action: "If the problem persists, contact support.",
   };
@@ -45,17 +31,24 @@ export function getErrorObject(e: unknown): ErrorData {
 }
 
 export const authApi = {
-  login: (credentials: LoginCredentials) =>
-    apiClient.post("/v1/login", credentials),
+  // login ajustado para retornar { token, role }
+  login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
+    const res = await apiClient.post<LoginResponse>("/v1/login", credentials);
+    return res.data;
+  },
 
   logout: () => apiClient.delete("/v1/logout"),
 
-  register: (userData: RegisterData) =>
-    apiClient.post("/v1/register", userData),
+  register: (userData: {
+    username: string;
+    email: string;
+    password: string;
+  }) => apiClient.post("/v1/register", userData),
 
-  activate: (token: string) => apiClient.get(`/v1/activate?token=${token}`),
+  activate: (token: string) =>
+    apiClient.get(`/v1/activate?token=${token}`),
 
-  verifySession: () => apiClient.get<SessionInfo>("/v1/verify-session"),
+  verifySession: () => apiClient.get("/v1/verify-session"),
 
   forgotPassword: (email: string) =>
     apiClient.post("/v1/forgot-password", { email }),
