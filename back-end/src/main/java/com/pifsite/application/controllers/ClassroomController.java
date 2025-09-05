@@ -17,8 +17,8 @@ import com.pifsite.application.dto.ClassroomDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-import java.util.List;
 import java.util.UUID;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/classroom")
@@ -35,7 +35,7 @@ public class ClassroomController {
     @Operation(summary = "Get Classroom", description = "Get all Classrooms from database")
     public ResponseEntity<?> getAllClassrooms(){
 
-        List<ClassroomDTO> Classrooms = classroomService.getAll();
+        Set<ClassroomDTO> Classrooms = classroomService.getAll();
         return ResponseEntity.ok(Classrooms); // dar um jeito de por uma lista com os nomes dos alunos de cada turma
 
     }

@@ -1,5 +1,7 @@
 package com.pifsite.application.dto;
 
-import java.util.UUID;
+import java.util.Set;
 
-public record CourseDTO(UUID courseId, String courseName) {}
+import com.pifsite.application.entities.Subject;
+
+public record CourseDTO(String courseName, Set<Subject> subjects) {}

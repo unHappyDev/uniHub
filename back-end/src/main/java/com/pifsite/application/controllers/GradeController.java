@@ -1,5 +1,6 @@
 package com.pifsite.application.controllers;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -7,12 +8,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 import com.pifsite.application.service.GradeService;
 import com.pifsite.application.dto.CreateGradeDTO;
-import com.pifsite.application.entities.Grade;
+import com.pifsite.application.dto.GradeDTO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,13 +36,14 @@ public class GradeController {
     @Operation(summary = "Get Grade", description = "Get all Grades from database")
     public ResponseEntity<?> getAllGrades(){
 
-        List<Grade> grades = gradeService.getAllGrades();
-        return ResponseEntity.ok(grades); // não está muito bom ainda tem que arrumar dps
+        List<GradeDTO> grades = gradeService.getAllGrades();
+        return ResponseEntity.ok(grades);
 
     }
 
     @PostMapping
     @Operation(summary = "Create Grade", description = "Create a Grade and save on the database")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
     public ResponseEntity<?> createGrade(@RequestBody CreateGradeDTO gradeDTO){
 
         gradeService.crateGrade(gradeDTO);
@@ -51,6 +53,7 @@ public class GradeController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete Grade", description = "Delete a Grade on database by its ID")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
     public ResponseEntity<String> deleteGrade(@PathVariable UUID id) {
 
         gradeService.deleteOneGrade(id);

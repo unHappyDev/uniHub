@@ -4,10 +4,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import com.pifsite.application.exceptions.ResourceNotFoundException;
 import com.pifsite.application.exceptions.UnauthorizedActionException;
+import com.pifsite.application.exceptions.ResourceNotFoundException;
 import com.pifsite.application.repository.PostRepository;
-import com.pifsite.application.security.UserRoles;
 import com.pifsite.application.dto.CreatePostDTO;
 import com.pifsite.application.entities.Post;
 import com.pifsite.application.entities.User;
@@ -40,10 +39,6 @@ public class PostService {
         Authentication userData = SecurityContextHolder.getContext().getAuthentication();
         User user = (User)userData.getPrincipal();
         
-        if(user.getRole() != UserRoles.ADMIN || user.getRole() != UserRoles.PROFESSOR){
-            throw new UnauthorizedActionException("you can't create posts");
-        }
-        
         Post newPost = new Post();
         newPost.setTitle(postDTO.title());
         newPost.setBody(postDTO.body());
@@ -61,7 +56,7 @@ public class PostService {
 
         if(!post.getOwner().equals(user)){
 
-            throw new UnauthorizedActionException("you can't delete a post that is not yours"); // melhorar depois
+            throw new UnauthorizedActionException("you can't delete a post that is not yours");
         }
         try{
             this.postRepository.deleteById(postId);
