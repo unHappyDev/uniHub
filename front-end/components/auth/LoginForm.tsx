@@ -65,7 +65,7 @@ export default function LoginForm() {
       const message =
         typeof errorObj === "string"
           ? errorObj
-          : errorObj?.message || "Login failed. Please try again.";
+          : errorObj?.message || "Falha no login. Tente novamente.";
 
       setError(message);
     }
@@ -93,7 +93,7 @@ export default function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Senha</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Input
@@ -131,7 +131,7 @@ export default function LoginForm() {
           className="w-full"
           disabled={form.formState.isSubmitting}
         >
-          {form.formState.isSubmitting ? "Signing in..." : "Sign In"}
+          {form.formState.isSubmitting ? "Entrando..." : "Entrar"}
         </Button>
       </form>
     </Form>

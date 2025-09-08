@@ -20,8 +20,8 @@ async function sendActivationEmailTo(email: string) {
     const userFound = await user.getUserByEmail(email);
     if (!userFound) {
       throw new ValidationError({
-        message: "Email not registered",
-        action: "Use another email for this operation",
+        message: "E-mail não cadastrado",
+        action: "Use outro e-mail para esta operação",
       });
     }
     return userFound;
@@ -42,16 +42,16 @@ async function resendActivationToken(token: string) {
     const dbToken = await activationToken.getActivationTokenById(token);
     if (!dbToken) {
       throw new NotFoundError({
-        message: "Token not found",
-        action: "Inform a valid token",
+        message: "Token não encontrado",
+        action: "Informe um token válido",
       });
     }
 
     const now = new Date(Date.now());
     if (new Date(dbToken.expires_at).getTime() < now.getTime()) {
       throw new ValidationError({
-        message: "Token was expired",
-        action: "Inform a valid token",
+        message: "O token expirou",
+        action: "Informe um token válido",
       });
     }
 
@@ -62,8 +62,8 @@ async function resendActivationToken(token: string) {
     const dbUser = await user.getUserById(userId);
     if (!dbUser) {
       throw new NotFoundError({
-        message: "User not found",
-        action: "Inform a valid user",
+        message: "Usuário não encontrado",
+        action: "Informar um usuário válido",
       });
     }
     return dbUser;

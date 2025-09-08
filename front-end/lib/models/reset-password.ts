@@ -26,8 +26,8 @@ export async function forgotPassword(providedEmail: string) {
 
   function throwUnauthorizedError() {
     throw new NotFoundError({
-      message: "Email not registered",
-      action: "Inform correct email",
+      message: "E-mail não cadastrado",
+      action: "Informar e-mail correto",
     });
   }
 }
@@ -46,8 +46,8 @@ export async function resetPassword(tokenId: string, newPassword: string) {
 
     if (!dbToken) {
       throw new NotFoundError({
-        message: "Token not found or expired",
-        action: "Create a new token",
+        message: "Token não encontrado ou expirado",
+        action: "Crie um novo token",
       });
     }
 

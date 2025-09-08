@@ -7,13 +7,13 @@ export default function ResetPasswordSuccessPage() {
     <div className="min-h-screen flex items-center justify-center px-4">
       <Card className="w-full max-w-md text-center">
         <CardHeader>
-          <CardTitle>Password Reset</CardTitle>
+          <CardTitle>Redefinição de senha</CardTitle>
         </CardHeader>
         <CardContent>
-          Your password has been successfully reset.
+          Sua senha foi redefinida com sucesso.
           <div className="mt-4">
             <Button asChild>
-              <Link href="/login">Go to Login</Link>
+              <Link href="/login">Vá para o Login</Link>
             </Button>
           </div>
         </CardContent>

@@ -7,11 +7,11 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-center">Sign in to your account</CardTitle>
+          <div className="flex justify-center items-center mb-4"><img src="/imagens/logo.svg" alt="Logo" className="h-18" /></div>
         </CardHeader>
         <CardContent>
           <LoginForm />
-          <div className="mt-4 text-center text-sm">
+          {/* <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?
             <Link
               href="/register"
@@ -19,14 +19,14 @@ export default function LoginPage() {
             >
               Register
             </Link>
-          </div>
+          </div> */}
           <div className="mt-4 text-center text-sm">
-            Forgot you password?
+            Esqueceu sua senha?
             <Link
               href="/forgot-password"
               className="ml-2 font-medium text-primary hover:underline"
             >
-              Recover
+              Recuperar
             </Link>
           </div>
         </CardContent>

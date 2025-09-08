@@ -11,13 +11,13 @@ export default async function ForgotPasswordSuccessPage({
     <div className="min-h-screen flex items-center justify-center px-4">
       <Card className="w-full max-w-md text-center">
         <CardHeader>
-          <CardTitle>Password Reset Sent</CardTitle>
+          <CardTitle>Redefinição de senha enviada</CardTitle>
         </CardHeader>
         <CardContent>
           {email ? (
             <>
-              If an account with <span className="font-bold">{email}</span>{" "}
-              exists, you’ll receive a reset link shortly.
+             Se uma conta com <span className="font-bold">{email}</span>{" "}
+              existe, você receberá um link de redefinição em breve.
             </>
           ) : (
             "If an account with that email exists, you’ll receive a reset link shortly."
