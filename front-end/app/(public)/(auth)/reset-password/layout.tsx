@@ -5,5 +5,5 @@ export default function ActivateLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>;
+  return <Suspense fallback={<div>Carregando...</div>}>{children}</Suspense>;
 }

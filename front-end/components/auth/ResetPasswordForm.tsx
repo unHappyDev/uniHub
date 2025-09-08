@@ -28,7 +28,7 @@ const schema = z
     confirm: PasswordSchema,
   })
   .refine((d) => d.password === d.confirm, {
-    message: "Passwords must match",
+    message: "As senhas devem corresponder",
     path: ["confirm"],
   });
 
@@ -57,11 +57,11 @@ export default function ResetPasswordForm() {
       if (res.status === 201) {
         router.push("/reset-password/success");
       } else {
-        setError("Reset failed. Try again.");
+        setError("Falha na redefinição. Tente novamente.");
       }
     } catch (err: unknown) {
       const { message } = getErrorObject(err);
-      setError(message ?? "Reset failed");
+      setError(message ?? "Falha na redefinição");
     } finally {
       setLoading(false);
     }
@@ -75,7 +75,7 @@ export default function ResetPasswordForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>New Password</FormLabel>
+              <FormLabel>Nova Senha</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Input
@@ -106,7 +106,7 @@ export default function ResetPasswordForm() {
           name="confirm"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Confirm Password</FormLabel>
+              <FormLabel>Confirmar Senha</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Input
@@ -138,7 +138,7 @@ export default function ResetPasswordForm() {
           </Alert>
         )}
         <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? "Resetting…" : "Reset Password"}
+          {loading ? "Redefinindo…" : "Redefinir senha"}
         </Button>
       </form>
     </Form>

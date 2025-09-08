@@ -24,18 +24,18 @@ export default function ActivatePage() {
       if (!token) {
         setStatus("error");
         setMessage(
-          "Invalid activation link. Please check your email for the correct link.",
+          "Link de ativação inválido. Verifique seu e-mail para encontrar o link correto.",
         );
         return;
       }
 
       setStatus("loading");
-      setMessage("Activating your account...");
+      setMessage("Ativando sua conta...");
 
       try {
         await authApi.activate(token);
         setStatus("success");
-        setMessage("Your account has been successfully activated!");
+        setMessage("Sua conta foi ativada com sucesso!");
       } catch (e: unknown) {
         const error = getErrorObject(e);
 
@@ -61,7 +61,7 @@ export default function ActivatePage() {
       setResendSuccess(true);
       setTimeout(() => setResendSuccess(false), 5000);
     } catch {
-      setMessage("Failed to resend activation email. Please try again later.");
+      setMessage("Falha ao reenviar o e-mail de ativação. Tente novamente mais tarde.");
     } finally {
       setResending(false);
     }

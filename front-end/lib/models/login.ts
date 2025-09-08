@@ -38,15 +38,15 @@ async function loginUser(emailProvided: string, passwordProvided: string) {
 
   function throwUnauthorizedError() {
     throw new UnauthorizedError({
-      message: "Invalid email or password",
-      action: "Inform correct email and password",
+      message: "E-mail ou senha inválidos",
+      action: "Informe e-mail e senha corretos",
     });
   }
 
   function throwForbiddenError() {
     throw new ForbiddenError({
-      message: "User need activation to log in",
-      action: "Please check your email and activate user",
+      message: "O usuário precisa de ativação para efetuar login",
+      action: "Por favor, verifique seu e-mail e ative o usor",
     });
   }
 }

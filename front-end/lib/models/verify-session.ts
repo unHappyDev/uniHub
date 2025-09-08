@@ -8,16 +8,16 @@ async function verifySessionByToken(token: string) {
 
   if (dbSessions.length !== 1) {
     throw new NotFoundError({
-      message: "Session not found",
-      action: "Inform a valid session_id",
+      message: "Sessão não encontrada",
+      action: "Informe um session_id válido",
     });
   }
 
   const now = new Date(Date.now());
   if (new Date(dbSessions[0].expires_at).getTime() < now.getTime()) {
     throw new ValidationError({
-      message: "Session was expired",
-      action: "Inform a valid session",
+      message: "A sessão expirou",
+      action: "Informar uma sessão válida",
     });
   }
 

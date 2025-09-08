@@ -6,7 +6,7 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen flex items-center justify-center px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-center">Forgot Password</CardTitle>
+          <CardTitle className="text-center">Recuperar senha</CardTitle>
         </CardHeader>
         <CardContent>
           <ForgotPasswordForm />

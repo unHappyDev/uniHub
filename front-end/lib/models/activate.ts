@@ -15,7 +15,7 @@ async function validateToken(token: string) {
   const dbToken = await activationToken.getActivationTokenById(token);
   if (!dbToken) {
     throw new NotFoundError({
-      message: "Token not found",
+      message: "Token não encontrado",
       action: "Inform a valid token",
     });
   }
@@ -23,8 +23,8 @@ async function validateToken(token: string) {
   const now = new Date(Date.now());
   if (new Date(dbToken.expires_at).getTime() < now.getTime()) {
     throw new ValidationError({
-      message: "Token was expired",
-      action: "Inform a valid token",
+      message: "O token expirou",
+      action: "Informe um token válido",
     });
   }
 
@@ -35,8 +35,8 @@ async function validateUser(userId: string) {
   const dbUser = await user.getUserById(userId);
   if (!dbUser) {
     throw new NotFoundError({
-      message: "User not found",
-      action: "Inform a valid user",
+      message: "Usuário não encontrado",
+      action: "Informar um usuário válidor",
     });
   }
 

@@ -29,8 +29,8 @@ async function registerUser(
     const userFound = await user.getUserByUsername(username);
     if (userFound) {
       throw new ValidationError({
-        message: "Username already exists",
-        action: "Use another username for this operation",
+        message: "O nome de usuário já existe",
+        action: "Use outro nome de usuário para esta operação",
       });
     }
   }
@@ -39,8 +39,8 @@ async function registerUser(
     const userFound = await user.getUserByEmail(email);
     if (userFound) {
       throw new ValidationError({
-        message: "Email already registered",
-        action: "Use another email for this operation",
+        message: "E-mail já cadastrado",
+        action: "Use outro e-mail para esta operação",
       });
     }
   }
