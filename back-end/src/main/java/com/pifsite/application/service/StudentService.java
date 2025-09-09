@@ -3,6 +3,7 @@ package com.pifsite.application.service;
 import com.pifsite.application.exceptions.EntityInUseException;
 import com.pifsite.application.exceptions.ResourceNotFoundException;
 import com.pifsite.application.repository.StudentRepository;
+import com.pifsite.application.repository.UserRepository;
 import com.pifsite.application.security.UserRoles;
 import com.pifsite.application.repository.CourseRepository;
 import com.pifsite.application.dto.CreateStudentDTO;
@@ -29,6 +30,7 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final CourseRepository courseRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
     private final UserService userService;
 
     public List<Student> getAllStudents(){ // trocar para retornar um DTO depois
@@ -45,17 +47,23 @@ public class StudentService {
     @Transactional
     public void createStudent(CreateStudentDTO registerStudentDTO){
 
-        CreateUserDTO registerUser = registerStudentDTO.registerUser();
+        User user = new User();
+
+        if(registerStudentDTO.userId() == null){
+
+            CreateUserDTO registerUser = registerStudentDTO.registerUser();
+
+            user.setUsername(registerUser.name());
+            user.setEmail(registerUser.email());
+            user.setPassword(passwordEncoder.encode(registerUser.password()));
+            user.setRole(UserRoles.fromString(registerUser.role()));
+            user.setIsActive(true);
+
+        }else{
+            user = userRepository.findById(registerStudentDTO.userId()).orElseThrow(() -> new ResourceNotFoundException("User with ID " + registerStudentDTO.userId() + " not found"));
+        }
 
         Course course = courseRepository.findById(registerStudentDTO.courseId()).orElseThrow(() -> new ResourceNotFoundException("Course with ID" + registerStudentDTO.courseId() + " not found"));
-
-        User user = new User( null,
-            registerUser.name(),
-            registerUser.email(),
-            passwordEncoder.encode(registerUser.password()),
-            UserRoles.fromString(registerUser.role()),
-            true
-        );
 
         Student student = new Student();
 
@@ -67,7 +75,7 @@ public class StudentService {
 
     public void deleteOneStudent(UUID studentId){
 
-        this.studentRepository.findById(studentId) .orElseThrow(() -> new ResourceNotFoundException("Student with ID " + studentId + " not found"));
+        this.studentRepository.findById(studentId).orElseThrow(() -> new ResourceNotFoundException("Student with ID " + studentId + " not found"));
 
         try{
             this.studentRepository.deleteById(studentId);

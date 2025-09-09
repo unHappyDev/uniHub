@@ -54,7 +54,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
             String token = this.recoverToken(request);
 
-            System.out.println(token);
+            // System.out.println(token);
 
             Session session = sessionService.validateSession(token);
 
@@ -70,7 +70,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         }catch(InvalidTokenException | ExpiredTokenException err){
 
-            System.out.println("entrou aqui de novo: " + err.getMessage());
+            // System.out.println("entrou aqui de novo: " + err.getMessage());
 
             authenticationEntryPoint.commence(request, response, new AuthenticationException(err.getMessage()) {});
             return;

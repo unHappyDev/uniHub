@@ -27,7 +27,7 @@ public class SessionService {
 
         if(!session.getExpiresAt().isAfter(OffsetDateTime.now())){
 
-            System.out.println(session.getExpiresAt() + " " + OffsetDateTime.now());
+            // System.out.println(session.getExpiresAt() + " " + OffsetDateTime.now());
 
             throw new ExpiredTokenException("Token expired");
         }
