@@ -1,5 +1,6 @@
 "use client";
 
+import Home from "@/app/(public)/page";
 import AppSidebar from "@/components/layout/sidebar/AppSidebar";
 
 import {
@@ -10,13 +11,14 @@ import {
 import { useAuthSession } from "@/hooks/useAuthSession";
 
 import { Separator } from "@radix-ui/react-separator";
-import { Book, Users, GraduationCap, AlertTriangle } from "lucide-react";
+import { Book, Users, GraduationCap, AlertTriangle, HomeIcon } from "lucide-react";
 
 const navMain = [
+  { title: "Início", url: "/secretaria", icon: HomeIcon },
   { title: "Alunos", url: "/secretaria/alunos", icon: Book },
-  { title: "Professores", url: "/secretaria/cursos", icon: Users },
-  { title: "Cursos", url: "/secretaria/turmas", icon: GraduationCap },
-  { title: "Post", url: "/secretaria/turmas", icon: AlertTriangle },
+  { title: "Professores", url: "/secretaria/professor", icon: Users },
+  { title: "Cursos", url: "/secretaria/cursos", icon: GraduationCap },
+  { title: "Post", url: "/secretaria/posts", icon: AlertTriangle },
   
 ];
 

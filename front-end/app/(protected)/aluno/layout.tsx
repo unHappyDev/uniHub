@@ -6,29 +6,34 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { useAuthSession } from "@/hooks/useAuthSession";
 
 import { Separator } from "@radix-ui/react-separator";
-import { Book, Users, GraduationCap } from "lucide-react";
+import { Book, HomeIcon, AlertTriangle, CalendarDays } from "lucide-react";
 
 const navMain = [
-  { title: "notas", url: "/secretaria/alunos", icon: Book },
-  { title: "horario", url: "/secretaria/cursos", icon: Users },
-  { title: "Turmas", url: "/secretaria/turmas", icon: GraduationCap },
+  { title: "início", url: "/aluno", icon: HomeIcon },
+  { title: "notas", url: "/aluno/notas", icon: Book },
+  { title: "horário", url: "/aluno/horario", icon: CalendarDays},
+  { title: "avisos", url: "/aluno/avisos", icon: AlertTriangle },
 ];
 
 const navSecondary = [{ title: "Ajuda", url: "/ajuda" }];
-
-const user = {
-  name: "shadcn",
-  email: "m@example.com",
-  avatar: "/avatars/shadcn.jpg",
-};
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+
+  const { user: sessionUser } = useAuthSession();
+
+ 
+  const user = sessionUser || {
+    name: "",
+    email: "",
+    avatar: "",
+  };
   return (
     <SidebarProvider>
       <AppSidebar user={user} navMain={navMain} navSecondary={navSecondary}>

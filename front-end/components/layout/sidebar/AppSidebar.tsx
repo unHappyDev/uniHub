@@ -1,12 +1,9 @@
 "use client";
 
 import * as React from "react";
-import {
-   LucideIcon,
-  } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 
 import { SidebarMain } from "@/components/layout/sidebar/SidebarMain";
-import { SidebarOptions } from "@/components/layout/sidebar/SidebarOptions";
 import { SidebarSecondary } from "@/components/layout/sidebar/SidebarSecondary";
 import { NavUser } from "@/components/layout/sidebar/nav-user";
 
@@ -19,8 +16,6 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import LogoutButton from "@/components/auth/LogoutButton";
-
-
 
 type NavItem = {
   title: string;
@@ -53,17 +48,17 @@ export default function AppSidebar({
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem className="mt-8">
-            <NavUser user={user} />
+            <NavUser />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
 
       <SidebarContent>
         <SidebarMain items={navMain} />
-        <SidebarSecondary items={navSecondary} className="mt-auto" />
+        {/* <SidebarSecondary items={navSecondary} className="mt-auto" /> */}
       </SidebarContent>
 
-      <SidebarFooter>
+      <SidebarFooter className="flex items-center justify-center">
         <LogoutButton />
       </SidebarFooter>
     </Sidebar>
