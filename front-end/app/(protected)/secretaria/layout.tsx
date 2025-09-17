@@ -1,35 +1,43 @@
 "use client";
 
 import AppSidebar from "@/components/layout/sidebar/AppSidebar";
+
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { useAuthSession } from "@/hooks/useAuthSession";
 
 import { Separator } from "@radix-ui/react-separator";
-import { Book, Users, GraduationCap } from "lucide-react";
+import { Book, Users, GraduationCap, AlertTriangle } from "lucide-react";
 
 const navMain = [
   { title: "Alunos", url: "/secretaria/alunos", icon: Book },
   { title: "Professores", url: "/secretaria/cursos", icon: Users },
   { title: "Cursos", url: "/secretaria/turmas", icon: GraduationCap },
+  { title: "Post", url: "/secretaria/turmas", icon: AlertTriangle },
   
 ];
 
 const navSecondary = [{ title: "Seus dados", url: "/ajuda" }];
 
-const user = {
-  name: "shadcn",
-  email: "m@example.com",
-  avatar: "/avatars/shadcn.jpg",
-};
+
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+
+  const { user: sessionUser } = useAuthSession();
+
+ 
+  const user = sessionUser || {
+    name: "",
+    email: "",
+    avatar: "",
+  };
   return (
     <SidebarProvider>
       <AppSidebar user={user} navMain={navMain} navSecondary={navSecondary}>
