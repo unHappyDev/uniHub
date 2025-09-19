@@ -70,7 +70,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         }catch(InvalidTokenException | ExpiredTokenException err){
 
-            // System.out.println("entrou aqui de novo: " + err.getMessage());
+            System.out.println("entrou aqui de novo: " + err.getMessage());
 
             authenticationEntryPoint.commence(request, response, new AuthenticationException(err.getMessage()) {});
             return;

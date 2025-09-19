@@ -1,12 +1,15 @@
 package com.pifsite.application.service;
 
-import com.pifsite.application.exceptions.EntityInUseException;
 import com.pifsite.application.exceptions.ResourceNotFoundException;
+import com.pifsite.application.exceptions.EntityInUseException;
 import com.pifsite.application.repository.ProfessorRepository;
 import com.pifsite.application.repository.UserRepository;
+import com.pifsite.application.dto.CreateProfessorDTO;
+import com.pifsite.application.dto.SmallClassroomDTO;
 import com.pifsite.application.security.UserRoles;
 import com.pifsite.application.entities.Professor;
 import com.pifsite.application.dto.CreateUserDTO;
+import com.pifsite.application.dto.ProfessorDTO;
 import com.pifsite.application.entities.User;
 
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +23,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.List;
 
 @Service
@@ -30,7 +34,7 @@ public class ProfessorService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-    public List<Professor> getAllProfessors(){ // trocar para retornar um DTO depois
+    public List<ProfessorDTO> getAllProfessors(){ // trocar para retornar um DTO depois
 
         List<Professor> Professors = this.professorRepository.findAll();
 
@@ -38,25 +42,51 @@ public class ProfessorService {
             throw new ResourceNotFoundException("there is no Professors in the database"); // melhorar depois
         }
 
-        return Professors;
+        return professorRepository.findAll().stream()
+                .map(professor -> {
+                    var classroomsDTO = professor.getClassrooms().stream()
+                            .map(c -> new SmallClassroomDTO(
+                                    c.getSubject().getSubjectName(),
+                                    c.getSemester()
+                            ))
+                            .collect(Collectors.toSet());
+
+                    return new ProfessorDTO(
+                            professor.getUser().getUsername(),
+                            professor.getUser().getEmail(),
+                            professor.getUser().getRole(),
+                            classroomsDTO
+                    );
+                })
+                .collect(Collectors.toList());
+    
     }
 
     @Transactional
-    public void createProfessor(CreateUserDTO registerProfessorDTO){
+    public void createProfessor(CreateProfessorDTO registerProfessorDTO){
 
-        User user = new User( null,
-            registerProfessorDTO.name(),
-            registerProfessorDTO.email(),
-            passwordEncoder.encode(registerProfessorDTO.password()),
-            UserRoles.fromString(registerProfessorDTO.role()),
-            true
-        );
+        User user = new User();
 
-        Professor Professor = new Professor();
+        if(registerProfessorDTO.userId() == null){
 
-        Professor.setUser(user);
+            CreateUserDTO registerUser = registerProfessorDTO.registerUser();
+
+            user.setUsername(registerUser.name());
+            user.setEmail(registerUser.email());
+            user.setPassword(passwordEncoder.encode(registerUser.password()));
+            user.setRole(UserRoles.PROFESSOR);
+            user.setIsActive(true);
+
+        }else{
+            user = userRepository.findById(registerProfessorDTO.userId()).orElseThrow(() -> new ResourceNotFoundException("User with ID " + registerProfessorDTO.userId() + " not found"));
+        }
+
+
+        Professor professor = new Professor();
+
+        professor.setUser(user);
         
-        professorRepository.save(Professor);
+        professorRepository.save(professor);
     }
 
     public void deleteOneProfessor(UUID professorId){

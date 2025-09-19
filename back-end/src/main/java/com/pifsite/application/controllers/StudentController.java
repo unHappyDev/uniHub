@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 
 import com.pifsite.application.service.StudentService;
 import com.pifsite.application.dto.CreateStudentDTO;
-import com.pifsite.application.entities.Student;
+import com.pifsite.application.dto.StudentDTO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,8 +35,8 @@ public class StudentController {
     @Operation(summary = "Get Student", description = "Get all Students from database")
     public ResponseEntity<?> getAllStudents(){
 
-        List<Student> Students = studentService.getAllStudents();
-        return ResponseEntity.ok(Students); // não está muito bom ainda tem que arrumar dps
+        List<StudentDTO> Students = studentService.getAllStudents();
+        return ResponseEntity.ok(Students);
 
     }
 

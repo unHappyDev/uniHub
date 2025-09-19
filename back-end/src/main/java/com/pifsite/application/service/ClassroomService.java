@@ -73,8 +73,8 @@ public class ClassroomService {
 
         Classroom newClassroom = new Classroom();
 
-        newClassroom.setProfessor(professor);
         newClassroom.setSubject(subject);
+        newClassroom.setProfessor(professor);
         newClassroom.setSemester(registerClassroomDTO.semester());
         newClassroom.setStartAt(registerClassroomDTO.startAt());
         newClassroom.setEndAt(registerClassroomDTO.endAt());

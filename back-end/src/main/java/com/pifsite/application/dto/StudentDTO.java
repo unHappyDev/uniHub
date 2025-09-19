@@ -1,9 +1,7 @@
 package com.pifsite.application.dto;
 
-import com.pifsite.application.entities.Course;
+import com.pifsite.application.security.UserRoles;
 
-import java.util.UUID;
-
-public record StudentDTO(UUID studentId, Course course) {
+public record StudentDTO(String username, String email, UserRoles role, String courseName) {
     
 }

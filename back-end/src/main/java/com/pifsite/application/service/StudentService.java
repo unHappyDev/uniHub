@@ -1,19 +1,20 @@
 package com.pifsite.application.service;
 
-import com.pifsite.application.exceptions.EntityInUseException;
 import com.pifsite.application.exceptions.ResourceNotFoundException;
+import com.pifsite.application.exceptions.EntityInUseException;
 import com.pifsite.application.repository.StudentRepository;
-import com.pifsite.application.repository.UserRepository;
-import com.pifsite.application.security.UserRoles;
 import com.pifsite.application.repository.CourseRepository;
+import com.pifsite.application.repository.UserRepository;
 import com.pifsite.application.dto.CreateStudentDTO;
+import com.pifsite.application.security.UserRoles;
 import com.pifsite.application.dto.CreateUserDTO;
 import com.pifsite.application.entities.Student;
 import com.pifsite.application.entities.Course;
+import com.pifsite.application.dto.StudentDTO;
 import com.pifsite.application.entities.User;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -33,12 +34,12 @@ public class StudentService {
     private final UserRepository userRepository;
     private final UserService userService;
 
-    public List<Student> getAllStudents(){ // trocar para retornar um DTO depois
+    public List<StudentDTO> getAllStudents(){ 
 
-        List<Student> students = this.studentRepository.findAll();
+        List<StudentDTO> students = this.studentRepository.getAllStudents();
 
         if(students.isEmpty()){
-            throw new ResourceNotFoundException("there is no Students in the database"); // melhorar depois
+            throw new ResourceNotFoundException("there is no Students in the database");
         }
 
         return students;
@@ -56,7 +57,7 @@ public class StudentService {
             user.setUsername(registerUser.name());
             user.setEmail(registerUser.email());
             user.setPassword(passwordEncoder.encode(registerUser.password()));
-            user.setRole(UserRoles.fromString(registerUser.role()));
+            user.setRole(UserRoles.USER);
             user.setIsActive(true);
 
         }else{
