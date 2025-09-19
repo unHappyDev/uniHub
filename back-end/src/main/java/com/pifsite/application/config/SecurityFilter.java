@@ -54,7 +54,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
             String token = this.recoverToken(request);
 
-            System.out.println(token);
+            // System.out.println(token);
 
             Session session = sessionService.validateSession(token);
 

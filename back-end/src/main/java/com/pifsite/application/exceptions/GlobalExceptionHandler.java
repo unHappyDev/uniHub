@@ -91,10 +91,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<String> methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Argument Type Mismatch");
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> IllegalArgumentException(IllegalArgumentException ex, HttpServletRequest request) {
+        
+        ErrorResponse error = new ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            HttpStatus.BAD_REQUEST.getReasonPhrase(),
+            ex.getMessage(),
+            request.getRequestURI()
+            );
+            
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+        
+        @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+        public ResponseEntity<String> methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+    
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Argument Type Mismatch");
+        }
     }
-
-}

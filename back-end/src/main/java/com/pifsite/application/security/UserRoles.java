@@ -22,6 +22,6 @@ public enum UserRoles {
                 return userRole;
             }
         }
-        return null; // UserRoles.STUDENT como padrão
+        return null;
     }
 }

@@ -11,8 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 
 import com.pifsite.application.service.ProfessorService;
-import com.pifsite.application.entities.Professor;
-import com.pifsite.application.dto.CreateUserDTO;
+import com.pifsite.application.dto.CreateProfessorDTO;
+import com.pifsite.application.dto.ProfessorDTO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,13 +35,13 @@ public class ProfessorController {
     @Operation(summary = "Get Professor", description = "Get all professors from database")
     public ResponseEntity<?> getAllProfessors(){
 
-        List<Professor> professors = ProfessorService.getAllProfessors();
+        List<ProfessorDTO> professors = ProfessorService.getAllProfessors();
         return ResponseEntity.ok(professors); // não está muito bom ainda tem que arrumar dps
     }
 
     @PostMapping
     @Operation(summary = "Create Professor", description = "Create a professor and save on the database")
-    public ResponseEntity<?> createProfessor(@RequestBody CreateUserDTO registerProfessorDTO){
+    public ResponseEntity<?> createProfessor(@RequestBody CreateProfessorDTO registerProfessorDTO){
 
         ProfessorService.createProfessor(registerProfessorDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Professor created");
