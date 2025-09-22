@@ -1,3 +1,4 @@
+"use client"
 import * as React from "react";
 import { type LucideIcon } from "lucide-react";
 
@@ -16,7 +17,7 @@ export function SidebarSecondary({
   items: {
     title: string;
     url: string;
-    icon: LucideIcon;
+    icon?: LucideIcon;
   }[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   return (
@@ -27,7 +28,7 @@ export function SidebarSecondary({
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild size="sm">
                 <a href={item.url}>
-                  <item.icon />
+                  {item.icon && <item.icon />}
                   <span>{item.title}</span>
                 </a>
               </SidebarMenuButton>

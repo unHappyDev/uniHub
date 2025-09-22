@@ -22,6 +22,12 @@ async function main() {
     "$2a$04$LfBpkw0M8qaMr/JvrafNjuD6EFp58MSCY6JHl3VgEGxSolAV9uhjy",
     "USER",
   );
+  await seedUser(
+    "joao",
+    "joao@user.com",
+    "$2a$04$LfBpkw0M8qaMr/JvrafNjuD6EFp58MSCY6JHl3VgEGxSolAV9uhjy",
+    "USER",
+  );
 
   console.log("\n> Database seeded!");
   console.log("------------------------------");
