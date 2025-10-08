@@ -74,6 +74,37 @@ public class StudentService {
         studentRepository.save(student);
     }
 
+    public void updateStudent(CreateStudentDTO registerStudentDTO, UUID id){
+        
+        Student student = this.studentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Student with ID " + id + " not found"));
+        
+        if(registerStudentDTO.registerUser().email() != null && !registerStudentDTO.registerUser().email().isBlank()){
+        
+            student.getUser().setEmail(registerStudentDTO.registerUser().email());
+        }
+        if(registerStudentDTO.registerUser().name() != null && !registerStudentDTO.registerUser().name().isBlank()){
+        
+            student.getUser().setUsername(registerStudentDTO.registerUser().name());
+        }
+        if(registerStudentDTO.registerUser().role() != null && !registerStudentDTO.registerUser().role().isBlank()){
+        
+            student.getUser().setRole(UserRoles.fromString(registerStudentDTO.registerUser().role()));
+        }
+        if(registerStudentDTO.registerUser().password() != null && !registerStudentDTO.registerUser().password().isBlank()){
+            
+            student.getUser().setPassword(passwordEncoder.encode(registerStudentDTO.registerUser().password()));
+        }
+        if(registerStudentDTO.courseId() != null){
+
+            Course course = courseRepository.findById(registerStudentDTO.courseId()).orElseThrow(() -> new ResourceNotFoundException("Course with ID" + registerStudentDTO.courseId() + " not found"));
+            
+            student.setCourse(course);
+        }
+
+        this.studentRepository.save(student);
+
+    }
+
     public void deleteOneStudent(UUID studentId){
 
         this.studentRepository.findById(studentId).orElseThrow(() -> new ResourceNotFoundException("Student with ID " + studentId + " not found"));

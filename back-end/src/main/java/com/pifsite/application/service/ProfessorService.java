@@ -12,10 +12,8 @@ import com.pifsite.application.dto.CreateUserDTO;
 import com.pifsite.application.dto.ProfessorDTO;
 import com.pifsite.application.entities.User;
 
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -34,7 +32,7 @@ public class ProfessorService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-    public List<ProfessorDTO> getAllProfessors(){ // trocar para retornar um DTO depois
+    public List<ProfessorDTO> getAllProfessors(){
 
         List<Professor> Professors = this.professorRepository.findAll();
 
@@ -89,16 +87,35 @@ public class ProfessorService {
         professorRepository.save(professor);
     }
 
+    public void updateProfessor(CreateProfessorDTO registerProfessorDTO, UUID id){
+        
+        Professor professor = this.professorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Professor with ID " + id + " not found"));
+        
+        if(registerProfessorDTO.registerUser().email() != null && !registerProfessorDTO.registerUser().email().isBlank()){
+        
+            professor.getUser().setEmail(registerProfessorDTO.registerUser().email());
+        }
+        if(registerProfessorDTO.registerUser().name() != null && !registerProfessorDTO.registerUser().name().isBlank()){
+        
+            professor.getUser().setUsername(registerProfessorDTO.registerUser().name());
+        }
+        if(registerProfessorDTO.registerUser().role() != null && !registerProfessorDTO.registerUser().role().isBlank()){
+        
+            professor.getUser().setRole(UserRoles.fromString(registerProfessorDTO.registerUser().role()));
+        }
+        if(registerProfessorDTO.registerUser().password() != null && !registerProfessorDTO.registerUser().password().isBlank()){
+            
+            professor.getUser().setPassword(passwordEncoder.encode(registerProfessorDTO.registerUser().password()));
+        }
+        
+
+        this.professorRepository.save(professor);
+
+    }
+
     public void deleteOneProfessor(UUID professorId){
 
-        Authentication userData = SecurityContextHolder.getContext().getAuthentication();
-        User reqUser = (User)userData.getPrincipal();
-
-        if(reqUser.getRole() != UserRoles.ADMIN){
-            throw new RuntimeException("you can't delete this user");
-        }
-
-        this.professorRepository.findById(professorId).orElseThrow(() -> new ResourceNotFoundException("Professor with ID " + professorId + " not found"));;
+        this.professorRepository.findById(professorId).orElseThrow(() -> new ResourceNotFoundException("Professor with ID " + professorId + " not found"));
 
         try{
             this.professorRepository.deleteById(professorId);

@@ -33,7 +33,8 @@ public class DataSeed implements CommandLineRunner {
                 "ds@email.com",
                 "$2a$04$LfBpkw0M8qaMr/JvrafNjuD6EFp58MSCY6JHl3VgEGxSolAV9uhjy",
                 UserRoles.USER,
-                true
+                true,
+                null
             ))
         );
 
@@ -44,7 +45,8 @@ public class DataSeed implements CommandLineRunner {
                 "dp@email.com",
                 "$2a$04$LfBpkw0M8qaMr/JvrafNjuD6EFp58MSCY6JHl3VgEGxSolAV9uhjy",
                 UserRoles.PROFESSOR,
-                true
+                true,
+                null
             ))
         );
 
@@ -55,7 +57,8 @@ public class DataSeed implements CommandLineRunner {
                 "da@email.com",
                 "$2a$04$LfBpkw0M8qaMr/JvrafNjuD6EFp58MSCY6JHl3VgEGxSolAV9uhjy",
                 UserRoles.ADMIN,
-                true
+                true,
+                null
             ))
         );
 
