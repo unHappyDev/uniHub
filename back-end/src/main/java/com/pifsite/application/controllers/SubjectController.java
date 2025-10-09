@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -49,6 +50,14 @@ public class SubjectController {
         subjectService.createSubject(subjectDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Subject created");
          
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update Subject", description = "Update a Subject on database by its ID")
+    public ResponseEntity<?> updateSubject(@RequestBody CreateSubjectDTO subjectDTO, @PathVariable UUID id){
+        
+        subjectService.updateSubject(subjectDTO, id);
+        return ResponseEntity.status(HttpStatus.OK).body("Matéria Atualizada");
     }
 
     @DeleteMapping("/{id}")
