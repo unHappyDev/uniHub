@@ -51,7 +51,35 @@ public class GradeService {
 
         this.gradeRepository.save(newGrade);
     }
-
+    
+    public void updateGrade(CreateGradeDTO gradeDTO, UUID id) {
+        
+        Grade grade = this.gradeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Grade not found"));
+        
+        if(gradeDTO.activity() != null && !gradeDTO.activity().isBlank()){
+            
+            grade.setActivity(gradeDTO.activity());
+        }
+        if(gradeDTO.grade() != null){
+            
+            grade.setGrade(gradeDTO.grade());
+        }
+        if(gradeDTO.studentId() != null){
+            
+            Student student = this.studentRepository.findById(gradeDTO.studentId()).orElseThrow(() -> new ResourceNotFoundException("Student with ID " + id + " not found"));
+            
+            grade.setStudent(student);
+        }
+        if(gradeDTO.classroomId() != null){
+            
+            Classroom classroom = this.classroomRepository.findById(gradeDTO.classroomId()).orElseThrow(() -> new ResourceNotFoundException("Classroom with ID " + id + " not found"));
+            
+            grade.setClassroom(classroom);
+        }
+        
+        this.gradeRepository.save(grade);
+    }
+    
     public void deleteOneGrade(UUID gradeId){
         this.gradeRepository.findById(gradeId).orElseThrow(() -> new ResourceNotFoundException("Grade not found"));
         

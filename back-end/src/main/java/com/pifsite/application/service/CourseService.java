@@ -15,6 +15,7 @@ import com.pifsite.application.dto.CourseDTO;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -31,12 +32,14 @@ public class CourseService {
 
         Set<Course> courses = courseRepository.getAllCoursesWithSubjects();
 
+        System.out.println(courses);
+
         Set<CourseDTO> setCourses = courses.stream()
-            .map(course -> new CourseDTO(course.getCourseName(), course.getSubjects()))
+            .map(course -> new CourseDTO(course.getCourseName(), course.getSubjects() != null ? course.getSubjects() : Collections.emptySet()))
             .collect(Collectors.toSet());
 
         if(courses.isEmpty()){
-            throw new ResourceNotFoundException("there is no posts in the database");
+            throw new ResourceNotFoundException("there is no courses in the database");
         }
 
         return setCourses;
@@ -50,6 +53,28 @@ public class CourseService {
         return this.courseRepository.save(newCourse);
     }
 
+    public void createCourseWithSubjects(CourseSubjectsDTO courseSubjectsDTO){
+
+        CreateCourseDTO newCourseDTO = new CreateCourseDTO(courseSubjectsDTO.courseName());
+        UUID courseId = crateCourse(newCourseDTO).getCourseId();
+        
+        System.out.println(courseSubjectsDTO.subjects());
+
+        addSubjectToCourse(courseId, courseSubjectsDTO.subjects());
+
+    }
+
+    public void updateCourse(CourseSubjectsDTO courseSubjectsDTO, UUID id) {
+
+        Course course = this.courseRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Course with ID " + id + " not found"));
+        
+        if(courseSubjectsDTO.courseName() != null && !courseSubjectsDTO.courseName().isBlank()){
+            course.setCourseName(courseSubjectsDTO.courseName());
+        }
+
+        courseRepository.save(course);
+    }
+
     public void addSubjectToCourse(UUID courseId, List<UUID> subjectIds){
         
         Course course = this.courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course with ID " + courseId + " not found"));
@@ -61,14 +86,15 @@ public class CourseService {
         courseRepository.save(course);
     }
 
-    public void createCourseWithSubjects(CourseSubjectsDTO courseSubjectsDTO){
+    public void removeSubjectToCourse(UUID courseId, List<UUID> subjectIds){
+        
+        Course course = this.courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course with ID " + courseId + " not found"));
 
-        CreateCourseDTO newCourseDTO = new CreateCourseDTO(courseSubjectsDTO.courseName());
-        UUID courseId = crateCourse(newCourseDTO).getCourseId();
+        List<Subject> subjects = subjectRepository.findAllById(subjectIds);
 
-        System.out.println(courseSubjectsDTO.subjects());
+        course.getSubjects().removeAll(subjects);
 
-        addSubjectToCourse(courseId, courseSubjectsDTO.subjects());
+        courseRepository.save(course);
     }
 
     public void deleteOneCourse(UUID courseId){

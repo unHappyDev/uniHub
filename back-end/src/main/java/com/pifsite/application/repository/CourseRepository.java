@@ -15,6 +15,6 @@ public interface CourseRepository extends JpaRepository<Course, UUID> {
     @Query(nativeQuery = true, value = "SELECT course_id, course_name from courses")
     List<CourseDTO> getAllCourses();
 
-    @Query("SELECT DISTINCT c FROM Course c JOIN FETCH c.subjects")
+    @Query("SELECT DISTINCT c FROM Course c LEFT JOIN c.subjects")
     Set<Course> getAllCoursesWithSubjects();
 }
