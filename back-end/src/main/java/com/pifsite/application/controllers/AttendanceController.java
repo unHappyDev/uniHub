@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -43,11 +44,20 @@ public class AttendanceController {
 
     @PostMapping
     @Operation(summary = "Create Attendance", description = "Create a Attendance and save on the database")
-    @PreAuthorize("hasRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
     public ResponseEntity<?> createAttendance(@RequestBody CreateAttendanceDTO attendanceDTO){
 
         attendanceService.crateAttendance(attendanceDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Attendance created");
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update Attendance", description = "Update a Attendance on database by its ID")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
+    public ResponseEntity<?> updateAttendance(@RequestBody CreateAttendanceDTO attendanceDTO, @PathVariable UUID id){
+        
+        attendanceService.updateAttendance(attendanceDTO, id);
+        return ResponseEntity.status(HttpStatus.OK).body("Attendance Atualizada");
     }
 
     @DeleteMapping("/{id}")

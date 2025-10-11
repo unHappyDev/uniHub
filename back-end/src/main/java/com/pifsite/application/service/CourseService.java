@@ -15,11 +15,11 @@ import com.pifsite.application.dto.CourseDTO;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.stream.Collectors;
 import java.util.Collections;
+import java.util.UUID;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

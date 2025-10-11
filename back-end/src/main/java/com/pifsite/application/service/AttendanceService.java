@@ -23,13 +23,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AttendanceService {
 
-    private final AttendanceRepository AttendanceRepository;
+    private final AttendanceRepository attendanceRepository;
     private final ClassroomRepository classroomRepository;
     private final StudentRepository studentRepository;
 
     public List<AttendanceDTO> getAll(){
 
-        List<AttendanceDTO> Attendances = this.AttendanceRepository.getAll();
+        List<AttendanceDTO> Attendances = this.attendanceRepository.getAll();
 
         if(Attendances.isEmpty()){
             throw new ResourceNotFoundException("there is no Attendances in the database"); // melhorar depois
@@ -53,15 +53,15 @@ public class AttendanceService {
         newAttendance.setStudent(student);
         newAttendance.setClassroom(classroom);
 
-        this.AttendanceRepository.save(newAttendance);
+        this.attendanceRepository.save(newAttendance);
     }
 
     public void deleteOneAttendance(UUID AttendanceId){
         
-        this.AttendanceRepository.findById(AttendanceId).orElseThrow(() -> new ResourceNotFoundException("Attendance with ID " + AttendanceId + " not found"));;
+        this.attendanceRepository.findById(AttendanceId).orElseThrow(() -> new ResourceNotFoundException("Attendance with ID " + AttendanceId + " not found"));
 
         try{
-            this.AttendanceRepository.deleteById(AttendanceId);
+            this.attendanceRepository.deleteById(AttendanceId);
 
         }catch(DataIntegrityViolationException err){
 
@@ -72,5 +72,36 @@ public class AttendanceService {
             System.out.println("This error was not treated yet: " + err.getClass());
         }
 
+    }
+
+    public void updateAttendance(CreateAttendanceDTO attendanceDTO, UUID id) {
+        
+        Attendance attendance = this.attendanceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Attendance not found"));
+        
+        if(attendanceDTO.attendanceDate() != null){
+            
+            attendance.setAttendanceDate(attendanceDTO.attendanceDate());
+        }
+
+        if(attendanceDTO.presence() != null){
+            
+            attendance.setPresence(attendanceDTO.presence());
+        }
+
+        if(attendanceDTO.studentId() != null){
+            
+            Student student = this.studentRepository.findById(attendanceDTO.studentId()).orElseThrow(() -> new ResourceNotFoundException("Student with ID " + id + " not found"));
+            
+            attendance.setStudent(student);
+        }
+
+        if(attendanceDTO.classroomId() != null){
+            
+            Classroom classroom = this.classroomRepository.findById(attendanceDTO.classroomId()).orElseThrow(() -> new ResourceNotFoundException("Classroom with ID " + id + " not found"));
+            
+            attendance.setClassroom(classroom);
+        }
+        
+        this.attendanceRepository.save(attendance);
     }
 }

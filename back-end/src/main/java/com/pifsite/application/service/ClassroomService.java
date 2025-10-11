@@ -84,12 +84,72 @@ public class ClassroomService {
         this.classroomRepository.save(newClassroom);
     }
 
-    public void deleteOneClassroom(UUID ClassroomId){
+    public void updateClassroom(CreateClassroomDTO registerClassroomDTO, UUID id) {
 
-        this.classroomRepository.findById(ClassroomId).orElseThrow(() -> new ResourceNotFoundException("classroom with ID " + ClassroomId + " not found"));;
+        Classroom classroom = this.classroomRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("classroom with ID " + id + " not found"));
+
+        if(registerClassroomDTO.professorId() != null){
+            
+            Professor professor = this.professorRepository.findById(registerClassroomDTO.professorId())
+            .orElseThrow(() -> new ResourceNotFoundException("Professor with ID " + registerClassroomDTO.professorId() + " not found"));
+            
+            classroom.setProfessor(professor);
+        }
+        
+        if(registerClassroomDTO.subjectId() != null){
+            
+            Subject subject = this.subjectRepository.findById(registerClassroomDTO.subjectId())
+            .orElseThrow(() -> new ResourceNotFoundException("Subject with ID " + registerClassroomDTO.subjectId() + " not found"));
+            
+            classroom.setSubject(subject);
+        }
+
+        if(registerClassroomDTO.semester() != null && registerClassroomDTO.semester().isBlank()){
+            
+            classroom.setSemester(registerClassroomDTO.semester());
+        }
+        
+        if(registerClassroomDTO.startAt() != null){
+            
+            classroom.setStartAt(registerClassroomDTO.startAt());
+        }
+
+        if(registerClassroomDTO.endAt() != null){
+        
+            classroom.setEndAt(registerClassroomDTO.endAt());
+        }    
+
+        classroomRepository.save(classroom);
+    }
+
+    public void addStudent(UUID id, List<UUID> studentIds){
+        
+        Classroom classroom = this.classroomRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Classroom with ID " + id + " not found"));
+
+        List<Student> students = studentRepository.findAllById(studentIds);
+
+        classroom.getStudents().addAll(students);
+
+        classroomRepository.save(classroom);
+    }
+
+    public void removeStudent(UUID id, List<UUID> studentIds){
+        
+        Classroom classroom = this.classroomRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Classroom with ID " + id + " not found"));
+
+        List<Student> students = studentRepository.findAllById(studentIds);
+
+        classroom.getStudents().removeAll(students);
+
+        classroomRepository.save(classroom);
+    }
+
+    public void deleteOneClassroom(UUID classroomId){
+
+        this.classroomRepository.findById(classroomId).orElseThrow(() -> new ResourceNotFoundException("classroom with ID " + classroomId + " not found"));
 
         try{
-            this.classroomRepository.deleteById(ClassroomId);
+            this.classroomRepository.deleteById(classroomId);
 
         }catch(DataIntegrityViolationException err){
 
