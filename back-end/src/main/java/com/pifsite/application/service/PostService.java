@@ -47,6 +47,22 @@ public class PostService {
         this.postRepository.save(newPost);
     }
 
+    public void updatePost(CreatePostDTO postDTO, UUID id) {
+
+        Post post = this.postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post with ID " + id + " not found"));
+        
+        if(postDTO.title() != null && !postDTO.title().isBlank()){
+        
+            post.setTitle(postDTO.title());
+        }
+        if(postDTO.body() != null && !postDTO.body().isBlank()){
+        
+            post.setBody(postDTO.body());
+        }
+
+        this.postRepository.save(post);
+    }
+
     public void deleteOnePost(UUID postId){
 
         Post post = this.postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post with ID " + postId + " not found"));

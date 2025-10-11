@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -45,7 +46,14 @@ public class UserController {
 
         userService.createUser(registerUserDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Usuário criado");
+    }
 
+    @PutMapping("/{id}")
+    @Operation(summary = "Update User", description = "Update a User on database by its ID")
+    public ResponseEntity<?> updateUser(@RequestBody CreateUserDTO registerUserDTO, @PathVariable UUID id){
+        
+        userService.updateUser(registerUserDTO, id);
+        return ResponseEntity.status(HttpStatus.OK).body("Usuário Atualizado");
     }
 
     @DeleteMapping("/{id}")

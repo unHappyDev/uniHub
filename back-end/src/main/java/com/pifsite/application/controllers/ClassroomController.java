@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 import com.pifsite.application.service.ClassroomService;
 import com.pifsite.application.dto.CreateClassroomDTO;
@@ -18,6 +20,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.UUID;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -46,7 +49,34 @@ public class ClassroomController {
     public ResponseEntity<?> createClassroom(@RequestBody CreateClassroomDTO ClassroomDTO){
 
         classroomService.createClassroom(ClassroomDTO);
-        return ResponseEntity.ok("Classroom created");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Classroom created");
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update Classroom", description = "Update a Classroom on database by its ID")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
+    public ResponseEntity<?> updateClassroom(@RequestBody CreateClassroomDTO classroomDTO, @PathVariable UUID id){
+        
+        classroomService.updateClassroom(classroomDTO, id);
+        return ResponseEntity.status(HttpStatus.OK).body("Classroom Atualizada");
+    }
+
+    @PutMapping("addStudents/{id}")
+    @Operation(summary = "Update Classroom", description = "Update a Classroom on database by its ID")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
+    public ResponseEntity<?> addStudent(@RequestBody List<UUID> studentsId, @PathVariable UUID id){
+        
+        classroomService.addStudent(id, studentsId);
+        return ResponseEntity.status(HttpStatus.OK).body("Classroom Atualizada");
+    }
+
+    @DeleteMapping("removeStudents/{id}")
+    @PreAuthorize("hasRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString())")
+    @Operation(summary = "Delete Classroom", description = "Delete a Classroom on database by its ID")
+    public ResponseEntity<String> deleteUser(@RequestBody List<UUID> studentsId, @PathVariable UUID id) {
+
+        classroomService.removeStudent(id, studentsId);
+        return ResponseEntity.ok("Students successfully removed from classroom.");
     }
 
     @DeleteMapping("/{id}")

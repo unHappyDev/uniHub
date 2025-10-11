@@ -1,6 +1,8 @@
 package com.pifsite.application.entities;
 
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Inheritance;
@@ -17,6 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import org.hibernate.annotations.JdbcTypeCode;
@@ -49,6 +52,19 @@ public class User{
     
     @Column(name="is_active")
     private Boolean isActive;
+
+    @Column(name = "updated_at", columnDefinition = "timestamptz")
+    private OffsetDateTime updatedAt;
+    
+    @PrePersist
+    public void prePersist() {
+        this.updatedAt = OffsetDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = OffsetDateTime.now();
+    }
 
     @Override
     public String toString() {

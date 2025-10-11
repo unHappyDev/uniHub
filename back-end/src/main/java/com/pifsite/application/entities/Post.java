@@ -39,7 +39,7 @@ public class Post {
     private OffsetDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "owner")  // FK da tabela User
+    @JoinColumn(name = "owner")
     private User owner;
 
 }

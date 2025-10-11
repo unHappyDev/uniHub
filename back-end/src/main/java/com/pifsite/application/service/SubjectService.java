@@ -53,6 +53,20 @@ public class SubjectService {
         this.subjectRepository.save(newSubject);
     }
 
+    public void updateSubject(CreateSubjectDTO subjectDTO, UUID id) {
+
+        Subject subject = this.subjectRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Subject with ID " + id + " not found"));
+
+        if(subjectDTO.subjectName() != null && !subjectDTO.subjectName().isBlank()){
+            subject.setSubjectName(subjectDTO.subjectName());
+        }
+        if(subjectDTO.workloadHours() != 0){
+            subject.setWorkloadHours(subjectDTO.workloadHours());
+        }
+
+        this.subjectRepository.save(subject);
+    }
+
     public void deleteOneSubject(UUID subjectId){
 
         this.subjectRepository.findById(subjectId).orElseThrow(() -> new ResourceNotFoundException("Subject with ID " + subjectId + " not found"));

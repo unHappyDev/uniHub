@@ -18,7 +18,6 @@ import com.pifsite.application.dto.UserDTO;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.Optional;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,11 +41,7 @@ public class UserService {
 
     public void createUser(CreateUserDTO registerUserDTO){
 
-        Optional<User> user = this.userRepository.findByEmail(registerUserDTO.email());
-
-        if(user.isPresent()){
-            throw new ConflictException("User already exists"); // melhorar depois
-        }
+        this.userRepository.findByEmail(registerUserDTO.email()).orElseThrow(() -> new ConflictException("User already exists"));
 
         User newUser = new User();
         newUser.setEmail(registerUserDTO.email());
@@ -55,6 +50,31 @@ public class UserService {
         newUser.setPassword(passwordEncoder.encode(registerUserDTO.password()));
 
         this.userRepository.save(newUser);
+    }
+
+    public void updateUser(CreateUserDTO registerUserDTO, UUID id){
+        
+        User user = this.userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User with ID " + id + " not found"));
+        
+        if(registerUserDTO.email() != null && !registerUserDTO.email().isBlank()){
+        
+            user.setEmail(registerUserDTO.email());
+        }
+        if(registerUserDTO.name() != null && !registerUserDTO.name().isBlank()){
+        
+            user.setUsername(registerUserDTO.name());
+        }
+        if(registerUserDTO.role() != null && !registerUserDTO.role().isBlank()){
+        
+            user.setRole(UserRoles.fromString(registerUserDTO.role()));
+        }
+        if(registerUserDTO.password() != null && !registerUserDTO.password().isBlank()){
+            
+            user.setPassword(passwordEncoder.encode(registerUserDTO.password()));
+        }
+
+        this.userRepository.save(user);
+
     }
 
     public void deleteOneUser(UUID userId){

@@ -29,7 +29,6 @@ public class Professor{
     @JoinColumn(name = "professor_id")
     private User user;
 
-
     @OneToMany(mappedBy = "professor")
     private Set<Classroom> classrooms = new HashSet<>();
 
