@@ -2,19 +2,18 @@
 import React, { useEffect, useState } from "react";
 import { Student } from "@/types/Student";
 
-interface Props {
-  onAdd: (student: Student) => void;
-  onEdit: (student: Student) => void;
+interface StudentFormProps {
+  onAdd: (student: Student) => Promise<void> | void;
+  onEdit: (student: Student) => Promise<void> | void;
   editingStudent: Student | null;
   students: Student[];
 }
 
-export function StudentForm({
+export default function StudentForm({
   onAdd,
   onEdit,
   editingStudent,
-  students,
-}: Props) {
+}: StudentFormProps) {
   const [formData, setFormData] = useState<Omit<Student, "id">>({
     nome: "",
     email: "",
@@ -23,12 +22,15 @@ export function StudentForm({
   });
 
   const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (editingStudent) {
       const { id, ...data } = editingStudent;
       setFormData(data);
       setError("");
+    } else {
+      setFormData({ nome: "", email: "", curso: "", semestre: "" });
     }
   }, [editingStudent]);
 
@@ -38,47 +40,34 @@ export function StudentForm({
     setError("");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (
-      !formData.nome ||
-      !formData.email ||
-      !formData.curso ||
-      !formData.semestre
-    ) {
-      setError("Por favor, preencha todos os campos antes de cadastrar.");
+    if (!formData.nome || !formData.email || !formData.curso || !formData.semestre) {
+      setError("Por favor, preencha todos os campos antes de salvar.");
       return;
     }
 
-    const emailDuplicado = students.some(
-      (student) =>
-        student.email.toLowerCase() === formData.email.toLowerCase() &&
-        student.id !== editingStudent?.id,
-    );
-
-    if (emailDuplicado) {
-      setError("Já existe um aluno cadastrado com esse e-mail!");
-      return;
+    setLoading(true);
+    try {
+      if (editingStudent) {
+        await onEdit({ ...editingStudent, ...formData });
+      } else {
+        await onAdd(formData as Student);
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Erro ao salvar aluno.");
+    } finally {
+      setLoading(false);
     }
-
-    if (editingStudent) {
-      onEdit({ ...formData, id: editingStudent.id });
-    } else {
-      onAdd({ ...formData, id: Date.now() });
-    }
-
-    setFormData({
-      nome: "",
-      email: "",
-      curso: "",
-      semestre: "",
-    });
-    setError("");
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-5 bg-neutral-900 p-6 rounded-xl border border-neutral-800 shadow-lg"
+    >
       <input
         type="text"
         name="nome"
@@ -117,12 +106,19 @@ export function StudentForm({
 
       {error && <p className="text-red-500 text-sm font-semibold">{error}</p>}
 
-      <button
-        type="submit"
-        className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-all cursor-pointer"
-      >
-        {editingStudent ? "Salvar Alterações" : "Cadastrar"}
-      </button>
+      <div className="flex gap-3">
+        <button
+          type="submit"
+          disabled={loading}
+          className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-all cursor-pointer"
+        >
+          {loading
+            ? "Salvando..."
+            : editingStudent
+            ? "Salvar Alterações"
+            : "Cadastrar"}
+        </button>
+      </div>
     </form>
   );
 }

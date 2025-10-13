@@ -30,4 +30,4 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
     ports:
-      - "8443:8080"
+      - "8080:8080"
