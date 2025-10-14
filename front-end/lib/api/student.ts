@@ -1,21 +1,21 @@
-import apiClient from "./client";
+import {apiSpring} from "./client";
 
 export const getStudents = async () => {
-  const response = await apiClient.get("/student");
+  const response = await apiSpring.get("/student");
   return response.data;
 };
 
 export const createStudent = async (student: any) => {
-  const response = await apiClient.post("/student", student);
+  const response = await apiSpring.post("/student", student);
   return response.data;
 };
 
 export const updateStudent = async (id: number, student: any) => {
-  const response = await apiClient.put(`/student/${id}`, student);
+  const response = await apiSpring.put(`/student/${id}`, student);
   return response.data;
 };
 
 export const deleteStudent = async (id: number) => {
-  const response = await apiClient.delete(`/student/${id}`);
+  const response = await apiSpring.delete(`/student/${id}`);
   return response.data;
 };
