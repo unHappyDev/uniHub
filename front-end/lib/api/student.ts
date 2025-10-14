@@ -1,4 +1,4 @@
-import { apiSpring } from "./client";
+import {apiSpring} from "./client";
 
 export const getStudents = async () => {
   const response = await apiSpring.get("/student");
