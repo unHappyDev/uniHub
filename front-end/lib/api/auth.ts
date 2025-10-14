@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import apiClient from "./client";
+import { apiSpring } from "./client"; // ⬅️ usa a API do Spring
 
 interface LoginCredentials {
   email: string;
@@ -7,7 +7,7 @@ interface LoginCredentials {
 }
 
 interface LoginResponse {
-  data: any;
+  id: string;
   token: string;
   role: "admin" | "professor" | "user";
 }
@@ -31,34 +31,21 @@ export function getErrorObject(e: unknown): ErrorData {
 }
 
 export const authApi = {
-  // login ajustado para retornar { token, role }
   login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
-    const res = await apiClient.post<LoginResponse>("/v1/login", credentials);
+    const res = await apiSpring.post<LoginResponse>("/v1/login", credentials);
     return res.data;
   },
 
-  logout: () => apiClient.delete("/v1/logout"),
-
-  register: (userData: {
-    username: string;
-    email: string;
-    password: string;
-  }) => apiClient.post("/v1/register", userData),
-
-  activate: (token: string) =>
-    apiClient.get(`/v1/activate?token=${token}`),
-
-  verifySession: () => apiClient.get("/v1/verify-session"),
-
+  logout: () => apiSpring.delete("/v1/logout"),
+  register: (userData: any) => apiSpring.post("/v1/register", userData),
+  activate: (token: string) => apiSpring.get(`/v1/activate?token=${token}`),
+  verifySession: () => apiSpring.get("/v1/verify-session"),
   forgotPassword: (email: string) =>
-    apiClient.post("/v1/forgot-password", { email }),
-
+    apiSpring.post("/v1/forgot-password", { email }),
   resetPassword: (token: string, password: string) =>
-    apiClient.post("/v1/reset-password", { token, password }),
-
+    apiSpring.post("/v1/reset-password", { token, password }),
   resendActivationByToken: (token: string) =>
-    apiClient.post("/v1/resend-activation", { token }),
-
+    apiSpring.post("/v1/resend-activation", { token }),
   resendActivationByEmail: (email: string) =>
-    apiClient.post("/v1/resend-activation", { email }),
+    apiSpring.post("/v1/resend-activation", { email }),
 };

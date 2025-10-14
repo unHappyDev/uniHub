@@ -1,10 +1,17 @@
 "use client";
-import React, { useEffect, useState } from "react";
+
+import { useEffect, useState } from "react";
 import { Student } from "@/types/Student";
+import { getCourses } from "@/lib/api/course";
+
+interface Course {
+  id: string;
+  nome: string;
+}
 
 interface StudentFormProps {
-  onAdd: (student: Student) => Promise<void> | void;
-  onEdit: (student: Student) => Promise<void> | void;
+  onAdd: (student: Student) => Promise<void>;
+  onEdit: (student: Student) => Promise<void>;
   editingStudent: Student | null;
   students: Student[];
 }
@@ -14,111 +21,130 @@ export default function StudentForm({
   onEdit,
   editingStudent,
 }: StudentFormProps) {
-  const [formData, setFormData] = useState<Omit<Student, "id">>({
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [formData, setFormData] = useState({
     nome: "",
     email: "",
-    curso: "",
     semestre: "",
+    courseId: "", // ✅ usar courseId (não cursoId)
   });
 
-  const [error, setError] = useState<string>("");
-  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    async function fetchCourses() {
+      try {
+        const data = await getCourses();
+        setCourses(data);
+      } catch (err) {
+        console.error("Erro ao buscar cursos:", err);
+      }
+    }
+    fetchCourses();
+  }, []);
 
   useEffect(() => {
     if (editingStudent) {
-      const { id, ...data } = editingStudent;
-      setFormData(data);
-      setError("");
+      setFormData({
+        nome: editingStudent.nome || "",
+        email: editingStudent.email || "",
+        semestre: editingStudent.semestre || "",
+        courseId: editingStudent.courseId || "",
+      });
     } else {
-      setFormData({ nome: "", email: "", curso: "", semestre: "" });
+      setFormData({ nome: "", email: "", semestre: "", courseId: "" });
     }
   }, [editingStudent]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setError("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.nome || !formData.email || !formData.curso || !formData.semestre) {
-      setError("Por favor, preencha todos os campos antes de salvar.");
-      return;
+    const selectedCourse = courses.find((c) => c.id === formData.courseId);
+
+    const studentData: Student = {
+      nome: formData.nome,
+      email: formData.email,
+      semestre: formData.semestre,
+      curso: selectedCourse?.nome || "",
+      courseId: formData.courseId,
+    };
+
+    if (editingStudent) {
+      await onEdit({ ...editingStudent, ...studentData });
+    } else {
+      await onAdd(studentData);
     }
 
-    setLoading(true);
-    try {
-      if (editingStudent) {
-        await onEdit({ ...editingStudent, ...formData });
-      } else {
-        await onAdd(formData as Student);
-      }
-    } catch (err) {
-      console.error(err);
-      setError("Erro ao salvar aluno.");
-    } finally {
-      setLoading(false);
-    }
+    setFormData({ nome: "", email: "", semestre: "", courseId: "" });
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col gap-5 bg-neutral-900 p-6 rounded-xl border border-neutral-800 shadow-lg"
-    >
-      <input
-        type="text"
-        name="nome"
-        placeholder="Nome"
-        value={formData.nome}
-        onChange={handleChange}
-        className="w-full border border-transparent bg-neutral-950 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-3 py-2 rounded-lg outline-none"
-      />
-
-      <input
-        type="email"
-        name="email"
-        placeholder="Email"
-        value={formData.email}
-        onChange={handleChange}
-        className="w-full border border-transparent bg-neutral-950 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-3 py-2 rounded-lg outline-none"
-      />
-
-      <input
-        type="text"
-        name="curso"
-        placeholder="Curso"
-        value={formData.curso}
-        onChange={handleChange}
-        className="w-full border border-transparent bg-neutral-950 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-3 py-2 rounded-lg outline-none"
-      />
-
-      <input
-        type="text"
-        name="semestre"
-        placeholder="Semestre"
-        value={formData.semestre}
-        onChange={handleChange}
-        className="w-full border border-transparent bg-neutral-950 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-3 py-2 rounded-lg outline-none"
-      />
-
-      {error && <p className="text-red-500 text-sm font-semibold">{error}</p>}
-
-      <div className="flex gap-3">
-        <button
-          type="submit"
-          disabled={loading}
-          className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-all cursor-pointer"
-        >
-          {loading
-            ? "Salvando..."
-            : editingStudent
-            ? "Salvar Alterações"
-            : "Cadastrar"}
-        </button>
+    <form onSubmit={handleSubmit} className="space-y-4 text-white">
+      <div>
+        <label className="block text-sm mb-1">Nome</label>
+        <input
+          type="text"
+          name="nome"
+          value={formData.nome}
+          onChange={handleChange}
+          required
+          className="w-full bg-neutral-900 border border-orange-500 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-orange-500/40"
+        />
       </div>
+
+      <div>
+        <label className="block text-sm mb-1">Email</label>
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+          className="w-full bg-neutral-900 border border-orange-500 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-orange-500/40"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm mb-1">Semestre</label>
+        <input
+          type="text"
+          name="semestre"
+          value={formData.semestre}
+          onChange={handleChange}
+          required
+          className="w-full bg-neutral-900 border border-orange-500 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-orange-500/40"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm mb-1">Curso</label>
+        <select
+          name="courseId"
+          value={formData.courseId}
+          onChange={handleChange}
+          required
+          className="w-full bg-neutral-900 border border-orange-500 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-orange-500/40"
+        >
+          <option value="">Selecione um curso</option>
+          {courses.map((course) => (
+            <option key={course.id} value={course.id}>
+              {course.nome}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <button
+        type="submit"
+        className="w-full bg-orange-500 hover:bg-transparent border hover:border-orange-500 text-white font-semibold px-6 py-2 rounded-lg transition-all cursor-pointer"
+      >
+        {editingStudent ? "Salvar Alterações" : "Cadastrar Aluno"}
+      </button>
     </form>
   );
 }

@@ -1,7 +1,13 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "http://localhost:8443/:path*", // back-end Spring Boot
+      },
+    ];
+  },
 };
 
-export default nextConfig;
+module.exports = nextConfig;

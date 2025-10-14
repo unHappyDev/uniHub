@@ -1,27 +1,20 @@
 import axios, { AxiosInstance } from "axios";
 
-const apiClient: AxiosInstance = axios.create({
-  baseURL: "/api",
-  withCredentials: true,
-});
-
 export const apiSpring: AxiosInstance = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: "/api", // ✅ conecta direto ao backend Spring Boot
   withCredentials: true,
 });
 
-// Interceptor: adiciona o token JWT em todas as requisições
-apiClient.interceptors.request.use(
-  (config) => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("token");
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+const attachToken = (config: any) => {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+  }
+  return config;
+};
 
-export default apiClient;
+apiSpring.interceptors.request.use(attachToken, (error) => Promise.reject(error));
+
+export default apiSpring;

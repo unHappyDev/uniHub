@@ -1,11 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Student } from "@/types/Student";
+import { Student, CreateStudentDTO } from "@/types/Student";
 import StudentForm from "@/components/cadastro/StudentForm";
 import StudentTable from "@/components/cadastro/StudentTable";
 import { Modal } from "@/components/ui/modal";
-import { getStudents, createStudent, updateStudent, deleteStudent } from "@/lib/api/student";
+import {
+  getStudents,
+  createStudent,
+  updateStudent,
+  deleteStudent,
+} from "@/lib/api/student";
 
 export default function AlunosPage() {
   const [students, setStudents] = useState<Student[]>([]);
@@ -21,39 +26,56 @@ export default function AlunosPage() {
       setStudents(data);
     } catch (error: any) {
       console.error("Erro ao buscar alunos:", error);
-      alert("Erro ao buscar alunos. Verifique se o backend está rodando e se o token é válido.");
+
+      if (error.response?.status === 404) {
+        // Caso o backend responda "there is no Students in the database"
+        setStudents([]);
+        console.warn("Nenhum aluno encontrado no banco de dados.");
+      } else {
+        alert("Erro ao buscar alunos. Verifique o backend.");
+      }
     }
   };
 
   const handleAdd = async (student: Student) => {
-    try {
-      await createStudent(student);
-      fetchStudents();
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error("Erro ao adicionar aluno:", error);
-    }
+    const dto: CreateStudentDTO = {
+      curso: student.curso,
+      semestre: student.semestre,
+      nome: student.nome,
+      email: student.email,
+      courseId: student.courseId!,
+      registerUser: {
+        nome: student.nome,
+        email: student.email,
+        senha: "123456",
+      },
+    };
+
+    await createStudent(dto);
+    await fetchStudents();
   };
 
   const handleUpdate = async (student: Student) => {
-    try {
-      await updateStudent(student.id, student);
-      fetchStudents();
-      setEditingStudent(null);
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error("Erro ao atualizar aluno:", error);
-    }
+    const dto: CreateStudentDTO = {
+      curso: student.curso, // ✅ corrigido
+      semestre: student.semestre,
+      nome: student.nome,
+      email: student.email,
+      courseId: student.courseId!,
+      registerUser: {
+        nome: student.nome,
+        email: student.email,
+      },
+    };
+
+    await updateStudent(student.id!, dto);
+    await fetchStudents();
   };
 
   const handleDelete = async (id: number) => {
     if (!confirm("Tem certeza que deseja excluir este aluno?")) return;
-    try {
-      await deleteStudent(id);
-      fetchStudents();
-    } catch (error) {
-      console.error("Erro ao excluir aluno:", error);
-    }
+    await deleteStudent(id);
+    fetchStudents();
   };
 
   const handleEdit = (student: Student) => {
@@ -67,9 +89,15 @@ export default function AlunosPage() {
   };
 
   const filteredStudents = students.filter((s) => {
-    const matchesName = s.nome?.toLowerCase().includes(filterName.toLowerCase());
-    const matchesCourse = s.curso?.toLowerCase().includes(filterCourse.toLowerCase());
-    const matchesSemester = s.semestre?.toLowerCase().includes(filterSemester.toLowerCase());
+    const matchesName = s.nome
+      ?.toLowerCase()
+      .includes(filterName.toLowerCase());
+    const matchesCourse = s.curso
+      ?.toLowerCase()
+      .includes(filterCourse.toLowerCase());
+    const matchesSemester = s.semestre
+      ?.toLowerCase()
+      .includes(filterSemester.toLowerCase());
     return matchesName && matchesCourse && matchesSemester;
   });
 
