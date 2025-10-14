@@ -1,11 +1,16 @@
 package com.pifsite.application.config;
 
 import com.pifsite.application.repository.SessionRepository;
+import com.pifsite.application.repository.StudentRepository;
+import com.pifsite.application.repository.CourseRepository;
 import com.pifsite.application.repository.UserRepository;
 import com.pifsite.application.security.UserRoles;
+import com.pifsite.application.entities.Course;
 import com.pifsite.application.entities.Session;
+import com.pifsite.application.entities.Student;
 import com.pifsite.application.entities.User;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -14,16 +19,21 @@ import java.time.OffsetDateTime;
 @Component
 public class DataSeed implements CommandLineRunner {
 
-    private final UserRepository userRepository;
+    private final StudentRepository studentRepository;
     private final SessionRepository sessionRepository;
+    private final CourseRepository courseRepository;
+    private final UserRepository userRepository;
 
 
-    public DataSeed(UserRepository userRepository, SessionRepository sessionRepository) {
-        this.userRepository = userRepository;
+    public DataSeed(UserRepository userRepository, SessionRepository sessionRepository, CourseRepository courseRepository, StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
         this.sessionRepository = sessionRepository;
+        this.courseRepository = courseRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
             
         User ds = userRepository.findByEmail("ds@email.com").orElseGet(() ->
@@ -106,5 +116,19 @@ public class DataSeed implements CommandLineRunner {
 
 
         System.out.println("Usuários e sessões criadas");
+        
+        Course courseA = courseRepository.findByCourseName("Eng. Compuação").orElseGet(() ->
+        courseRepository.save(new Course(null, "Eng. Compuação", null)));
+        
+        courseRepository.findByCourseName("Eng. Elétrica").orElseGet(() ->
+        courseRepository.save(new Course(null, "Eng. Elétrica", null)));
+        
+        courseRepository.findByCourseName("Eng. Produção").orElseGet(() ->
+        courseRepository.save(new Course(null, "Eng. Produção", null)));
+        
+        studentRepository.findById(ds.getId()).orElseGet(() ->
+            studentRepository.save(new Student(null, ds, courseA)));
+        
+        System.out.println("Cursos e estudantes criados");
     }
 }
