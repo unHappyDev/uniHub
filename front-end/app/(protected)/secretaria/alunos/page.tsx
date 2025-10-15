@@ -12,6 +12,8 @@ import {
   deleteStudent,
 } from "@/lib/api/student";
 
+const DEFAULT_PASSWORD = "12341234";
+
 export default function AlunosPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,15 +22,15 @@ export default function AlunosPage() {
   const [filterCourse, setFilterCourse] = useState("");
   const [filterSemester, setFilterSemester] = useState("");
 
+  // 🧩 Buscar alunos
   const fetchStudents = async () => {
     try {
       const data = await getStudents();
+      console.log("📋 Alunos carregados:", data);
       setStudents(data);
     } catch (error: any) {
       console.error("Erro ao buscar alunos:", error);
-
       if (error.response?.status === 404) {
-        // Caso o backend responda "there is no Students in the database"
         setStudents([]);
         console.warn("Nenhum aluno encontrado no banco de dados.");
       } else {
@@ -37,57 +39,65 @@ export default function AlunosPage() {
     }
   };
 
-  const handleAdd = async (student: Student) => {
-    const dto: CreateStudentDTO = {
-      curso: student.curso,
-      semestre: student.semestre,
-      nome: student.nome,
-      email: student.email,
-      courseId: student.courseId!,
-      registerUser: {
-        nome: student.nome,
-        email: student.email,
-        senha: "123456",
-      },
-    };
+  // ➕ Adicionar aluno
+  const handleAdd = async (student: Student | CreateStudentDTO) => {
+    let dto: CreateStudentDTO;
+
+    if ("registerUser" in student) {
+      dto = student;
+    } else {
+      dto = {
+        userId: null,
+        courseId: student.courseId,
+        registerUser: {
+          name: student.nome,
+          email: student.email,
+          password: DEFAULT_PASSWORD,
+        },
+      };
+    }
 
     await createStudent(dto);
     await fetchStudents();
+    setIsModalOpen(false);
   };
 
   const handleUpdate = async (student: Student) => {
     const dto: CreateStudentDTO = {
-      curso: student.curso, // ✅ corrigido
-      semestre: student.semestre,
-      nome: student.nome,
-      email: student.email,
+      userId: student.id ?? null,
       courseId: student.courseId!,
       registerUser: {
-        nome: student.nome,
+        name: student.nome,
         email: student.email,
+        password: DEFAULT_PASSWORD,
       },
     };
 
-    await updateStudent(student.id!, dto);
+    await updateStudent(String(student.id), dto);
     await fetchStudents();
+    setIsModalOpen(false); // 👈 fecha modal
   };
 
-  const handleDelete = async (id: number) => {
+  // ❌ Excluir aluno
+  const handleDelete = async (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este aluno?")) return;
     await deleteStudent(id);
     fetchStudents();
   };
 
+  // 🧱 Editar aluno
   const handleEdit = (student: Student) => {
     setEditingStudent(student);
     setIsModalOpen(true);
   };
 
+  // 🚪 Fechar modal
   const closeModal = () => {
     setEditingStudent(null);
     setIsModalOpen(false);
   };
 
+  // 🔍 Filtros
   const filteredStudents = students.filter((s) => {
     const matchesName = s.nome
       ?.toLowerCase()
@@ -111,6 +121,7 @@ export default function AlunosPage() {
         Cadastro de Alunos
       </h1>
 
+      {/* 🔎 Filtros */}
       <div className="bg-neutral-800/60 backdrop-blur-sm border border-orange-400 rounded-xl p-4 mb-8 shadow-lg">
         <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 justify-between items-center">
           <input
@@ -143,12 +154,14 @@ export default function AlunosPage() {
         </div>
       </div>
 
+      {/* 🧾 Tabela */}
       <StudentTable
         students={filteredStudents}
         onDelete={handleDelete}
         onEdit={handleEdit}
       />
 
+      {/* 🪟 Modal */}
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <h2 className="text-xl font-semibold mb-4 text-center">
           {editingStudent ? "Editar Aluno" : "Novo Aluno"}

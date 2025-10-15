@@ -1,16 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Student } from "@/types/Student";
+import { CreateStudentDTO, Student } from "@/types/Student";
 import { getCourses } from "@/lib/api/course";
 
 interface Course {
-  id: string;
-  nome: string;
+  id: string; // UUID
+  courseName: string;
 }
 
 interface StudentFormProps {
-  onAdd: (student: Student) => Promise<void>;
+  onAdd: (student: Student | CreateStudentDTO) => Promise<void>;
   onEdit: (student: Student) => Promise<void>;
   editingStudent: Student | null;
   students: Student[];
@@ -22,65 +22,109 @@ export default function StudentForm({
   editingStudent,
 }: StudentFormProps) {
   const [courses, setCourses] = useState<Course[]>([]);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Student>({
     nome: "",
     email: "",
     semestre: "",
-    courseId: "", // ✅ usar courseId (não cursoId)
+    curso: "",
+    courseId: "",
   });
 
+  // 🔹 Carrega cursos ao iniciar
   useEffect(() => {
     async function fetchCourses() {
       try {
         const data = await getCourses();
+        console.log("📘 Cursos recebidos do backend:", data);
         setCourses(data);
       } catch (err) {
-        console.error("Erro ao buscar cursos:", err);
+        console.error("❌ Erro ao buscar cursos:", err);
       }
     }
     fetchCourses();
   }, []);
 
+  // 🔹 Preenche ou limpa o form ao editar
   useEffect(() => {
     if (editingStudent) {
-      setFormData({
-        nome: editingStudent.nome || "",
-        email: editingStudent.email || "",
-        semestre: editingStudent.semestre || "",
-        courseId: editingStudent.courseId || "",
-      });
+      console.log("✏️ Editando aluno:", editingStudent);
+      setFormData(editingStudent);
     } else {
-      setFormData({ nome: "", email: "", semestre: "", courseId: "" });
+      console.log("🆕 Novo aluno - limpando form");
+      setFormData({
+        nome: "",
+        email: "",
+        semestre: "",
+        curso: "",
+        courseId: "",
+      });
     }
   }, [editingStudent]);
 
+  // 🔹 Atualiza estado do form
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(
+      (prev) =>
+        ({
+          ...prev,
+          [name]: value,
+        }) as Student,
+    );
   };
 
+  // 🔹 Submete o form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const selectedCourse = courses.find((c) => c.id === formData.courseId);
+    console.log("🚀 Submetendo formData:", formData);
 
-    const studentData: Student = {
-      nome: formData.nome,
-      email: formData.email,
-      semestre: formData.semestre,
-      curso: selectedCourse?.nome || "",
-      courseId: formData.courseId,
-    };
-
-    if (editingStudent) {
-      await onEdit({ ...editingStudent, ...studentData });
-    } else {
-      await onAdd(studentData);
+    if (!formData.courseId) {
+      alert("Selecione um curso antes de cadastrar!");
+      return;
     }
 
-    setFormData({ nome: "", email: "", semestre: "", courseId: "" });
+    const studentDTO: CreateStudentDTO = {
+      userId: null,
+      courseId: formData.courseId,
+      registerUser: {
+        name: formData.nome,
+        email: formData.email,
+        password: "12341234", // ✅ CORRIGIDO: backend espera 'password'
+      },
+    };
+
+    console.log(
+      "📤 Enviando aluno ao backend:",
+      JSON.stringify(studentDTO, null, 2),
+    );
+
+    if (editingStudent) {
+      const updatedStudent: CreateStudentDTO = {
+        userId: editingStudent.id ?? null,
+        courseId: formData.courseId,
+        registerUser: {
+          name: formData.nome,
+          email: formData.email,
+          password: "12341234",
+        },
+      };
+
+      await onEdit(updatedStudent as any);
+    } else {
+      await onAdd(studentDTO as any);
+    }
+
+    console.log("✅ Cadastro concluído!");
+    setFormData({
+      nome: "",
+      email: "",
+      semestre: "",
+      curso: "",
+      courseId: "",
+    });
   };
 
   return (
@@ -133,7 +177,7 @@ export default function StudentForm({
           <option value="">Selecione um curso</option>
           {courses.map((course) => (
             <option key={course.id} value={course.id}>
-              {course.nome}
+              {course.courseName}
             </option>
           ))}
         </select>

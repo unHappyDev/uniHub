@@ -5,11 +5,15 @@ import { Student } from "@/types/Student";
 
 interface StudentTableProps {
   students: Student[];
-  onDelete: (id: number) => Promise<void> | void;
+  onDelete: (id: string) => Promise<void> | void;
   onEdit: (student: Student) => void;
 }
 
-export default function StudentTable({ students, onDelete, onEdit }: StudentTableProps) {
+export default function StudentTable({
+  students,
+  onDelete,
+  onEdit,
+}: StudentTableProps) {
   return (
     <div className="mt-6">
       <div className="overflow-x-auto border border-orange-400 rounded-xl">
