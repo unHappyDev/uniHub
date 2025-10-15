@@ -25,7 +25,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Table(name = "subjects")
 public class Subject {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID subjectId;
@@ -36,7 +36,7 @@ public class Subject {
     @Column(name = "workload_hours")
     private int workloadHours;
 
-    @JsonIgnore 
+    @JsonIgnore
     @ManyToMany(mappedBy = "subjects")
     private Set<Course> courses;
 

@@ -34,7 +34,7 @@ public class UserController {
 
     @GetMapping
     @Operation(summary = "Get User", description = "Get all Users from database")
-    public ResponseEntity<?> getAllUsers(){
+    public ResponseEntity<?> getAllUsers() {
 
         List<UserDTO> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
@@ -42,7 +42,7 @@ public class UserController {
 
     @PostMapping
     @Operation(summary = "Create User", description = "Create a User and save on the database")
-    public ResponseEntity<?> createUser(@RequestBody CreateUserDTO registerUserDTO){
+    public ResponseEntity<?> createUser(@RequestBody CreateUserDTO registerUserDTO) {
 
         userService.createUser(registerUserDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Usuário criado");
@@ -50,8 +50,8 @@ public class UserController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update User", description = "Update a User on database by its ID")
-    public ResponseEntity<?> updateUser(@RequestBody CreateUserDTO registerUserDTO, @PathVariable UUID id){
-        
+    public ResponseEntity<?> updateUser(@RequestBody CreateUserDTO registerUserDTO, @PathVariable UUID id) {
+
         userService.updateUser(registerUserDTO, id);
         return ResponseEntity.status(HttpStatus.OK).body("Usuário Atualizado");
     }

@@ -35,27 +35,25 @@ public class SubjectController {
 
     @GetMapping
     @Operation(summary = "Get Subject", description = "Get all Subjects from database")
-    public ResponseEntity<?> getAllSubjects(){
+    public ResponseEntity<?> getAllSubjects() {
 
         List<SubjectDTO> subject = subjectService.getAllSubjects();
-        return ResponseEntity.ok(subject); // não está muito bom ainda tem que arrumar dps
-
+        return ResponseEntity.ok(subject);
     }
 
     @PostMapping
     @Operation(summary = "Create Subject", description = "Create a Subject and save on the database")
     @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString())")
-    public ResponseEntity<?> createSubject(@RequestBody CreateSubjectDTO subjectDTO){
+    public ResponseEntity<?> createSubject(@RequestBody CreateSubjectDTO subjectDTO) {
 
         subjectService.createSubject(subjectDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Subject created");
-         
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update Subject", description = "Update a Subject on database by its ID")
-    public ResponseEntity<?> updateSubject(@RequestBody CreateSubjectDTO subjectDTO, @PathVariable UUID id){
-        
+    public ResponseEntity<?> updateSubject(@RequestBody CreateSubjectDTO subjectDTO, @PathVariable UUID id) {
+
         subjectService.updateSubject(subjectDTO, id);
         return ResponseEntity.status(HttpStatus.OK).body("Matéria Atualizada");
     }
@@ -67,6 +65,5 @@ public class SubjectController {
 
         subjectService.deleteOneSubject(id);
         return ResponseEntity.ok("Subject successfully deleted.");
-
     }
 }

@@ -25,22 +25,24 @@ public class GradeService {
     private final StudentRepository studentRepository;
     private final GradeRepository gradeRepository;
 
-    public List<GradeDTO> getAllGrades(){
+    public List<GradeDTO> getAllGrades() {
 
         List<GradeDTO> grades = this.gradeRepository.getAll();
 
-        if(grades.isEmpty()){
+        if (grades.isEmpty()) {
             throw new ResourceNotFoundException("No Grades found");
         }
 
         return grades;
     }
 
-    public void crateGrade(CreateGradeDTO gradeDTO){
+    public void crateGrade(CreateGradeDTO gradeDTO) {
 
-        Student newStudent = this.studentRepository.findById(gradeDTO.studentId()).orElseThrow(() -> new ResourceNotFoundException("User with ID " + gradeDTO.studentId() + " not found"));
+        Student newStudent = this.studentRepository.findById(gradeDTO.studentId()).orElseThrow(
+                () -> new ResourceNotFoundException("User with ID " + gradeDTO.studentId() + " not found"));
 
-        Classroom newClassroom = this.classroomRepository.findById(gradeDTO.classroomId()).orElseThrow(() -> new ResourceNotFoundException("Classroom with ID " + gradeDTO.classroomId() + " not found"));
+        Classroom newClassroom = this.classroomRepository.findById(gradeDTO.classroomId()).orElseThrow(
+                () -> new ResourceNotFoundException("Classroom with ID " + gradeDTO.classroomId() + " not found"));
 
         Grade newGrade = new Grade();
 
@@ -51,42 +53,45 @@ public class GradeService {
 
         this.gradeRepository.save(newGrade);
     }
-    
+
     public void updateGrade(CreateGradeDTO gradeDTO, UUID id) {
-        
-        Grade grade = this.gradeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Grade not found"));
-        
-        if(gradeDTO.activity() != null && !gradeDTO.activity().isBlank()){
-            
+
+        Grade grade = this.gradeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Grade not found"));
+
+        if (gradeDTO.activity() != null && !gradeDTO.activity().isBlank()) {
+
             grade.setActivity(gradeDTO.activity());
         }
-        if(gradeDTO.grade() != null){
-            
+        if (gradeDTO.grade() != null) {
+
             grade.setGrade(gradeDTO.grade());
         }
-        if(gradeDTO.studentId() != null){
-            
-            Student student = this.studentRepository.findById(gradeDTO.studentId()).orElseThrow(() -> new ResourceNotFoundException("Student with ID " + id + " not found"));
-            
+        if (gradeDTO.studentId() != null) {
+
+            Student student = this.studentRepository.findById(gradeDTO.studentId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Student with ID " + id + " not found"));
+
             grade.setStudent(student);
         }
-        if(gradeDTO.classroomId() != null){
-            
-            Classroom classroom = this.classroomRepository.findById(gradeDTO.classroomId()).orElseThrow(() -> new ResourceNotFoundException("Classroom with ID " + id + " not found"));
-            
+        if (gradeDTO.classroomId() != null) {
+
+            Classroom classroom = this.classroomRepository.findById(gradeDTO.classroomId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Classroom with ID " + id + " not found"));
+
             grade.setClassroom(classroom);
         }
-        
+
         this.gradeRepository.save(grade);
     }
-    
-    public void deleteOneGrade(UUID gradeId){
+
+    public void deleteOneGrade(UUID gradeId) {
         this.gradeRepository.findById(gradeId).orElseThrow(() -> new ResourceNotFoundException("Grade not found"));
-        
-        try{
+
+        try {
             this.gradeRepository.deleteById(gradeId);
 
-        }catch(Exception err){
+        } catch (Exception err) {
 
             System.out.println(err.getClass());
         }

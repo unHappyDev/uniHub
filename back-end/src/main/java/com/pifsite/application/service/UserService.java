@@ -24,24 +24,25 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    
+
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-    public List<UserDTO> getAllUsers(){
+    public List<UserDTO> getAllUsers() {
 
         List<UserDTO> users = this.userRepository.getAllUsers();
 
-        if(users.isEmpty()){
+        if (users.isEmpty()) {
             throw new ResourceNotFoundException("there is no users in the database");
         }
 
         return users;
     }
 
-    public void createUser(CreateUserDTO registerUserDTO){
+    public void createUser(CreateUserDTO registerUserDTO) {
 
-        this.userRepository.findByEmail(registerUserDTO.email()).orElseThrow(() -> new ConflictException("User already exists"));
+        this.userRepository.findByEmail(registerUserDTO.email())
+                .orElseThrow(() -> new ConflictException("User already exists"));
 
         User newUser = new User();
         newUser.setEmail(registerUserDTO.email());
@@ -52,24 +53,25 @@ public class UserService {
         this.userRepository.save(newUser);
     }
 
-    public void updateUser(CreateUserDTO registerUserDTO, UUID id){
-        
-        User user = this.userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User with ID " + id + " not found"));
-        
-        if(registerUserDTO.email() != null && !registerUserDTO.email().isBlank()){
-        
+    public void updateUser(CreateUserDTO registerUserDTO, UUID id) {
+
+        User user = this.userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User with ID " + id + " not found"));
+
+        if (registerUserDTO.email() != null && !registerUserDTO.email().isBlank()) {
+
             user.setEmail(registerUserDTO.email());
         }
-        if(registerUserDTO.name() != null && !registerUserDTO.name().isBlank()){
-        
+        if (registerUserDTO.name() != null && !registerUserDTO.name().isBlank()) {
+
             user.setUsername(registerUserDTO.name());
         }
-        if(registerUserDTO.role() != null && !registerUserDTO.role().isBlank()){
-        
+        if (registerUserDTO.role() != null && !registerUserDTO.role().isBlank()) {
+
             user.setRole(UserRoles.fromString(registerUserDTO.role()));
         }
-        if(registerUserDTO.password() != null && !registerUserDTO.password().isBlank()){
-            
+        if (registerUserDTO.password() != null && !registerUserDTO.password().isBlank()) {
+
             user.setPassword(passwordEncoder.encode(registerUserDTO.password()));
         }
 
@@ -77,29 +79,31 @@ public class UserService {
 
     }
 
-    public void deleteOneUser(UUID userId){
+    public void deleteOneUser(UUID userId) {
 
-        User user = this.userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User with ID " + userId + " not found"));
+        User user = this.userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User with ID " + userId + " not found"));
 
         Authentication userData = SecurityContextHolder.getContext().getAuthentication();
-        User reqUser = (User)userData.getPrincipal();
+        User reqUser = (User) userData.getPrincipal();
 
-        if(reqUser.getRole() != UserRoles.ADMIN){
+        if (reqUser.getRole() != UserRoles.ADMIN) {
             throw new UnauthorizedActionException("you can't delete this user");
         }
 
-        if(user.equals(reqUser)){
+        if (user.equals(reqUser)) {
             throw new ConflictException("you can't delete this user while loged with it");
         }
 
-        try{
+        try {
             this.userRepository.deleteById(userId);
 
-        }catch(DataIntegrityViolationException err){
+        } catch (DataIntegrityViolationException err) {
 
-            throw new EntityInUseException("This user is still linked to other entities in the application, like student or professor");
+            throw new EntityInUseException(
+                    "This user is still linked to other entities in the application, like student or professor");
 
-        }catch(Exception err){
+        } catch (Exception err) {
 
             System.out.println(err.getClass());
         }

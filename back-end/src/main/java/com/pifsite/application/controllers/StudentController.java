@@ -34,26 +34,24 @@ public class StudentController {
 
     @GetMapping
     @Operation(summary = "Get Student", description = "Get all Students from database")
-    public ResponseEntity<?> getAllStudents(){
+    public ResponseEntity<?> getAllStudents() {
 
         List<StudentDTO> Students = studentService.getAllStudents();
         return ResponseEntity.ok(Students);
-
     }
 
     @PostMapping
     @Operation(summary = "Create Student", description = "Create a Student and save on the database")
-    public ResponseEntity<?> createStudent(@RequestBody CreateStudentDTO registerStudentDTO){
+    public ResponseEntity<?> createStudent(@RequestBody CreateStudentDTO registerStudentDTO) {
 
         studentService.createStudent(registerStudentDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Student Created");
-
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update User", description = "Update a User on database by its ID")
-    public ResponseEntity<?> updateStudent(@RequestBody CreateStudentDTO registerStudentDTO, @PathVariable UUID id){
-        
+    public ResponseEntity<?> updateStudent(@RequestBody CreateStudentDTO registerStudentDTO, @PathVariable UUID id) {
+
         studentService.updateStudent(registerStudentDTO, id);
         return ResponseEntity.status(HttpStatus.OK).body("Estudante Atualizado");
     }
@@ -64,6 +62,5 @@ public class StudentController {
 
         studentService.deleteOneStudent(id);
         return ResponseEntity.ok("Student successfully deleted.");
-
     }
 }

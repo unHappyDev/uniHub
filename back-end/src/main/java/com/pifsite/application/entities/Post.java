@@ -26,7 +26,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Table(name = "posts")
 public class Post {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID postId;

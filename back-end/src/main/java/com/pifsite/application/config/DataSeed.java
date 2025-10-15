@@ -24,8 +24,8 @@ public class DataSeed implements CommandLineRunner {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
 
-
-    public DataSeed(UserRepository userRepository, SessionRepository sessionRepository, CourseRepository courseRepository, StudentRepository studentRepository) {
+    public DataSeed(UserRepository userRepository, SessionRepository sessionRepository,
+            CourseRepository courseRepository, StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
         this.sessionRepository = sessionRepository;
         this.courseRepository = courseRepository;
@@ -35,100 +35,86 @@ public class DataSeed implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-            
-        User ds = userRepository.findByEmail("ds@email.com").orElseGet(() ->
-            userRepository.save(new User(
+
+        User ds = userRepository.findByEmail("ds@email.com").orElseGet(() -> userRepository.save(new User(
                 null,
                 "default_student",
                 "ds@email.com",
                 "$2a$04$LfBpkw0M8qaMr/JvrafNjuD6EFp58MSCY6JHl3VgEGxSolAV9uhjy",
                 UserRoles.USER,
                 true,
-                null
-            ))
-        );
+                null)));
 
-        User dp = userRepository.findByEmail("dp@email.com").orElseGet(() ->
-            userRepository.save(new User(
+        User dp = userRepository.findByEmail("dp@email.com").orElseGet(() -> userRepository.save(new User(
                 null,
                 "default_professor",
                 "dp@email.com",
                 "$2a$04$LfBpkw0M8qaMr/JvrafNjuD6EFp58MSCY6JHl3VgEGxSolAV9uhjy",
                 UserRoles.PROFESSOR,
                 true,
-                null
-            ))
-        );
+                null)));
 
-        User da = userRepository.findByEmail("da@email.com").orElseGet(() ->
-            userRepository.save(new User(
+        User da = userRepository.findByEmail("da@email.com").orElseGet(() -> userRepository.save(new User(
                 null,
                 "default_admin",
                 "da@email.com",
                 "$2a$04$LfBpkw0M8qaMr/JvrafNjuD6EFp58MSCY6JHl3VgEGxSolAV9uhjy",
                 UserRoles.ADMIN,
                 true,
-                null
-            ))
-        );
+                null)));
 
         sessionRepository.findByToken("33333-33333-33333-33333")
-            .map(session -> {
-                session.setExpiresAt(OffsetDateTime.now().plusHours(3));
-                return sessionRepository.save(session);
-            })
-            .orElseGet(() -> sessionRepository.save(new Session(
-                null,
-                "33333-33333-33333-33333",
-                ds,
-                OffsetDateTime.now().plusHours(3),
-                null,
-                null
-            )));
+                .map(session -> {
+                    session.setExpiresAt(OffsetDateTime.now().plusHours(3));
+                    return sessionRepository.save(session);
+                })
+                .orElseGet(() -> sessionRepository.save(new Session(
+                        null,
+                        "33333-33333-33333-33333",
+                        ds,
+                        OffsetDateTime.now().plusHours(3),
+                        null,
+                        null)));
 
         sessionRepository.findByToken("22222-22222-22222-22222")
-            .map(session -> {
-                session.setExpiresAt(OffsetDateTime.now().plusHours(3));
-                return sessionRepository.save(session);
-            })
-            .orElseGet(() -> sessionRepository.save(new Session(
-                null,
-                "22222-22222-22222-22222",
-                dp,
-                OffsetDateTime.now().plusHours(3),
-                null,
-                null
-            )));
+                .map(session -> {
+                    session.setExpiresAt(OffsetDateTime.now().plusHours(3));
+                    return sessionRepository.save(session);
+                })
+                .orElseGet(() -> sessionRepository.save(new Session(
+                        null,
+                        "22222-22222-22222-22222",
+                        dp,
+                        OffsetDateTime.now().plusHours(3),
+                        null,
+                        null)));
 
         sessionRepository.findByToken("11111-11111-11111-11111")
-            .map(session -> {
-                session.setExpiresAt(OffsetDateTime.now().plusHours(3));
-                return sessionRepository.save(session);
-            })
-            .orElseGet(() -> sessionRepository.save(new Session(
-                null,
-                "11111-11111-11111-11111",
-                da,
-                OffsetDateTime.now().plusHours(3),
-                null,
-                null
-            )));
-
+                .map(session -> {
+                    session.setExpiresAt(OffsetDateTime.now().plusHours(3));
+                    return sessionRepository.save(session);
+                })
+                .orElseGet(() -> sessionRepository.save(new Session(
+                        null,
+                        "11111-11111-11111-11111",
+                        da,
+                        OffsetDateTime.now().plusHours(3),
+                        null,
+                        null)));
 
         System.out.println("Usuários e sessões criadas");
-        
-        Course courseA = courseRepository.findByCourseName("Eng. Compuação").orElseGet(() ->
-        courseRepository.save(new Course(null, "Eng. Compuação", null)));
-        
-        courseRepository.findByCourseName("Eng. Elétrica").orElseGet(() ->
-        courseRepository.save(new Course(null, "Eng. Elétrica", null)));
-        
-        courseRepository.findByCourseName("Eng. Produção").orElseGet(() ->
-        courseRepository.save(new Course(null, "Eng. Produção", null)));
-        
-        studentRepository.findById(ds.getId()).orElseGet(() ->
-            studentRepository.save(new Student(null, ds, courseA)));
-        
+
+        Course courseA = courseRepository.findByCourseName("Eng. Compuação")
+                .orElseGet(() -> courseRepository.save(new Course(null, "Eng. Compuação", null)));
+
+        courseRepository.findByCourseName("Eng. Elétrica")
+                .orElseGet(() -> courseRepository.save(new Course(null, "Eng. Elétrica", null)));
+
+        courseRepository.findByCourseName("Eng. Produção")
+                .orElseGet(() -> courseRepository.save(new Course(null, "Eng. Produção", null)));
+
+        studentRepository.findById(ds.getId()).orElseGet(() -> studentRepository.save(new Student(null, ds, courseA)));
+
         System.out.println("Cursos e estudantes criados");
     }
 }

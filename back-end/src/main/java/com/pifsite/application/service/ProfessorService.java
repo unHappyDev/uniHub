@@ -32,11 +32,11 @@ public class ProfessorService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-    public List<ProfessorDTO> getAllProfessors(){
+    public List<ProfessorDTO> getAllProfessors() {
 
         List<Professor> Professors = this.professorRepository.findAll();
 
-        if(Professors.isEmpty()){
+        if (Professors.isEmpty()) {
             throw new ResourceNotFoundException("there is no Professors in the database"); // melhorar depois
         }
 
@@ -45,27 +45,25 @@ public class ProfessorService {
                     var classroomsDTO = professor.getClassrooms().stream()
                             .map(c -> new SmallClassroomDTO(
                                     c.getSubject().getSubjectName(),
-                                    c.getSemester()
-                            ))
+                                    c.getSemester()))
                             .collect(Collectors.toSet());
 
                     return new ProfessorDTO(
                             professor.getUser().getUsername(),
                             professor.getUser().getEmail(),
                             professor.getUser().getRole(),
-                            classroomsDTO
-                    );
+                            classroomsDTO);
                 })
                 .collect(Collectors.toList());
-    
+
     }
 
     @Transactional
-    public void createProfessor(CreateProfessorDTO registerProfessorDTO){
+    public void createProfessor(CreateProfessorDTO registerProfessorDTO) {
 
         User user = new User();
 
-        if(registerProfessorDTO.userId() == null){
+        if (registerProfessorDTO.userId() == null) {
 
             CreateUserDTO registerUser = registerProfessorDTO.registerUser();
 
@@ -75,60 +73,66 @@ public class ProfessorService {
             user.setRole(UserRoles.PROFESSOR);
             user.setIsActive(true);
 
-        }else{
-            user = userRepository.findById(registerProfessorDTO.userId()).orElseThrow(() -> new ResourceNotFoundException("User with ID " + registerProfessorDTO.userId() + " not found"));
+        } else {
+            user = userRepository.findById(registerProfessorDTO.userId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "User with ID " + registerProfessorDTO.userId() + " not found"));
         }
-
 
         Professor professor = new Professor();
 
         professor.setUser(user);
-        
+
         professorRepository.save(professor);
     }
 
-    public void updateProfessor(CreateProfessorDTO registerProfessorDTO, UUID id){
-        
-        Professor professor = this.professorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Professor with ID " + id + " not found"));
-        
-        if(registerProfessorDTO.registerUser().email() != null && !registerProfessorDTO.registerUser().email().isBlank()){
-        
+    public void updateProfessor(CreateProfessorDTO registerProfessorDTO, UUID id) {
+
+        Professor professor = this.professorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Professor with ID " + id + " not found"));
+
+        if (registerProfessorDTO.registerUser().email() != null
+                && !registerProfessorDTO.registerUser().email().isBlank()) {
+
             professor.getUser().setEmail(registerProfessorDTO.registerUser().email());
         }
-        if(registerProfessorDTO.registerUser().name() != null && !registerProfessorDTO.registerUser().name().isBlank()){
-        
+        if (registerProfessorDTO.registerUser().name() != null
+                && !registerProfessorDTO.registerUser().name().isBlank()) {
+
             professor.getUser().setUsername(registerProfessorDTO.registerUser().name());
         }
-        if(registerProfessorDTO.registerUser().role() != null && !registerProfessorDTO.registerUser().role().isBlank()){
-        
+        if (registerProfessorDTO.registerUser().role() != null
+                && !registerProfessorDTO.registerUser().role().isBlank()) {
+
             professor.getUser().setRole(UserRoles.fromString(registerProfessorDTO.registerUser().role()));
         }
-        if(registerProfessorDTO.registerUser().password() != null && !registerProfessorDTO.registerUser().password().isBlank()){
-            
+        if (registerProfessorDTO.registerUser().password() != null
+                && !registerProfessorDTO.registerUser().password().isBlank()) {
+
             professor.getUser().setPassword(passwordEncoder.encode(registerProfessorDTO.registerUser().password()));
         }
-        
 
         this.professorRepository.save(professor);
 
     }
 
-    public void deleteOneProfessor(UUID professorId){
+    public void deleteOneProfessor(UUID professorId) {
 
-        this.professorRepository.findById(professorId).orElseThrow(() -> new ResourceNotFoundException("Professor with ID " + professorId + " not found"));
+        this.professorRepository.findById(professorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Professor with ID " + professorId + " not found"));
 
-        try{
+        try {
             this.professorRepository.deleteById(professorId);
 
-        }catch(DataIntegrityViolationException err){
+        } catch (DataIntegrityViolationException err) {
 
-            throw new EntityInUseException("This professor is still linked to other entities in the application, like classrooms, subjects, attendances or grades");
+            throw new EntityInUseException(
+                    "This professor is still linked to other entities in the application, like classrooms, subjects, attendances or grades");
 
-        }catch(Exception err){
+        } catch (Exception err) {
 
             System.out.println("This error was not treated yet: " + err.getClass());
         }
-
 
         this.userRepository.deleteById(professorId);
     }

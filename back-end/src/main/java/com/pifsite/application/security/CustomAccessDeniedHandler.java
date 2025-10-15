@@ -21,17 +21,16 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     @Autowired
     private ObjectMapper objectMapper;
-    
+
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, 
-                       AccessDeniedException accessDeniedException) throws IOException, ServletException {
+    public void handle(HttpServletRequest request, HttpServletResponse response,
+            AccessDeniedException accessDeniedException) throws IOException, ServletException {
 
         ErrorResponse error = new ErrorResponse(
-            HttpStatus.FORBIDDEN.value(),
-            HttpStatus.FORBIDDEN.getReasonPhrase(),
-            "You don't have access for this resource",
-            request.getRequestURI()
-        );
+                HttpStatus.FORBIDDEN.value(),
+                HttpStatus.FORBIDDEN.getReasonPhrase(),
+                "You don't have access for this resource",
+                request.getRequestURI());
 
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType("application/json");

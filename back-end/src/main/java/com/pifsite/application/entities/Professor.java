@@ -19,7 +19,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Table(name = "professors")
-public class Professor{
+public class Professor {
 
     @Id
     private UUID professorId;

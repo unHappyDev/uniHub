@@ -35,17 +35,16 @@ public class PostController {
 
     @GetMapping
     @Operation(summary = "Get Post", description = "Get all Posts from database")
-    public ResponseEntity<?> getAllPosts(){
+    public ResponseEntity<?> getAllPosts() {
 
         List<PostDTO> posts = postService.getAllPosts();
         return ResponseEntity.ok(posts);
-
     }
 
     @PostMapping
     @Operation(summary = "Create Post", description = "Create a Post and save on the database")
     @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
-    public ResponseEntity<?> createPost(@RequestBody CreatePostDTO postDTO){
+    public ResponseEntity<?> createPost(@RequestBody CreatePostDTO postDTO) {
 
         postService.createPost(postDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Post created");
@@ -53,8 +52,8 @@ public class PostController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update Post", description = "Update a Post on database by its ID")
-    public ResponseEntity<?> updatePost(@RequestBody CreatePostDTO postDTO, @PathVariable UUID id){
-        
+    public ResponseEntity<?> updatePost(@RequestBody CreatePostDTO postDTO, @PathVariable UUID id) {
+
         postService.updatePost(postDTO, id);
         return ResponseEntity.status(HttpStatus.OK).body("Post Atualizado");
     }
@@ -63,7 +62,7 @@ public class PostController {
     @Operation(summary = "Delete Post", description = "Delete a Post on database by its ID")
     @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
     public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
-        
+
         postService.deleteOnePost(id);
         return ResponseEntity.ok("Post successfully deleted.");
     }

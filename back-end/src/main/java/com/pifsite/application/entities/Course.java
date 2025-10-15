@@ -26,7 +26,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Table(name = "courses")
 public class Course {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID courseId;
@@ -35,11 +35,7 @@ public class Course {
     private String courseName;
 
     @ManyToMany
-    @JoinTable(
-        name = "courses_subjects",
-        joinColumns = @JoinColumn(name = "fk_course_id"),
-        inverseJoinColumns = @JoinColumn(name = "fk_subject_id")
-    )
+    @JoinTable(name = "courses_subjects", joinColumns = @JoinColumn(name = "fk_course_id"), inverseJoinColumns = @JoinColumn(name = "fk_subject_id"))
     private Set<Subject> subjects = new HashSet<>();
-    
+
 }
