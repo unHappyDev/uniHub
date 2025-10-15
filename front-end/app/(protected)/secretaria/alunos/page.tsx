@@ -24,20 +24,35 @@ export default function AlunosPage() {
 
   // 🧩 Buscar alunos
   const fetchStudents = async () => {
-    try {
-      const data = await getStudents();
-      console.log("📋 Alunos carregados:", data);
-      setStudents(data);
-    } catch (error: any) {
-      console.error("Erro ao buscar alunos:", error);
-      if (error.response?.status === 404) {
-        setStudents([]);
-        console.warn("Nenhum aluno encontrado no banco de dados.");
-      } else {
-        alert("Erro ao buscar alunos. Verifique o backend.");
-      }
+  try {
+    const data = await getStudents();
+    console.log("📋 Alunos carregados:", data);
+
+    // 🧩 Normaliza os dados vindos do backend
+    const normalized = Array.isArray(data)
+  ? data.map((s: any, index: number) => ({
+      id: s.id ?? String(index + 1), // gera id se não vier do backend
+      nome: s.username ?? "",
+      email: s.email ?? "",
+      curso: s.courseName ?? "",
+      semestre: s.semester ?? "", // pode estar ausente mesmo
+      courseId: s.courseId ?? null,
+    }))
+  : [];
+
+    console.log("📋 Alunos normalizados:", normalized);
+
+    setStudents(normalized);
+  } catch (error: any) {
+    console.error("Erro ao buscar alunos:", error);
+    if (error.response?.status === 404) {
+      setStudents([]);
+      console.warn("Nenhum aluno encontrado no banco de dados.");
+    } else {
+      alert("Erro ao buscar alunos. Verifique o backend.");
     }
-  };
+  }
+};
 
   // ➕ Adicionar aluno
   const handleAdd = async (student: Student | CreateStudentDTO) => {
