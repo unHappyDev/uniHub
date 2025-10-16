@@ -15,6 +15,8 @@ const attachToken = (config: any) => {
   return config;
 };
 
-apiSpring.interceptors.request.use(attachToken, (error) => Promise.reject(error));
+apiSpring.interceptors.request.use(attachToken, (error) =>
+  Promise.reject(error),
+);
 
 export default apiSpring;

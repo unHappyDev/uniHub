@@ -47,7 +47,7 @@ export default function LoginForm() {
       // res = { token, role }
       console.log("res login:", res);
       // Salva no localStorage
-      localStorage.setItem("token", res.id);
+      localStorage.setItem("token", res.token);
 
       localStorage.setItem("role", res.role);
 

@@ -20,39 +20,36 @@ export default function AlunosPage() {
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [filterName, setFilterName] = useState("");
   const [filterCourse, setFilterCourse] = useState("");
-  const [filterSemester, setFilterSemester] = useState("");
 
   // 🧩 Buscar alunos
   const fetchStudents = async () => {
-  try {
-    const data = await getStudents();
-    console.log("📋 Alunos carregados:", data);
+    try {
+      const data = await getStudents();
+      console.log("📋 Alunos carregados:", data);
 
-    // 🧩 Normaliza os dados vindos do backend
-    const normalized = Array.isArray(data)
-  ? data.map((s: any, index: number) => ({
-      id: s.id ?? String(index + 1), // gera id se não vier do backend
-      nome: s.username ?? "",
-      email: s.email ?? "",
-      curso: s.courseName ?? "",
-      semestre: s.semester ?? "", // pode estar ausente mesmo
-      courseId: s.courseId ?? null,
-    }))
-  : [];
+      // 🧩 Normaliza os dados vindos do backend
+      const normalized = Array.isArray(data)
+        ? data.map((s: any, index: number) => ({
+            id: s.id ?? String(index + 1), // gera id se não vier do backend
+            nome: s.username ?? "",
+            email: s.email ?? "",
+            curso: s.courseName ?? "",
+            courseId: s.courseId ?? null,
+          }))
+        : [];
 
-    console.log("📋 Alunos normalizados:", normalized);
-
-    setStudents(normalized);
-  } catch (error: any) {
-    console.error("Erro ao buscar alunos:", error);
-    if (error.response?.status === 404) {
-      setStudents([]);
-      console.warn("Nenhum aluno encontrado no banco de dados.");
-    } else {
-      alert("Erro ao buscar alunos. Verifique o backend.");
+      console.log("📋 Alunos normalizados:", normalized);
+      setStudents(normalized);
+    } catch (error: any) {
+      console.error("Erro ao buscar alunos:", error);
+      if (error.response?.status === 404) {
+        setStudents([]);
+        console.warn("Nenhum aluno encontrado no banco de dados.");
+      } else {
+        alert("Erro ao buscar alunos. Verifique o backend.");
+      }
     }
-  }
-};
+  };
 
   // ➕ Adicionar aluno
   const handleAdd = async (student: Student | CreateStudentDTO) => {
@@ -77,9 +74,16 @@ export default function AlunosPage() {
     setIsModalOpen(false);
   };
 
+  // ✏️ Atualizar aluno
   const handleUpdate = async (student: Student) => {
+    if (!student.id) {
+      console.error("❌ Erro: aluno sem ID para atualização:", student);
+      alert("Erro interno: o ID do aluno não foi encontrado.");
+      return;
+    }
+
     const dto: CreateStudentDTO = {
-      userId: student.id ?? null,
+      userId: student.id, // ✅ ID do aluno vindo do front
       courseId: student.courseId!,
       registerUser: {
         name: student.nome,
@@ -88,9 +92,11 @@ export default function AlunosPage() {
       },
     };
 
-    await updateStudent(String(student.id), dto);
+    console.log("📤 Atualizando aluno:", student.id, dto);
+
+    await updateStudent(student.id, dto);
     await fetchStudents();
-    setIsModalOpen(false); // 👈 fecha modal
+    setIsModalOpen(false);
   };
 
   // ❌ Excluir aluno
@@ -117,13 +123,16 @@ export default function AlunosPage() {
     const matchesName = s.nome
       ?.toLowerCase()
       .includes(filterName.toLowerCase());
-    const matchesCourse = s.curso
-      ?.toLowerCase()
+
+    // ✅ Corrigido — trata curso como string ou objeto
+    const courseName =
+      typeof s.curso === "string" ? s.curso : s.curso?.courseName || "";
+
+    const matchesCourse = courseName
+      .toLowerCase()
       .includes(filterCourse.toLowerCase());
-    const matchesSemester = s.semestre
-      ?.toLowerCase()
-      .includes(filterSemester.toLowerCase());
-    return matchesName && matchesCourse && matchesSemester;
+
+    return matchesName && matchesCourse;
   });
 
   useEffect(() => {
@@ -152,13 +161,6 @@ export default function AlunosPage() {
             value={filterCourse}
             onChange={(e) => setFilterCourse(e.target.value)}
             className="w-full sm:flex-1 border border-transparent bg-neutral-900 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-3 py-2 rounded-lg outline-none"
-          />
-          <input
-            type="text"
-            placeholder="Filtrar por semestre..."
-            value={filterSemester}
-            onChange={(e) => setFilterSemester(e.target.value)}
-            className="w-full sm:w-48 border border-transparent bg-neutral-900 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-3 py-2 rounded-lg outline-none"
           />
           <button
             onClick={() => setIsModalOpen(true)}

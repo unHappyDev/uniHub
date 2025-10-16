@@ -25,7 +25,6 @@ export default function StudentForm({
   const [formData, setFormData] = useState<Student>({
     nome: "",
     email: "",
-    semestre: "",
     curso: "",
     courseId: "",
   });
@@ -48,18 +47,34 @@ export default function StudentForm({
   useEffect(() => {
     if (editingStudent) {
       console.log("✏️ Editando aluno:", editingStudent);
-      setFormData(editingStudent);
+
+      // tenta achar o curso correspondente pelo nome
+      const matchedCourse = courses.find(
+        (c) =>
+          c.courseName.toLowerCase().trim() ===
+          (typeof editingStudent.curso === "string"
+            ? editingStudent.curso.toLowerCase().trim()
+            : editingStudent.curso?.courseName.toLowerCase().trim()),
+      );
+
+      setFormData({
+        nome: editingStudent.nome,
+        email: editingStudent.email,
+        curso: editingStudent.curso,
+        courseId: matchedCourse
+          ? matchedCourse.id
+          : editingStudent.courseId || "",
+      });
     } else {
       console.log("🆕 Novo aluno - limpando form");
       setFormData({
         nome: "",
         email: "",
-        semestre: "",
         curso: "",
         courseId: "",
       });
     }
-  }, [editingStudent]);
+  }, [editingStudent, courses]);
 
   // 🔹 Atualiza estado do form
   const handleChange = (
@@ -92,7 +107,7 @@ export default function StudentForm({
       registerUser: {
         name: formData.nome,
         email: formData.email,
-        password: "12341234", // ✅ CORRIGIDO: backend espera 'password'
+        password: "12341234", // ✅ backend espera 'password'
       },
     };
 
@@ -102,26 +117,23 @@ export default function StudentForm({
     );
 
     if (editingStudent) {
-      const updatedStudent: CreateStudentDTO = {
-        userId: editingStudent.id ?? null,
+      const updatedStudent: Student = {
+        ...editingStudent, // garante que o id venha junto
+        nome: formData.nome,
+        email: formData.email,
+        curso: formData.curso,
         courseId: formData.courseId,
-        registerUser: {
-          name: formData.nome,
-          email: formData.email,
-          password: "12341234",
-        },
       };
 
-      await onEdit(updatedStudent as any);
+      console.log("📤 Enviando aluno atualizado:", updatedStudent);
+      await onEdit(updatedStudent);
     } else {
       await onAdd(studentDTO as any);
     }
-
     console.log("✅ Cadastro concluído!");
     setFormData({
       nome: "",
       email: "",
-      semestre: "",
       curso: "",
       courseId: "",
     });
@@ -154,22 +166,10 @@ export default function StudentForm({
       </div>
 
       <div>
-        <label className="block text-sm mb-1">Semestre</label>
-        <input
-          type="text"
-          name="semestre"
-          value={formData.semestre}
-          onChange={handleChange}
-          required
-          className="w-full bg-neutral-900 border border-orange-500 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-orange-500/40"
-        />
-      </div>
-
-      <div>
         <label className="block text-sm mb-1">Curso</label>
         <select
           name="courseId"
-          value={formData.courseId}
+          value={formData.courseId ?? ""}
           onChange={handleChange}
           required
           className="w-full bg-neutral-900 border border-orange-500 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-orange-500/40"

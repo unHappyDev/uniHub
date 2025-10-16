@@ -3,8 +3,7 @@ export interface Student {
   id?: string;
   nome: string;
   email: string;
-  curso: string;
-  semestre: string;
+  curso: string | { id: string; courseName: string };
   courseId: string;
 }
 
