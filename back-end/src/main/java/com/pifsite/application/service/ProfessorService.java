@@ -31,6 +31,7 @@ public class ProfessorService {
     private final ProfessorRepository professorRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     public List<ProfessorDTO> getAllProfessors() {
 
@@ -65,13 +66,13 @@ public class ProfessorService {
 
         if (registerProfessorDTO.userId() == null) {
 
-            CreateUserDTO registerUser = registerProfessorDTO.registerUser();
+            CreateUserDTO registerUser = new CreateUserDTO(
+                    registerProfessorDTO.registerUser().name(),
+                    registerProfessorDTO.registerUser().email(),
+                    passwordEncoder.encode(registerProfessorDTO.registerUser().password()),
+                    UserRoles.PROFESSOR.toString());
 
-            user.setUsername(registerUser.name());
-            user.setEmail(registerUser.email());
-            user.setPassword(passwordEncoder.encode(registerUser.password()));
-            user.setRole(UserRoles.PROFESSOR);
-            user.setIsActive(true);
+            user = userService.createUser(registerUser);
 
         } else {
             user = userRepository.findById(registerProfessorDTO.userId())

@@ -3,6 +3,7 @@ package com.pifsite.application.service;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
 
+    @Value("${pepper}")
+    private String pepper;
+
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
@@ -39,18 +43,22 @@ public class UserService {
         return users;
     }
 
-    public void createUser(CreateUserDTO registerUserDTO) {
+    public User createUser(CreateUserDTO registerUserDTO) {
 
-        this.userRepository.findByEmail(registerUserDTO.email())
-                .orElseThrow(() -> new ConflictException("User already exists"));
+        if (this.userRepository.findByEmail(registerUserDTO.email()).isPresent()) {
+            System.out.println(this.userRepository.findByEmail(registerUserDTO.email()));
+            throw new ConflictException("User already exists");
+        }
 
         User newUser = new User();
+
         newUser.setEmail(registerUserDTO.email());
         newUser.setUsername(registerUserDTO.name());
         newUser.setRole(UserRoles.fromString(registerUserDTO.role()));
-        newUser.setPassword(passwordEncoder.encode(registerUserDTO.password()));
+        newUser.setPassword(passwordEncoder.encode(registerUserDTO.password() + pepper));
+        newUser.setIsActive(true);
 
-        this.userRepository.save(newUser);
+        return this.userRepository.save(newUser);
     }
 
     public void updateUser(CreateUserDTO registerUserDTO, UUID id) {

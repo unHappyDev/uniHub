@@ -52,13 +52,13 @@ public class StudentService {
 
         if (registerStudentDTO.userId() == null) {
 
-            CreateUserDTO registerUser = registerStudentDTO.registerUser();
+            CreateUserDTO registerUser = new CreateUserDTO(
+                    registerStudentDTO.registerUser().name(),
+                    registerStudentDTO.registerUser().email(),
+                    registerStudentDTO.registerUser().password(),
+                    UserRoles.USER.toString());
 
-            user.setUsername(registerUser.name());
-            user.setEmail(registerUser.email());
-            user.setPassword(passwordEncoder.encode(registerUser.password()));
-            user.setRole(UserRoles.USER);
-            user.setIsActive(true);
+            user = userService.createUser(registerUser);
 
         } else {
             user = userRepository.findById(registerStudentDTO.userId()).orElseThrow(
