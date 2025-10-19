@@ -80,7 +80,7 @@ public class UserService {
         }
         if (registerUserDTO.password() != null && !registerUserDTO.password().isBlank()) {
 
-            user.setPassword(passwordEncoder.encode(registerUserDTO.password()));
+            user.setPassword(passwordEncoder.encode(registerUserDTO.password() + pepper));
         }
 
         this.userRepository.save(user);

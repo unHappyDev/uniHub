@@ -14,19 +14,23 @@ import com.pifsite.application.entities.User;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.UUID;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ProfessorService {
+
+    @Value("${pepper}")
+    private String pepper;
 
     private final ProfessorRepository professorRepository;
     private final PasswordEncoder passwordEncoder;
@@ -110,7 +114,8 @@ public class ProfessorService {
         if (registerProfessorDTO.registerUser().password() != null
                 && !registerProfessorDTO.registerUser().password().isBlank()) {
 
-            professor.getUser().setPassword(passwordEncoder.encode(registerProfessorDTO.registerUser().password()));
+            professor.getUser()
+                    .setPassword(passwordEncoder.encode(registerProfessorDTO.registerUser().password() + pepper));
         }
 
         this.professorRepository.save(professor);

@@ -15,6 +15,7 @@ import com.pifsite.application.entities.User;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -27,6 +28,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class StudentService {
+
+    @Value("${pepper}")
+    private String pepper;
 
     private final StudentRepository studentRepository;
     private final CourseRepository courseRepository;
@@ -96,7 +100,7 @@ public class StudentService {
         if (registerStudentDTO.registerUser().password() != null
                 && !registerStudentDTO.registerUser().password().isBlank()) {
 
-            student.getUser().setPassword(passwordEncoder.encode(registerStudentDTO.registerUser().password()));
+            student.getUser().setPassword(passwordEncoder.encode(registerStudentDTO.registerUser().password() + pepper));
         }
         if (registerStudentDTO.courseId() != null) {
 
