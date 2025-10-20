@@ -27,24 +27,26 @@ public class AttendanceService {
     private final ClassroomRepository classroomRepository;
     private final StudentRepository studentRepository;
 
-    public List<AttendanceDTO> getAll(){
+    public List<AttendanceDTO> getAll() {
 
         List<AttendanceDTO> Attendances = this.attendanceRepository.getAll();
 
-        if(Attendances.isEmpty()){
+        if (Attendances.isEmpty()) {
             throw new ResourceNotFoundException("there is no Attendances in the database"); // melhorar depois
         }
 
         return Attendances;
     }
 
-    public void crateAttendance(CreateAttendanceDTO AttendanceDTO){
+    public void crateAttendance(CreateAttendanceDTO AttendanceDTO) {
 
         Student student = this.studentRepository.findById(AttendanceDTO.studentId())
-        .orElseThrow(() -> new ResourceNotFoundException("Student with ID " + AttendanceDTO.studentId() + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Student with ID " + AttendanceDTO.studentId() + " not found"));
 
         Classroom classroom = this.classroomRepository.findById(AttendanceDTO.classroomId())
-        .orElseThrow(() -> new ResourceNotFoundException("Classroom with ID " + AttendanceDTO.classroomId() + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Classroom with ID " + AttendanceDTO.classroomId() + " not found"));
 
         Attendance newAttendance = new Attendance();
 
@@ -56,18 +58,19 @@ public class AttendanceService {
         this.attendanceRepository.save(newAttendance);
     }
 
-    public void deleteOneAttendance(UUID AttendanceId){
-        
-        this.attendanceRepository.findById(AttendanceId).orElseThrow(() -> new ResourceNotFoundException("Attendance with ID " + AttendanceId + " not found"));
+    public void deleteOneAttendance(UUID AttendanceId) {
 
-        try{
+        this.attendanceRepository.findById(AttendanceId)
+                .orElseThrow(() -> new ResourceNotFoundException("Attendance with ID " + AttendanceId + " not found"));
+
+        try {
             this.attendanceRepository.deleteById(AttendanceId);
 
-        }catch(DataIntegrityViolationException err){
+        } catch (DataIntegrityViolationException err) {
 
             throw new EntityInUseException("what?");
 
-        }catch(Exception err){
+        } catch (Exception err) {
 
             System.out.println("This error was not treated yet: " + err.getClass());
         }
@@ -75,33 +78,36 @@ public class AttendanceService {
     }
 
     public void updateAttendance(CreateAttendanceDTO attendanceDTO, UUID id) {
-        
-        Attendance attendance = this.attendanceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Attendance not found"));
-        
-        if(attendanceDTO.attendanceDate() != null){
-            
+
+        Attendance attendance = this.attendanceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Attendance not found"));
+
+        if (attendanceDTO.attendanceDate() != null) {
+
             attendance.setAttendanceDate(attendanceDTO.attendanceDate());
         }
 
-        if(attendanceDTO.presence() != null){
-            
+        if (attendanceDTO.presence() != null) {
+
             attendance.setPresence(attendanceDTO.presence());
         }
 
-        if(attendanceDTO.studentId() != null){
-            
-            Student student = this.studentRepository.findById(attendanceDTO.studentId()).orElseThrow(() -> new ResourceNotFoundException("Student with ID " + id + " not found"));
-            
+        if (attendanceDTO.studentId() != null) {
+
+            Student student = this.studentRepository.findById(attendanceDTO.studentId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Student with ID " + id + " not found"));
+
             attendance.setStudent(student);
         }
 
-        if(attendanceDTO.classroomId() != null){
-            
-            Classroom classroom = this.classroomRepository.findById(attendanceDTO.classroomId()).orElseThrow(() -> new ResourceNotFoundException("Classroom with ID " + id + " not found"));
-            
+        if (attendanceDTO.classroomId() != null) {
+
+            Classroom classroom = this.classroomRepository.findById(attendanceDTO.classroomId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Classroom with ID " + id + " not found"));
+
             attendance.setClassroom(classroom);
         }
-        
+
         this.attendanceRepository.save(attendance);
     }
 }

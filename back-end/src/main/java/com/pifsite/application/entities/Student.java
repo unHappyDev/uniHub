@@ -21,7 +21,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "students")
-public class Student{
+public class Student {
 
     @Id
     private UUID studentId;
@@ -36,4 +36,3 @@ public class Student{
     private Course course;
 
 }
-

@@ -38,7 +38,8 @@ public class SecurityFilter extends OncePerRequestFilter {
     CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
         String path = request.getRequestURI();
 
@@ -49,8 +50,8 @@ public class SecurityFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        
-        try{
+
+        try {
 
             String token = this.recoverToken(request);
 
@@ -60,7 +61,8 @@ public class SecurityFilter extends OncePerRequestFilter {
 
             User user = session.getUser();
 
-            var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().toString()));
+            var authorities = Collections
+                    .singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().toString()));
 
             var authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
 
@@ -68,30 +70,31 @@ public class SecurityFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
 
-        }catch(InvalidTokenException | ExpiredTokenException err){
+        } catch (InvalidTokenException | ExpiredTokenException err) {
 
             System.out.println("entrou aqui de novo: " + err.getMessage());
 
-            authenticationEntryPoint.commence(request, response, new AuthenticationException(err.getMessage()) {});
+            authenticationEntryPoint.commence(request, response, new AuthenticationException(err.getMessage()) {
+            });
             return;
         }
     }
 
-    private String recoverToken(HttpServletRequest request){
+    private String recoverToken(HttpServletRequest request) {
 
         Cookie[] cookies = request.getCookies();
-    
+
         if (cookies == null) {
             return null;
         }
-        
+
         for (Cookie cookie : cookies) {
             if ("session_id".equals(cookie.getName())) {
-    
-                return cookie.getValue(); 
+
+                return cookie.getValue();
             }
         }
 
-        return null; 
+        return null;
     }
 }

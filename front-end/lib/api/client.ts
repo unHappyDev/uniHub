@@ -1,8 +1,22 @@
 import axios, { AxiosInstance } from "axios";
 
-const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "/api",
+export const apiSpring: AxiosInstance = axios.create({
+  baseURL: "/api", // ✅ conecta direto ao backend Spring Boot
   withCredentials: true,
 });
 
-export default apiClient;
+const attachToken = (config: any) => {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  return config;
+};
+
+apiSpring.interceptors.request.use(attachToken, (error) =>
+  Promise.reject(error),
+);
+
+export default apiSpring;

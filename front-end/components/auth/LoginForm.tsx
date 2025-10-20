@@ -45,9 +45,10 @@ export default function LoginForm() {
       // Chamada à API
       const res = await authApi.login(values);
       // res = { token, role }
-
+      console.log("res login:", res);
       // Salva no localStorage
       localStorage.setItem("token", res.token);
+
       localStorage.setItem("role", res.role);
 
       const roleRouteMap: Record<string, string> = {

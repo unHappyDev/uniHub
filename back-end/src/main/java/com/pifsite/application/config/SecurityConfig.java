@@ -1,5 +1,6 @@
 package com.pifsite.application.config;
 
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -36,22 +37,24 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        
+
         httpSecurity
-        .csrf(csrf -> csrf.disable())
-        .sessionManagement(session  -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "/login").permitAll()
-                                            .requestMatchers("/user").hasRole(UserRoles.ADMIN.toString())
-                                            .requestMatchers("/professor").hasRole(UserRoles.ADMIN.toString())
-                                            .requestMatchers("/student").hasAnyRole(UserRoles.ADMIN.toString(), UserRoles.PROFESSOR.toString())
-                                            .requestMatchers("/v3/api-docs/**").permitAll()
-                                            .requestMatchers("/swagger-ui/**").permitAll()
-                                            .requestMatchers("/swagger-ui.html").permitAll()
-                                            .anyRequest().authenticated())
-        .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
-        .exceptionHandling(ex -> ex
-            .accessDeniedHandler(accessDeniedHandler)
-            .authenticationEntryPoint(authenticationEntryPoint));
+                .cors(Customizer.withDefaults())
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "/login").permitAll()
+                        .requestMatchers("/user").hasRole(UserRoles.ADMIN.toString())
+                        .requestMatchers("/professor").hasRole(UserRoles.ADMIN.toString())
+                        .requestMatchers("/student")
+                        .hasAnyRole(UserRoles.ADMIN.toString(), UserRoles.PROFESSOR.toString())
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/swagger-ui.html").permitAll()
+                        .anyRequest().authenticated())
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(ex -> ex
+                        .accessDeniedHandler(accessDeniedHandler)
+                        .authenticationEntryPoint(authenticationEntryPoint));
 
         return httpSecurity.build();
     }
@@ -62,7 +65,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 }

@@ -36,17 +36,16 @@ public class ClassroomController {
 
     @GetMapping
     @Operation(summary = "Get Classroom", description = "Get all Classrooms from database")
-    public ResponseEntity<?> getAllClassrooms(){
+    public ResponseEntity<?> getAllClassrooms() {
 
         Set<ClassroomDTO> Classrooms = classroomService.getAll();
-        return ResponseEntity.ok(Classrooms); // dar um jeito de por uma lista com os nomes dos alunos de cada turma
-
+        return ResponseEntity.ok(Classrooms);
     }
 
     @PostMapping
     @PreAuthorize("hasRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString())")
     @Operation(summary = "Create Classroom", description = "Create a Classroom save on the database")
-    public ResponseEntity<?> createClassroom(@RequestBody CreateClassroomDTO ClassroomDTO){
+    public ResponseEntity<?> createClassroom(@RequestBody CreateClassroomDTO ClassroomDTO) {
 
         classroomService.createClassroom(ClassroomDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Classroom created");
@@ -55,8 +54,8 @@ public class ClassroomController {
     @PutMapping("/{id}")
     @Operation(summary = "Update Classroom", description = "Update a Classroom on database by its ID")
     @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
-    public ResponseEntity<?> updateClassroom(@RequestBody CreateClassroomDTO classroomDTO, @PathVariable UUID id){
-        
+    public ResponseEntity<?> updateClassroom(@RequestBody CreateClassroomDTO classroomDTO, @PathVariable UUID id) {
+
         classroomService.updateClassroom(classroomDTO, id);
         return ResponseEntity.status(HttpStatus.OK).body("Classroom Atualizada");
     }
@@ -64,8 +63,8 @@ public class ClassroomController {
     @PutMapping("addStudents/{id}")
     @Operation(summary = "Update Classroom", description = "Update a Classroom on database by its ID")
     @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
-    public ResponseEntity<?> addStudent(@RequestBody List<UUID> studentsId, @PathVariable UUID id){
-        
+    public ResponseEntity<?> addStudent(@RequestBody List<UUID> studentsId, @PathVariable UUID id) {
+
         classroomService.addStudent(id, studentsId);
         return ResponseEntity.status(HttpStatus.OK).body("Classroom Atualizada");
     }

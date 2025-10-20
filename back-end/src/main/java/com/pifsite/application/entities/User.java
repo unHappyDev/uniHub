@@ -1,12 +1,12 @@
 package com.pifsite.application.entities;
 
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Inheritance;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,10 +35,10 @@ import com.pifsite.application.security.UserRoles;
 @EqualsAndHashCode
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "users")
-public class User{
-    
+public class User {
+
     @Id
-    @Column(name="id")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
@@ -49,13 +49,13 @@ public class User{
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private UserRoles role;
-    
-    @Column(name="is_active")
+
+    @Column(name = "is_active")
     private Boolean isActive;
 
     @Column(name = "updated_at", columnDefinition = "timestamptz")
     private OffsetDateTime updatedAt;
-    
+
     @PrePersist
     public void prePersist() {
         this.updatedAt = OffsetDateTime.now();

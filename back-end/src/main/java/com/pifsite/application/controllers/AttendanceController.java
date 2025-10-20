@@ -19,7 +19,6 @@ import com.pifsite.application.dto.AttendanceDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-
 import java.util.List;
 import java.util.UUID;
 
@@ -36,7 +35,7 @@ public class AttendanceController {
 
     @GetMapping
     @Operation(summary = "Get Attendance", description = "Get all Attendances from database")
-    public ResponseEntity<?> getAllAttendances(){
+    public ResponseEntity<?> getAllAttendances() {
 
         List<AttendanceDTO> attendances = attendanceService.getAll();
         return ResponseEntity.ok(attendances);
@@ -45,7 +44,7 @@ public class AttendanceController {
     @PostMapping
     @Operation(summary = "Create Attendance", description = "Create a Attendance and save on the database")
     @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
-    public ResponseEntity<?> createAttendance(@RequestBody CreateAttendanceDTO attendanceDTO){
+    public ResponseEntity<?> createAttendance(@RequestBody CreateAttendanceDTO attendanceDTO) {
 
         attendanceService.crateAttendance(attendanceDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Attendance created");
@@ -54,8 +53,8 @@ public class AttendanceController {
     @PutMapping("/{id}")
     @Operation(summary = "Update Attendance", description = "Update a Attendance on database by its ID")
     @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
-    public ResponseEntity<?> updateAttendance(@RequestBody CreateAttendanceDTO attendanceDTO, @PathVariable UUID id){
-        
+    public ResponseEntity<?> updateAttendance(@RequestBody CreateAttendanceDTO attendanceDTO, @PathVariable UUID id) {
+
         attendanceService.updateAttendance(attendanceDTO, id);
         return ResponseEntity.status(HttpStatus.OK).body("Attendance Atualizada");
     }
@@ -64,9 +63,9 @@ public class AttendanceController {
     @Operation(summary = "Delete Attendance", description = "Delete a Attendance on database by its ID")
     @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
     public ResponseEntity<String> deleteAttendance(@PathVariable UUID id) {
-        
+
         attendanceService.deleteOneAttendance(id);
-        
+
         return ResponseEntity.ok("Attendance successfully deleted.");
     }
 }

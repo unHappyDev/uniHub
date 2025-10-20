@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public interface StudentRepository extends JpaRepository<Student, UUID> {
 
-    @Query("SELECT new com.pifsite.application.dto.StudentDTO(s.user.username, s.user.email, s.user.role, s.course.courseName) " +
+    @Query("SELECT new com.pifsite.application.dto.StudentDTO(s.user.id, s.user.username, s.user.email, s.user.role, s.course.courseName) " +
             "FROM Student s")
     List<StudentDTO> getAllStudents();
 }

@@ -35,28 +35,26 @@ public class GradeController {
 
     @GetMapping
     @Operation(summary = "Get Grade", description = "Get all Grades from database")
-    public ResponseEntity<?> getAllGrades(){
+    public ResponseEntity<?> getAllGrades() {
 
         List<GradeDTO> grades = gradeService.getAllGrades();
         return ResponseEntity.ok(grades);
-
     }
 
     @PostMapping
     @Operation(summary = "Create Grade", description = "Create a Grade and save on the database")
     @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
-    public ResponseEntity<?> createGrade(@RequestBody CreateGradeDTO gradeDTO){
+    public ResponseEntity<?> createGrade(@RequestBody CreateGradeDTO gradeDTO) {
 
         gradeService.crateGrade(gradeDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Grade created");
-         
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update Grade", description = "Update a Grade on database by its ID")
     @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
-    public ResponseEntity<?> updateGrade(@RequestBody CreateGradeDTO gradeDTO, @PathVariable UUID id){
-        
+    public ResponseEntity<?> updateGrade(@RequestBody CreateGradeDTO gradeDTO, @PathVariable UUID id) {
+
         gradeService.updateGrade(gradeDTO, id);
         return ResponseEntity.status(HttpStatus.OK).body("Grade Atualizada");
     }
@@ -68,6 +66,5 @@ public class GradeController {
 
         gradeService.deleteOneGrade(id);
         return ResponseEntity.ok("Grade successfully deleted.");
-
     }
 }

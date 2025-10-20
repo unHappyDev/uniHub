@@ -9,6 +9,7 @@ import com.pifsite.application.repository.SubjectRepository;
 import com.pifsite.application.repository.CourseRepository;
 import com.pifsite.application.dto.CourseSubjectsDTO;
 import com.pifsite.application.dto.CreateCourseDTO;
+import com.pifsite.application.dto.CourseNameDTO;
 import com.pifsite.application.entities.Subject;
 import com.pifsite.application.entities.Course;
 import com.pifsite.application.dto.CourseDTO;
@@ -28,36 +29,46 @@ public class CourseService {
     private final CourseRepository courseRepository;
     private final SubjectRepository subjectRepository;
 
-    public Set<CourseDTO> getAllCourses(){
+    public Set<CourseDTO> getAllCourses() {
 
         Set<Course> courses = courseRepository.getAllCoursesWithSubjects();
 
-        System.out.println(courses);
-
         Set<CourseDTO> setCourses = courses.stream()
-            .map(course -> new CourseDTO(course.getCourseName(), course.getSubjects() != null ? course.getSubjects() : Collections.emptySet()))
-            .collect(Collectors.toSet());
+                .map(course -> new CourseDTO(course.getCourseName(),
+                        course.getSubjects() != null ? course.getSubjects() : Collections.emptySet()))
+                .collect(Collectors.toSet());
 
-        if(courses.isEmpty()){
+        if (courses.isEmpty()) {
             throw new ResourceNotFoundException("there is no courses in the database");
         }
 
         return setCourses;
     }
 
-    public Course crateCourse(CreateCourseDTO courseDTO){
-        
+    public List<CourseNameDTO> getAllCoursesNames() {
+
+        List<CourseNameDTO> courses = courseRepository.getAllCoursesNames();
+
+        if (courses.isEmpty()) {
+            throw new ResourceNotFoundException("there is no courses in the database");
+        }
+
+        return courses;
+    }
+
+    public Course crateCourse(CreateCourseDTO courseDTO) {
+
         Course newCourse = new Course();
         newCourse.setCourseName(courseDTO.courseName());
 
         return this.courseRepository.save(newCourse);
     }
 
-    public void createCourseWithSubjects(CourseSubjectsDTO courseSubjectsDTO){
+    public void createCourseWithSubjects(CourseSubjectsDTO courseSubjectsDTO) {
 
         CreateCourseDTO newCourseDTO = new CreateCourseDTO(courseSubjectsDTO.courseName());
         UUID courseId = crateCourse(newCourseDTO).getCourseId();
-        
+
         System.out.println(courseSubjectsDTO.subjects());
 
         addSubjectToCourse(courseId, courseSubjectsDTO.subjects());
@@ -66,18 +77,20 @@ public class CourseService {
 
     public void updateCourse(CourseSubjectsDTO courseSubjectsDTO, UUID id) {
 
-        Course course = this.courseRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Course with ID " + id + " not found"));
-        
-        if(courseSubjectsDTO.courseName() != null && !courseSubjectsDTO.courseName().isBlank()){
+        Course course = this.courseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Course with ID " + id + " not found"));
+
+        if (courseSubjectsDTO.courseName() != null && !courseSubjectsDTO.courseName().isBlank()) {
             course.setCourseName(courseSubjectsDTO.courseName());
         }
 
         courseRepository.save(course);
     }
 
-    public void addSubjectToCourse(UUID courseId, List<UUID> subjectIds){
-        
-        Course course = this.courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course with ID " + courseId + " not found"));
+    public void addSubjectToCourse(UUID courseId, List<UUID> subjectIds) {
+
+        Course course = this.courseRepository.findById(courseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Course with ID " + courseId + " not found"));
 
         List<Subject> subjects = subjectRepository.findAllById(subjectIds);
 
@@ -86,9 +99,10 @@ public class CourseService {
         courseRepository.save(course);
     }
 
-    public void removeSubjectToCourse(UUID courseId, List<UUID> subjectIds){
-        
-        Course course = this.courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course with ID " + courseId + " not found"));
+    public void removeSubjectToCourse(UUID courseId, List<UUID> subjectIds) {
+
+        Course course = this.courseRepository.findById(courseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Course with ID " + courseId + " not found"));
 
         List<Subject> subjects = subjectRepository.findAllById(subjectIds);
 
@@ -97,21 +111,23 @@ public class CourseService {
         courseRepository.save(course);
     }
 
-    public void deleteOneCourse(UUID courseId){
+    public void deleteOneCourse(UUID courseId) {
 
-        this.courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("User with ID " + courseId + " not found"));
+        this.courseRepository.findById(courseId)
+                .orElseThrow(() -> new ResourceNotFoundException("User with ID " + courseId + " not found"));
 
-        try{
+        try {
             this.courseRepository.deleteById(courseId);
 
-        }catch(DataIntegrityViolationException err){
+        } catch (DataIntegrityViolationException err) {
 
             throw new EntityInUseException("This course has students, so it can't be deleted yet");
 
-        }catch(Exception err){
+        } catch (Exception err) {
 
             System.out.println("This error was not treated yet: " + err.getClass());
         }
 
     }
+
 }

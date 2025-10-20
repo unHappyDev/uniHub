@@ -23,22 +23,22 @@ public class PostService {
 
     private final PostRepository postRepository;
 
-    public List<PostDTO> getAllPosts(){
+    public List<PostDTO> getAllPosts() {
 
         List<PostDTO> posts = this.postRepository.getAllPosts();
 
-        if(posts.isEmpty()){
+        if (posts.isEmpty()) {
             throw new ResourceNotFoundException("there is no posts in the database"); // melhorar depois
         }
 
         return posts;
     }
 
-    public void createPost(CreatePostDTO postDTO){
+    public void createPost(CreatePostDTO postDTO) {
 
         Authentication userData = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User)userData.getPrincipal();
-        
+        User user = (User) userData.getPrincipal();
+
         Post newPost = new Post();
         newPost.setTitle(postDTO.title());
         newPost.setBody(postDTO.body());
@@ -49,36 +49,38 @@ public class PostService {
 
     public void updatePost(CreatePostDTO postDTO, UUID id) {
 
-        Post post = this.postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post with ID " + id + " not found"));
-        
-        if(postDTO.title() != null && !postDTO.title().isBlank()){
-        
+        Post post = this.postRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Post with ID " + id + " not found"));
+
+        if (postDTO.title() != null && !postDTO.title().isBlank()) {
+
             post.setTitle(postDTO.title());
         }
-        if(postDTO.body() != null && !postDTO.body().isBlank()){
-        
+        if (postDTO.body() != null && !postDTO.body().isBlank()) {
+
             post.setBody(postDTO.body());
         }
 
         this.postRepository.save(post);
     }
 
-    public void deleteOnePost(UUID postId){
+    public void deleteOnePost(UUID postId) {
 
-        Post post = this.postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post with ID " + postId + " not found"));
-        
+        Post post = this.postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post with ID " + postId + " not found"));
+
         Authentication userData = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User)userData.getPrincipal();
+        User user = (User) userData.getPrincipal();
 
-        if(!post.getOwner().equals(user)){
+        if (!post.getOwner().equals(user)) {
 
             throw new UnauthorizedActionException("you can't delete a post that is not yours");
         }
-        try{
+        try {
             this.postRepository.deleteById(postId);
 
-        }catch(Exception err){
-            
+        } catch (Exception err) {
+
             System.out.println(err.getClass());
         }
     }

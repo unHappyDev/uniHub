@@ -17,15 +17,16 @@ public class SessionService {
 
     private final SessionRepository sessionRepository;
 
-    public Session validateSession(String token){
+    public Session validateSession(String token) {
 
-        if(token == null || token.isBlank()){
+        if (token == null || token.isBlank()) {
             throw new InvalidTokenException("Token not informed");
         }
 
-        Session session = sessionRepository.findByToken(token).orElseThrow(() -> new InvalidTokenException("Token invalid"));
+        Session session = sessionRepository.findByToken(token)
+                .orElseThrow(() -> new InvalidTokenException("Token invalid"));
 
-        if(!session.getExpiresAt().isAfter(OffsetDateTime.now())){
+        if (!session.getExpiresAt().isAfter(OffsetDateTime.now())) {
 
             // System.out.println(session.getExpiresAt() + " " + OffsetDateTime.now());
 

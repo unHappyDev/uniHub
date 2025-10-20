@@ -22,20 +22,19 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     private ObjectMapper objectMapper;
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
+    public void commence(HttpServletRequest request, HttpServletResponse response,
+            AuthenticationException authException)
             throws IOException, ServletException {
 
-
         ErrorResponse error = new ErrorResponse(
-            HttpStatus.UNAUTHORIZED.value(),
-            HttpStatus.UNAUTHORIZED.getReasonPhrase(),
-            authException.getMessage(),
-            request.getRequestURI()
-        );
+                HttpStatus.UNAUTHORIZED.value(),
+                HttpStatus.UNAUTHORIZED.getReasonPhrase(),
+                authException.getMessage(),
+                request.getRequestURI());
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
         response.getWriter().write(objectMapper.writeValueAsString(error));
-        
+
     }
 }
