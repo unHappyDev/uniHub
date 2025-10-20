@@ -29,6 +29,8 @@ export default function StudentForm({
     courseId: "",
   });
 
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); // 🆕 estado para mensagem de erro
+
   // 🔹 Carrega cursos ao iniciar
   useEffect(() => {
     async function fetchCourses() {
@@ -48,7 +50,6 @@ export default function StudentForm({
     if (editingStudent) {
       console.log("✏️ Editando aluno:", editingStudent);
 
-      // tenta achar o curso correspondente pelo nome
       const matchedCourse = courses.find(
         (c) =>
           c.courseName.toLowerCase().trim() ===
@@ -81,13 +82,8 @@ export default function StudentForm({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
-    setFormData(
-      (prev) =>
-        ({
-          ...prev,
-          [name]: value,
-        }) as Student,
-    );
+    setFormData((prev) => ({ ...prev, [name]: value }) as Student);
+    setErrorMessage(null); // 🆕 limpa erro quando usuário digita
   };
 
   // 🔹 Submete o form
@@ -107,7 +103,7 @@ export default function StudentForm({
       registerUser: {
         name: formData.nome,
         email: formData.email,
-        password: "12341234", // ✅ backend espera 'password'
+        password: "12341234",
       },
     };
 
@@ -116,27 +112,49 @@ export default function StudentForm({
       JSON.stringify(studentDTO, null, 2),
     );
 
-    if (editingStudent) {
-      const updatedStudent: Student = {
-        ...editingStudent, // garante que o id venha junto
-        nome: formData.nome,
-        email: formData.email,
-        curso: formData.curso,
-        courseId: formData.courseId,
-      };
+    try {
+      if (editingStudent) {
+        const updatedStudent: Student = {
+          ...editingStudent,
+          nome: formData.nome,
+          email: formData.email,
+          curso: formData.curso,
+          courseId: formData.courseId,
+        };
+        await onEdit(updatedStudent);
+      } else {
+        await onAdd(studentDTO as any);
+      }
 
-      console.log("📤 Enviando aluno atualizado:", updatedStudent);
-      await onEdit(updatedStudent);
-    } else {
-      await onAdd(studentDTO as any);
+      console.log("✅ Cadastro concluído!");
+      setFormData({
+        nome: "",
+        email: "",
+        curso: "",
+        courseId: "",
+      });
+      setErrorMessage(null); // 🆕 limpa erro depois de sucesso
+    } catch (error: any) {
+      console.error("❌ Erro ao enviar aluno:", error);
+
+      if (error.response) {
+        const status = error.response.status;
+
+        if (status === 409) {
+          setErrorMessage("Nome ou e-mail já existente!");
+        } else if (status === 401) {
+          setErrorMessage("Nome ou e-mail já existente!");
+        } else if (status === 400) {
+          setErrorMessage(
+            "Dados inválidos. Verifique os campos e tente novamente.",
+          );
+        } else {
+          setErrorMessage("Erro ao cadastrar aluno. Tente novamente.");
+        }
+      } else {
+        setErrorMessage("Erro de conexão com o servidor.");
+      }
     }
-    console.log("✅ Cadastro concluído!");
-    setFormData({
-      nome: "",
-      email: "",
-      curso: "",
-      courseId: "",
-    });
   };
 
   return (
@@ -189,6 +207,13 @@ export default function StudentForm({
       >
         {editingStudent ? "Salvar Alterações" : "Cadastrar Aluno"}
       </button>
+
+      {/* 🆕 Exibe mensagem de erro abaixo do botão */}
+      {errorMessage && (
+        <p className="text-red-500 text-center mt-2 font-semibold">
+          {errorMessage}
+        </p>
+      )}
     </form>
   );
 }
