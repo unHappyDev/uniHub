@@ -15,5 +15,5 @@ export interface CreateStudentDTO {
     email: string;
     password: string;
   };
-  courseId: string; // ✅ compatível com backend
+  courseId: string;
 }

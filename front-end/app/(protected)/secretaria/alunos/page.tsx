@@ -21,16 +21,16 @@ export default function AlunosPage() {
   const [filterName, setFilterName] = useState("");
   const [filterCourse, setFilterCourse] = useState("");
 
-  // 🧩 Buscar alunos
+  //  Buscar alunos
   const fetchStudents = async () => {
     try {
       const data = await getStudents();
       console.log("📋 Alunos carregados:", data);
 
-      // 🧩 Normaliza os dados vindos do backend
+      //  Normaliza os dados vindos do backend
       const normalized = Array.isArray(data)
         ? data.map((s: any, index: number) => ({
-            id: s.id ?? String(index + 1), // gera id se não vier do backend
+            id: s.id ?? String(index + 1),
             nome: s.username ?? "",
             email: s.email ?? "",
             curso: s.courseName ?? "",
@@ -51,7 +51,7 @@ export default function AlunosPage() {
     }
   };
 
-  // ➕ Adicionar aluno
+  //  Adicionar aluno
   const handleAdd = async (student: Student | CreateStudentDTO) => {
     let dto: CreateStudentDTO;
 
@@ -74,7 +74,7 @@ export default function AlunosPage() {
     setIsModalOpen(false);
   };
 
-  // ✏️ Atualizar aluno
+  //  Atualizar aluno
   const handleUpdate = async (student: Student) => {
     if (!student.id) {
       console.error("❌ Erro: aluno sem ID para atualização:", student);
@@ -83,7 +83,7 @@ export default function AlunosPage() {
     }
 
     const dto: CreateStudentDTO = {
-      userId: student.id, // ✅ ID do aluno vindo do front
+      userId: student.id,
       courseId: student.courseId!,
       registerUser: {
         name: student.nome,
@@ -99,32 +99,31 @@ export default function AlunosPage() {
     setIsModalOpen(false);
   };
 
-  // ❌ Excluir aluno
+  //  Excluir aluno
   const handleDelete = async (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este aluno?")) return;
     await deleteStudent(id);
     fetchStudents();
   };
 
-  // 🧱 Editar aluno
+  //  Editar aluno
   const handleEdit = (student: Student) => {
     setEditingStudent(student);
     setIsModalOpen(true);
   };
 
-  // 🚪 Fechar modal
+  //  Fechar modal
   const closeModal = () => {
     setEditingStudent(null);
     setIsModalOpen(false);
   };
 
-  // 🔍 Filtros
+  //  Filtros
   const filteredStudents = students.filter((s) => {
     const matchesName = s.nome
       ?.toLowerCase()
       .includes(filterName.toLowerCase());
 
-    // ✅ Corrigido — trata curso como string ou objeto
     const courseName =
       typeof s.curso === "string" ? s.curso : s.curso?.courseName || "";
 
@@ -145,7 +144,7 @@ export default function AlunosPage() {
         Cadastro de Alunos
       </h1>
 
-      {/* 🔎 Filtros */}
+      {/* Filtros */}
       <div className="bg-neutral-800/60 backdrop-blur-sm border border-orange-400 rounded-xl p-4 mb-8 shadow-lg">
         <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 justify-between items-center">
           <input
@@ -171,14 +170,14 @@ export default function AlunosPage() {
         </div>
       </div>
 
-      {/* 🧾 Tabela */}
+     {/* tabela  */}
       <StudentTable
         students={filteredStudents}
         onDelete={handleDelete}
         onEdit={handleEdit}
       />
 
-      {/* 🪟 Modal */}
+      {/* Modal */}
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <h2 className="text-xl font-semibold mb-4 text-center">
           {editingStudent ? "Editar Aluno" : "Novo Aluno"}

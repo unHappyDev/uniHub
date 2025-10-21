@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { apiSpring } from "./client"; // ⬅️ usa a API do Spring
+import { apiSpring } from "./client"; // usa a API do Spring
 
 interface LoginCredentials {
   email: string;

@@ -5,7 +5,7 @@ import { CreateStudentDTO, Student } from "@/types/Student";
 import { getCourses } from "@/lib/api/course";
 
 interface Course {
-  id: string; // UUID
+  id: string;
   courseName: string;
 }
 
@@ -31,7 +31,7 @@ export default function StudentForm({
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // 🆕 estado para mensagem de erro
 
-  // 🔹 Carrega cursos ao iniciar
+  //  Carrega cursos ao iniciar
   useEffect(() => {
     async function fetchCourses() {
       try {
@@ -45,7 +45,7 @@ export default function StudentForm({
     fetchCourses();
   }, []);
 
-  // 🔹 Preenche ou limpa o form ao editar
+  //  Preenche ou limpa o form ao editar
   useEffect(() => {
     if (editingStudent) {
       console.log("✏️ Editando aluno:", editingStudent);
@@ -77,7 +77,7 @@ export default function StudentForm({
     }
   }, [editingStudent, courses]);
 
-  // 🔹 Atualiza estado do form
+  // Atualiza estado do form
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
@@ -86,7 +86,7 @@ export default function StudentForm({
     setErrorMessage(null); // 🆕 limpa erro quando usuário digita
   };
 
-  // 🔹 Submete o form
+  // Submete o form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -133,7 +133,7 @@ export default function StudentForm({
         curso: "",
         courseId: "",
       });
-      setErrorMessage(null); // 🆕 limpa erro depois de sucesso
+      setErrorMessage(null); // limpa erro depois de sucesso
     } catch (error: any) {
       console.error("❌ Erro ao enviar aluno:", error);
 
@@ -208,7 +208,7 @@ export default function StudentForm({
         {editingStudent ? "Salvar Alterações" : "Cadastrar Aluno"}
       </button>
 
-      {/* 🆕 Exibe mensagem de erro abaixo do botão */}
+      
       {errorMessage && (
         <p className="text-red-500 text-center mt-2 font-semibold">
           {errorMessage}
