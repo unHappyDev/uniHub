@@ -54,6 +54,7 @@ public class ProfessorService {
                             .collect(Collectors.toSet());
 
                     return new ProfessorDTO(
+                            professor.getUser().getId(),
                             professor.getUser().getUsername(),
                             professor.getUser().getEmail(),
                             professor.getUser().getRole(),
