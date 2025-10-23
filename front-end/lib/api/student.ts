@@ -1,8 +1,6 @@
 import { CreateStudentDTO } from "@/types/Student";
 import apiSpring from "./client";
 
-
-
 //  Buscar todos os alunos
 export const getStudents = async () => {
   const response = await apiSpring.get("/student");
