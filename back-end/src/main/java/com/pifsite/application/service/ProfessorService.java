@@ -14,7 +14,6 @@ import com.pifsite.application.entities.User;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -29,9 +28,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProfessorService {
 
-    @Value("${pepper}")
-    private String pepper;
-
     private final ProfessorRepository professorRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
@@ -42,7 +38,7 @@ public class ProfessorService {
         List<Professor> Professors = this.professorRepository.findAll();
 
         if (Professors.isEmpty()) {
-            throw new ResourceNotFoundException("there is no Professors in the database"); // melhorar depois
+            throw new ResourceNotFoundException("there are no Professors in the database");
         }
 
         return professorRepository.findAll().stream()
@@ -74,7 +70,7 @@ public class ProfessorService {
             CreateUserDTO registerUser = new CreateUserDTO(
                     registerProfessorDTO.registerUser().name(),
                     registerProfessorDTO.registerUser().email(),
-                    passwordEncoder.encode(registerProfessorDTO.registerUser().password()),
+                    registerProfessorDTO.registerUser().password(),
                     UserRoles.PROFESSOR.toString());
 
             user = userService.createUser(registerUser);
