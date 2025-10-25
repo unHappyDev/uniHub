@@ -16,7 +16,7 @@ export default function StudentTable({
 }: StudentTableProps) {
   return (
     <div className="mt-6">
-      {/* === Versão Desktop === */}
+      {/* Versão Desktop*/}
       <div className="hidden md:block overflow-x-auto border border-orange-400 rounded-xl">
         <table className="min-w-full bg-neutral-950 rounded-xl text-white">
           <thead>
@@ -73,7 +73,7 @@ export default function StudentTable({
         </table>
       </div>
 
-      {/* === Versão Mobile === */}
+      {/*Versão Mobile*/}
       <div className="md:hidden flex flex-col gap-4">
         {students.length === 0 ? (
           <div className="text-center text-gray-400 py-6 border border-orange-500 rounded-xl bg-neutral-900">

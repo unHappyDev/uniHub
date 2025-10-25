@@ -42,7 +42,7 @@ public class ProfessorService {
         List<Professor> Professors = this.professorRepository.findAll();
 
         if (Professors.isEmpty()) {
-            throw new ResourceNotFoundException("there is no Professors in the database"); // melhorar depois
+            throw new ResourceNotFoundException("there are no Professors in the database");
         }
 
         return professorRepository.findAll().stream()
@@ -54,6 +54,7 @@ public class ProfessorService {
                             .collect(Collectors.toSet());
 
                     return new ProfessorDTO(
+                            professor.getUser().getId(),
                             professor.getUser().getUsername(),
                             professor.getUser().getEmail(),
                             professor.getUser().getRole(),
@@ -73,7 +74,7 @@ public class ProfessorService {
             CreateUserDTO registerUser = new CreateUserDTO(
                     registerProfessorDTO.registerUser().name(),
                     registerProfessorDTO.registerUser().email(),
-                    passwordEncoder.encode(registerProfessorDTO.registerUser().password()),
+                    registerProfessorDTO.registerUser().password(),
                     UserRoles.PROFESSOR.toString());
 
             user = userService.createUser(registerUser);

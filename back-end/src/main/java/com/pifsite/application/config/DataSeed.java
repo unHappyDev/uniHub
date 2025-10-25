@@ -1,13 +1,15 @@
 package com.pifsite.application.config;
 
-import com.pifsite.application.repository.SessionRepository;
+import com.pifsite.application.repository.ProfessorRepository;
 import com.pifsite.application.repository.StudentRepository;
+import com.pifsite.application.repository.SessionRepository;
 import com.pifsite.application.repository.CourseRepository;
 import com.pifsite.application.repository.UserRepository;
 import com.pifsite.application.security.UserRoles;
-import com.pifsite.application.entities.Course;
+import com.pifsite.application.entities.Professor;
 import com.pifsite.application.entities.Session;
 import com.pifsite.application.entities.Student;
+import com.pifsite.application.entities.Course;
 import com.pifsite.application.entities.User;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -19,13 +21,17 @@ import java.time.OffsetDateTime;
 @Component
 public class DataSeed implements CommandLineRunner {
 
+    private final ProfessorRepository professorRepository;
     private final StudentRepository studentRepository;
     private final SessionRepository sessionRepository;
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
 
     public DataSeed(UserRepository userRepository, SessionRepository sessionRepository,
-            CourseRepository courseRepository, StudentRepository studentRepository) {
+            CourseRepository courseRepository, StudentRepository studentRepository,
+            ProfessorRepository professorRepository) {
+
+        this.professorRepository = professorRepository;
         this.studentRepository = studentRepository;
         this.sessionRepository = sessionRepository;
         this.courseRepository = courseRepository;
@@ -113,8 +119,12 @@ public class DataSeed implements CommandLineRunner {
         courseRepository.findByCourseName("Eng. Produção")
                 .orElseGet(() -> courseRepository.save(new Course(null, "Eng. Produção", null)));
 
-        studentRepository.findById(ds.getId()).orElseGet(() -> studentRepository.save(new Student(null, ds, courseA)));
+        studentRepository.findById(ds.getId())
+                .orElseGet(() -> studentRepository.save(new Student(null, ds, courseA)));
 
-        System.out.println("Cursos e estudantes criados");
+        professorRepository.findById(dp.getId())
+                .orElseGet(() -> professorRepository.save(new Professor(null, dp, null)));
+
+        System.out.println("Cursos, estudantes, professores criados");
     }
 }

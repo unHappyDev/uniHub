@@ -28,6 +28,12 @@ async function main() {
     "$2a$04$LfBpkw0M8qaMr/JvrafNjuD6EFp58MSCY6JHl3VgEGxSolAV9uhjy",
     "USER",
   );
+  await seedUser(
+    "professor",
+    "professor@user.com",
+    "$2a$04$LfBpkw0M8qaMr/JvrafNjuD6EFp58MSCY6JHl3VgEGxSolAV9uhjy",
+    "PROFESSOR",
+  );
 
   console.log("\n> Database seeded!");
   console.log("------------------------------");
@@ -41,7 +47,7 @@ async function seedUser(
   username: string,
   email: string,
   password: string,
-  role: "USER" | "ADMIN" | "MODERATOR",
+  role: "USER" | "ADMIN" | "PROFESSOR",
 ) {
   try {
     await prisma.user.create({

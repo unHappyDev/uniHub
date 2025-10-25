@@ -1,5 +1,6 @@
 package com.pifsite.application.entities;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -8,6 +9,8 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,6 +21,8 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "professors")
 public class Professor {
 
@@ -25,7 +30,7 @@ public class Professor {
     private UUID professorId;
 
     @MapsId
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "professor_id")
     private User user;
 

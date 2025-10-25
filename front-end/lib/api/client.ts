@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 
 export const apiSpring: AxiosInstance = axios.create({
-  baseURL: "/api", // ✅ conecta direto ao backend Spring Boot
+  baseURL: "/api", // conecta direto ao backend Spring Boot
   withCredentials: true,
 });
 
