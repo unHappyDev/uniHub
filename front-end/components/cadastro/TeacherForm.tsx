@@ -65,34 +65,34 @@ export default function TeacherForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 text-white">
+    <form onSubmit={handleSubmit} className="space-y-7 text-white">
       <div>
-        <label className="block text-sm mb-1">Nome</label>
+        <label className="block text-sm mb-1 uppercase">Nome</label>
         <input
           type="text"
           name="nome"
           value={formData.nome}
           onChange={handleChange}
           required
-          className="w-full bg-neutral-900 border border-orange-500 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-orange-500/40"
+          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:border-orange-400/10 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-5 py-3 rounded-xl outline-none shadow-inner"
         />
       </div>
 
       <div>
-        <label className="block text-sm mb-1">Email</label>
+        <label className="block text-sm mb-1 uppercase">Email</label>
         <input
           type="email"
           name="email"
           value={formData.email}
           onChange={handleChange}
           required
-          className="w-full bg-neutral-900 border border-orange-500 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-orange-500/40"
+          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:border-orange-400/10 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-5 py-3 rounded-xl outline-none shadow-inner"
         />
       </div>
 
       <button
         type="submit"
-        className="w-full bg-orange-500 hover:bg-transparent border hover:border-orange-500 text-white font-semibold px-6 py-2 rounded-lg transition-all cursor-pointer"
+        className="w-full bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-semibold px-6 py-3 rounded-xl  transition-all  uppercase cursor-pointer"
       >
         {editingTeacher ? "Salvar Alterações" : "Cadastrar Professor"}
       </button>

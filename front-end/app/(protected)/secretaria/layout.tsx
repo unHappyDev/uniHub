@@ -47,11 +47,11 @@ export default function DashboardLayout({
       </AppSidebar>
 
       <SidebarInset>
-        <header className="relative flex h-25 items-center px-4">
+        <header className="relative flex h-25 items-center px-4 border-b border-orange-500/40">
           <SidebarTrigger className="-ml-1 cursor-pointer" />
           <Separator
             orientation="vertical"
-            className="mr-2 data-[orientation=vertical]:h-4"
+            className="mr-2 data-[orientation=vertical]:h-4 "
           />
           <img
             src="/imagens/logo.svg"

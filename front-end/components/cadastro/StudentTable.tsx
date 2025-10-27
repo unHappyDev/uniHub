@@ -16,11 +16,11 @@ export default function StudentTable({
 }: StudentTableProps) {
   return (
     <div className="mt-6">
-      {/* Versão Desktop*/}
-      <div className="hidden md:block overflow-x-auto border border-orange-400 rounded-xl">
-        <table className="min-w-full bg-neutral-950 rounded-xl text-white">
+      {/* Desktop */}
+      <div className="hidden md:block overflow-x-auto  bg-glass border border-orange-400/40 rounded-2xl p-6 mb-10 shadow-glow transition-all hover:shadow-orange-500/30">
+        <table className="min-w-full  rounded-xl text-white">
           <thead>
-            <tr className="bg-neutral-800 text-orange-400 uppercase text-sm">
+            <tr className="text-orange-400 uppercase text-sm">
               <th className="px-4 py-3 text-left whitespace-nowrap">Nome</th>
               <th className="px-4 py-3 text-left whitespace-nowrap">Email</th>
               <th className="px-4 py-3 text-left whitespace-nowrap">Curso</th>
@@ -41,7 +41,7 @@ export default function StudentTable({
               students.map((s) => (
                 <tr
                   key={s.id}
-                  className="border-t border-neutral-700 transition hover:bg-neutral-800"
+                  className="border-t border-orange-500/30 transition hover:bg-neutral-900"
                 >
                   <td className="px-4 py-3">{s.nome}</td>
                   <td className="px-4 py-3">{s.email}</td>
@@ -73,28 +73,28 @@ export default function StudentTable({
         </table>
       </div>
 
-      {/*Versão Mobile*/}
-      <div className="md:hidden flex flex-col gap-4">
+      {/* Mobile */}
+      <div className="md:hidden flex flex-col gap-6">
         {students.length === 0 ? (
-          <div className="text-center text-gray-400 py-6 border border-orange-500 rounded-xl bg-neutral-900">
+          <div className="text-center text-gray-400  bg-glass border border-orange-400/40 rounded-2xl p-6 mb-10 shadow-glow transition-all hover:shadow-orange-500/30">
             Nenhum aluno cadastrado
           </div>
         ) : (
           students.map((s) => (
             <div
               key={s.id}
-              className="bg-neutral-900 border border-orange-500 rounded-xl p-4 text-gray-200"
+              className="flex flex-col gap-2 bg-glass border border-orange-400/40 rounded-2xl p-7  text-gray-200 shadow-glow transition-all hover:shadow-orange-500/30"
             >
               <p>
-                <span className="font-semibold text-orange-400">Nome:</span>{" "}
+                <span className="font-semibold text-orange-500">Nome:</span>{" "}
                 {s.nome}
               </p>
               <p>
-                <span className="font-semibold text-orange-400">Email:</span>{" "}
+                <span className="font-semibold text-orange-500">Email:</span>{" "}
                 {s.email}
               </p>
               <p>
-                <span className="font-semibold text-orange-400">Curso:</span>{" "}
+                <span className="font-semibold text-orange-500">Curso:</span>{" "}
                 {typeof s.curso === "string"
                   ? s.curso
                   : s.curso?.courseName || "—"}

@@ -21,13 +21,9 @@ export default function AlunosPage() {
   const [filterName, setFilterName] = useState("");
   const [filterCourse, setFilterCourse] = useState("");
 
-  //  Buscar alunos
   const fetchStudents = async () => {
     try {
       const data = await getStudents();
-      console.log("📋 Alunos carregados:", data);
-
-      //  Normaliza os dados vindos do backend
       const normalized = Array.isArray(data)
         ? data.map((s: any, index: number) => ({
             id: s.id ?? String(index + 1),
@@ -37,51 +33,34 @@ export default function AlunosPage() {
             courseId: s.courseId ?? null,
           }))
         : [];
-
-      console.log("📋 Alunos normalizados:", normalized);
       setStudents(normalized);
     } catch (error: any) {
       console.error("Erro ao buscar alunos:", error);
-      if (error.response?.status === 404) {
-        setStudents([]);
-        console.warn("Nenhum aluno encontrado no banco de dados.");
-      } else {
-        alert("Erro ao buscar alunos. Verifique o backend.");
-      }
+      setStudents([]);
     }
   };
 
-  //  Adicionar aluno
   const handleAdd = async (student: Student | CreateStudentDTO) => {
-    let dto: CreateStudentDTO;
-
-    if ("registerUser" in student) {
-      dto = student;
-    } else {
-      dto = {
-        userId: null,
-        courseId: student.courseId,
-        registerUser: {
-          name: student.nome,
-          email: student.email,
-          password: DEFAULT_PASSWORD,
-        },
-      };
-    }
+    const dto: CreateStudentDTO =
+      "registerUser" in student
+        ? student
+        : {
+            userId: null,
+            courseId: student.courseId,
+            registerUser: {
+              name: student.nome,
+              email: student.email,
+              password: DEFAULT_PASSWORD,
+            },
+          };
 
     await createStudent(dto);
     await fetchStudents();
     setIsModalOpen(false);
   };
 
-  //  Atualizar aluno
   const handleUpdate = async (student: Student) => {
-    if (!student.id) {
-      console.error("❌ Erro: aluno sem ID para atualização:", student);
-      alert("Erro interno: o ID do aluno não foi encontrado.");
-      return;
-    }
-
+    if (!student.id) return;
     const dto: CreateStudentDTO = {
       userId: student.id,
       courseId: student.courseId!,
@@ -91,46 +70,34 @@ export default function AlunosPage() {
         password: DEFAULT_PASSWORD,
       },
     };
-
-    console.log("📤 Atualizando aluno:", student.id, dto);
-
     await updateStudent(student.id, dto);
     await fetchStudents();
     setIsModalOpen(false);
   };
 
-  //  Excluir aluno
   const handleDelete = async (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este aluno?")) return;
     await deleteStudent(id);
     fetchStudents();
   };
 
-  //  Editar aluno
   const handleEdit = (student: Student) => {
     setEditingStudent(student);
     setIsModalOpen(true);
   };
 
-  //  Fechar modal
   const closeModal = () => {
     setEditingStudent(null);
     setIsModalOpen(false);
   };
 
-  //  Filtros
   const filteredStudents = students.filter((s) => {
-    const matchesName = s.nome
-      ?.toLowerCase()
-      .includes(filterName.toLowerCase());
-
+    const matchesName = s.nome?.toLowerCase().includes(filterName.toLowerCase());
     const courseName =
       typeof s.curso === "string" ? s.curso : s.curso?.courseName || "";
-
     const matchesCourse = courseName
       .toLowerCase()
       .includes(filterCourse.toLowerCase());
-
     return matchesName && matchesCourse;
   });
 
@@ -139,56 +106,55 @@ export default function AlunosPage() {
   }, []);
 
   return (
-    <div className="p-8 text-white flex flex-col">
-      <h1 className="text-2xl font-medium mb-7 text-center uppercase">
-        Cadastro de Alunos
-      </h1>
+    <div className="p-8 text-white flex flex-col min-h-screen ">
+      <div className="max-w-6xl mx-auto w-full">
+        <h1 className="text-3xl font-medium mb-8 text-center uppercase">
+          Cadastro de Alunos
+        </h1>
 
-      {/* Filtros */}
-      <div className="bg-neutral-800/60 backdrop-blur-sm border border-orange-400 rounded-xl p-4 mb-8 shadow-lg">
-        <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 justify-between items-center">
-          <input
-            type="text"
-            placeholder="Filtrar por nome..."
-            value={filterName}
-            onChange={(e) => setFilterName(e.target.value)}
-            className="w-full sm:flex-1 border border-transparent bg-neutral-900 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-3 py-2 rounded-lg outline-none"
-          />
-          <input
-            type="text"
-            placeholder="Filtrar por curso..."
-            value={filterCourse}
-            onChange={(e) => setFilterCourse(e.target.value)}
-            className="w-full sm:flex-1 border border-transparent bg-neutral-900 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-3 py-2 rounded-lg outline-none"
-          />
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="w-full sm:w-auto bg-orange-500 hover:bg-transparent hover:border-1 hover:border-orange-500 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition-all cursor-pointer"
-          >
-            + Cadastrar
-          </button>
+        <div className="bg-glass border border-orange-400/40 rounded-2xl p-6 mb-10 shadow-glow transition-all hover:shadow-orange-500/30">
+          <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
+            <input
+              type="text"
+              placeholder=" Filtrar por nome..."
+              value={filterName}
+              onChange={(e) => setFilterName(e.target.value)}
+              className="w-full sm:flex-1 bg-[#1a1a1dc3] border border-orange-400/20 focus:border-orange-400/10 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-4 py-2.5 rounded-xl outline-none shadow-inner"
+            />
+            <input
+              type="text"
+              placeholder=" Filtrar por curso..."
+              value={filterCourse}
+              onChange={(e) => setFilterCourse(e.target.value)}
+              className="w-full sm:flex-1 bg-[#1a1a1dc3] border border-orange-400/20 focus:border-orange-400/10 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-4 py-2.5 rounded-xl outline-none shadow-inner"
+            />
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="w-full sm:w-auto bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-medium px-6 py-2.5 rounded-xl shadow-md transition-all uppercase cursor-pointer"
+            >
+              + Cadastrar
+            </button>
+          </div>
         </div>
-      </div>
 
-     {/* tabela  */}
-      <StudentTable
-        students={filteredStudents}
-        onDelete={handleDelete}
-        onEdit={handleEdit}
-      />
-
-      {/* Modal */}
-      <Modal isOpen={isModalOpen} onClose={closeModal}>
-        <h2 className="text-xl font-semibold mb-4 text-center">
-          {editingStudent ? "Editar Aluno" : "Novo Aluno"}
-        </h2>
-        <StudentForm
-          onAdd={handleAdd}
-          onEdit={handleUpdate}
-          editingStudent={editingStudent}
-          students={students}
+        <StudentTable
+          students={filteredStudents}
+          onDelete={handleDelete}
+          onEdit={handleEdit}
         />
-      </Modal>
+
+        <Modal isOpen={isModalOpen} onClose={closeModal}>
+          <h2 className="text-xl font-semibold mb-4 text-center text-white uppercase">
+            {editingStudent ? "Editar Aluno" : "Novo Aluno"}
+          </h2>
+          <StudentForm
+            onAdd={handleAdd}
+            onEdit={handleUpdate}
+            editingStudent={editingStudent}
+            students={students}
+          />
+        </Modal>
+      </div>
     </div>
   );
 }

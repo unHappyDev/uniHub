@@ -11,15 +11,15 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-[#1a1a1b] z-50">
       <div
-        className="bg-neutral-800/60 backdrop-blur-sm border border-orange-400 rounded-xl p-6 shadow-lg w-[400px] relative"
+        className="bg-glass backdrop-blur-sm border border-orange-400/40 rounded-2xl p-8 shadow-glow transition-all hover:shadow-orange-500/30  w-[400px] relative"
       >
         <button
           onClick={onClose}
           className="absolute top-2 right-3 text-white text-xl hover:text-red-400"
         >
-          ✕
+          &times;
         </button>
 
         {children}

@@ -4,9 +4,7 @@ import * as React from "react";
 import { LucideIcon } from "lucide-react";
 
 import { SidebarMain } from "@/components/layout/sidebar/SidebarMain";
-import { SidebarSecondary } from "@/components/layout/sidebar/SidebarSecondary";
 import { NavUser } from "@/components/layout/sidebar/nav-user";
-
 import {
   Sidebar,
   SidebarContent,
@@ -44,22 +42,34 @@ export default function AppSidebar({
   ...props
 }: AppSidebarProps & React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar variant="inset" {...props}>
-      <SidebarHeader>
+    <Sidebar
+      className={`
+    text-white uppercase
+    bg-[#0d0d0f]
+    border-r border-orange-400/20
+    [&[data-mobile=true]]:!border-r
+    [&[data-mobile=true]]:!border-orange-400/50
+    [&[data-mobile=true]]:!border-solid
+    [&[data-mobile=true]]:!bg-[#0d0d0f]
+  `}
+      {...props}
+    >
+      <SidebarHeader className="border-b border-orange-400/20 ">
         <SidebarMenu>
-          <SidebarMenuItem className="mt-8">
+          <SidebarMenuItem className="mt-6">
             <NavUser />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="px-3 py-4 ">
         <SidebarMain items={navMain} />
-        {/* <SidebarSecondary items={navSecondary} className="mt-auto" /> */}
       </SidebarContent>
 
-      <SidebarFooter className="flex items-center justify-center">
-        <LogoutButton />
+      <SidebarFooter className="border-t border-orange-400/20 py-6 ">
+        <div className="flex justify-center py-2">
+          <LogoutButton />
+        </div>
       </SidebarFooter>
     </Sidebar>
   );
