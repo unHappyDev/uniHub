@@ -34,7 +34,7 @@ public class CourseService {
         Set<Course> courses = courseRepository.getAllCoursesWithSubjects();
 
         Set<CourseDTO> setCourses = courses.stream()
-                .map(course -> new CourseDTO(course.getCourseName(),
+                .map(course -> new CourseDTO(course.getCourseId(), course.getCourseName(),
                         course.getSubjects() != null ? course.getSubjects() : Collections.emptySet()))
                 .collect(Collectors.toSet());
 
