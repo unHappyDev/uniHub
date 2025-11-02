@@ -19,24 +19,28 @@ export default function MateriasPage() {
   const [filterName, setFilterName] = useState("");
 
   // 🟢 Buscar matérias
- const fetchSubjects = async () => {
-  try {
-    const data = await getSubjects();
+  const fetchSubjects = async () => {
+    try {
+      const data = await getSubjects();
 
-    const normalized: Subject[] = Array.isArray(data)
-      ? data.map((s: any) => ({
-          id: s.subjectId ?? s.id, // 👈 ajustado
-          subjectName: s.subjectName ?? s.name ?? "",
-          workloadHours: s.workloadHours ?? s.cargaHoraria ?? 0,
-        }))
-      : [];
+      const normalized: Subject[] = Array.isArray(data)
+        ? data.map((s: any) => ({
+            id: s.subjectId ?? s.id,
+            subjectName: s.subjectName ?? s.name ?? "",
+            workloadHours: s.workloadHours ?? s.cargaHoraria ?? 0,
+          }))
+        : [];
 
-    setSubjects(normalized);
-  } catch (error) {
-    console.error("Erro ao buscar matérias:", error);
-  }
-};
-
+      setSubjects(normalized);
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        // Se a API não encontrou nada, apenas zera a lista sem mostrar erro
+        setSubjects([]);
+      } else {
+        console.error("Erro ao buscar matérias:", error);
+      }
+    }
+  };
 
   // 🟠 Adicionar nova matéria
   const handleAdd = async (subject: CreateSubjectDTO) => {

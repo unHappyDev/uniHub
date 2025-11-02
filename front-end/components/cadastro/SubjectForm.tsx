@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CreateSubjectDTO, Subject } from "@/types/Subject";
 
 interface SubjectFormProps {
@@ -17,31 +17,40 @@ export default function SubjectForm({
   const [formData, setFormData] = useState<Subject>({
     id: "",
     subjectName: "",
-    workloadHours: 0,
+    workloadHours: 0, // mantemos numérico internamente
   });
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Preenche o formulário se for edição
-  useState(() => {
+  // 🟢 Corrigido: useEffect para preencher quando for edição
+  useEffect(() => {
     if (editingSubject) {
       setFormData(editingSubject);
     } else {
       setFormData({ id: "", subjectName: "", workloadHours: 0 });
     }
-  });
+  }, [editingSubject]);
 
+  // 🟠 Atualiza os campos do formulário
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "workloadHours" ? Number(value) : value,
+      [name]:
+        name === "workloadHours"
+          ? value === "" // 👈 permite campo vazio sem mostrar 0
+            ? 0
+            : Number(value)
+          : value,
     }));
+
     setErrorMessage(null);
   };
 
+  // 🔵 Enviar formulário
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -61,6 +70,7 @@ export default function SubjectForm({
         await onAdd(dto);
       }
 
+      // Limpa o formulário
       setFormData({ id: "", subjectName: "", workloadHours: 0 });
       setErrorMessage(null);
     } catch (error: any) {
@@ -71,6 +81,7 @@ export default function SubjectForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 text-white">
+      {/* Nome da matéria */}
       <div>
         <label className="block text-sm mb-1 uppercase">Nome da Matéria</label>
         <input
@@ -79,25 +90,32 @@ export default function SubjectForm({
           value={formData.subjectName}
           onChange={handleChange}
           required
-          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-5 py-3 rounded-xl outline-none shadow-inner"
+          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40 
+                     transition-all text-white placeholder-gray-400 px-5 py-3 rounded-xl outline-none shadow-inner"
         />
       </div>
 
+      {/* Carga Horária */}
       <div>
         <label className="block text-sm mb-1 uppercase">Carga Horária</label>
         <input
           type="number"
           name="workloadHours"
-          value={formData.workloadHours}
+          min="1"
+          value={formData.workloadHours || ""} // 👈 mostra vazio em vez de 0
           onChange={handleChange}
           required
-          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-5 py-3 rounded-xl outline-none shadow-inner"
+          className="no-spinner w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40 
+                     transition-all text-white placeholder-gray-400 px-5 py-3 rounded-xl outline-none shadow-inner"
         />
       </div>
 
       <button
         type="submit"
-        className="w-full bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-semibold px-6 py-3 rounded-xl transition-all uppercase cursor-pointer"
+        className="w-full bg-gradient-to-r from-orange-500/50 to-yellow-400/30 
+                   hover:from-orange-500/60 hover:to-yellow-400/40 
+                   text-white font-semibold px-6 py-3 rounded-xl 
+                   transition-all uppercase cursor-pointer"
       >
         {editingSubject ? "Salvar Alterações" : "Cadastrar Matéria"}
       </button>
