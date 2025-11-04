@@ -17,12 +17,11 @@ export default function SubjectForm({
   const [formData, setFormData] = useState<Subject>({
     id: "",
     subjectName: "",
-    workloadHours: 0, // mantemos numérico internamente
+    workloadHours: 0,
   });
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // 🟢 Corrigido: useEffect para preencher quando for edição
   useEffect(() => {
     if (editingSubject) {
       setFormData(editingSubject);
@@ -31,7 +30,6 @@ export default function SubjectForm({
     }
   }, [editingSubject]);
 
-  // 🟠 Atualiza os campos do formulário
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -41,7 +39,7 @@ export default function SubjectForm({
       ...prev,
       [name]:
         name === "workloadHours"
-          ? value === "" // 👈 permite campo vazio sem mostrar 0
+          ? value === ""
             ? 0
             : Number(value)
           : value,
@@ -50,7 +48,6 @@ export default function SubjectForm({
     setErrorMessage(null);
   };
 
-  // 🔵 Enviar formulário
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -70,18 +67,17 @@ export default function SubjectForm({
         await onAdd(dto);
       }
 
-      // Limpa o formulário
       setFormData({ id: "", subjectName: "", workloadHours: 0 });
       setErrorMessage(null);
     } catch (error: any) {
-      console.error("❌ Erro ao salvar matéria:", error);
+      console.error("Erro ao salvar matéria:", error);
       setErrorMessage("Erro ao cadastrar matéria. Tente novamente.");
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 text-white">
-      {/* Nome da matéria */}
+    
       <div>
         <label className="block text-sm mb-1 uppercase">Nome da Matéria</label>
         <input
@@ -95,14 +91,14 @@ export default function SubjectForm({
         />
       </div>
 
-      {/* Carga Horária */}
+      
       <div>
         <label className="block text-sm mb-1 uppercase">Carga Horária</label>
         <input
           type="number"
           name="workloadHours"
           min="1"
-          value={formData.workloadHours || ""} // 👈 mostra vazio em vez de 0
+          value={formData.workloadHours || ""} 
           onChange={handleChange}
           required
           className="no-spinner w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40 

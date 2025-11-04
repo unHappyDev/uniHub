@@ -34,8 +34,7 @@ export default function ProfessoresPage() {
 
       setTeachers(normalized);
     } catch (error: any) {
-      // 👇 ignora 404 para não poluir o console
-      if (error.response?.status === 404) {
+       if (error.response?.status === 404) {
         setTeachers([]);
       } else {
         console.error("Erro ao buscar professores:", error);

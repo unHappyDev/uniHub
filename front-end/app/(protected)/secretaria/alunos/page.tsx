@@ -37,7 +37,6 @@ export default function AlunosPage() {
 
       setStudents(normalized);
     } catch (error: any) {
-      // 👇 Ignora 404 (sem alunos ainda)
       if (error.response?.status === 404) {
         setStudents([]);
       } else {

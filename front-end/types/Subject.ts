@@ -1,6 +1,6 @@
 // Tipo usado no front-end
 export interface Subject {
-  id: string;
+  id: string; 
   subjectName: string;
   workloadHours: number;
 }

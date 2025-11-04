@@ -18,7 +18,6 @@ export default function MateriasPage() {
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
   const [filterName, setFilterName] = useState("");
 
-  // 🟢 Buscar matérias
   const fetchSubjects = async () => {
     try {
       const data = await getSubjects();
@@ -34,7 +33,7 @@ export default function MateriasPage() {
       setSubjects(normalized);
     } catch (error: any) {
       if (error.response?.status === 404) {
-        // Se a API não encontrou nada, apenas zera a lista sem mostrar erro
+
         setSubjects([]);
       } else {
         console.error("Erro ao buscar matérias:", error);
@@ -42,14 +41,12 @@ export default function MateriasPage() {
     }
   };
 
-  // 🟠 Adicionar nova matéria
   const handleAdd = async (subject: CreateSubjectDTO) => {
     await createSubject(subject);
     await fetchSubjects();
     setIsModalOpen(false);
   };
 
-  // 🔵 Editar matéria
   const handleEdit = async (subject: Subject) => {
     if (!subject.id) return;
     await updateSubject(subject.id, subject);
@@ -57,29 +54,26 @@ export default function MateriasPage() {
     setIsModalOpen(false);
   };
 
-  // 🔴 Excluir matéria
   const handleDelete = async (id: string) => {
-    console.log("🧩 handleDelete chamado com id:", id);
+    console.log("handleDelete chamado com id:", id);
 
     if (!confirm("Tem certeza que deseja excluir esta matéria?")) return;
 
     try {
-      // Antes da requisição
-      console.log("➡️ Enviando DELETE para:", `/subject/${id}`);
+      console.log(" Enviando DELETE para:", `/subject/${id}`);
 
       const response = await deleteSubject(id);
 
-      console.log("✅ Resposta da API ao deletar:", response);
+      console.log("Resposta da API ao deletar:", response);
 
       await fetchSubjects();
     } catch (err: any) {
-      console.error("❌ Erro ao deletar matéria:", err);
+      console.error("Erro ao deletar matéria:", err);
 
-      // Log detalhado se for Axios
       if (err.response) {
-        console.error("📩 Resposta do servidor:", err.response.data);
-        console.error("📊 Status:", err.response.status);
-        console.error("📬 Headers:", err.response.headers);
+        console.error("Resposta do servidor:", err.response.data);
+        console.error("Status:", err.response.status);
+        console.error("Headers:", err.response.headers);
       }
     }
   };
@@ -94,7 +88,6 @@ export default function MateriasPage() {
     setIsModalOpen(false);
   };
 
-  // 🔍 Filtro por nome
   const filteredSubjects = subjects.filter((s) =>
     s.subjectName.toLowerCase().includes(filterName.toLowerCase()),
   );
@@ -110,7 +103,6 @@ export default function MateriasPage() {
           Cadastro de Matérias
         </h1>
 
-        {/* 🔎 Filtros e botão */}
         <div className="bg-glass border border-orange-400/40 rounded-2xl p-6 mb-10 shadow-glow transition-all hover:shadow-orange-500/30">
           <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
             <input
@@ -129,14 +121,12 @@ export default function MateriasPage() {
           </div>
         </div>
 
-        {/* 🧾 Tabela */}
         <SubjectTable
           subjects={filteredSubjects}
           onDelete={handleDelete}
           onEdit={handleEditClick}
         />
 
-        {/* 🪟 Modal */}
         <Modal isOpen={isModalOpen} onClose={closeModal}>
           <h2 className="text-xl font-semibold mb-4 text-center text-white uppercase">
             {editingSubject ? "Editar Matéria" : "Nova Matéria"}
