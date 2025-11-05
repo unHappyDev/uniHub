@@ -18,7 +18,7 @@ const navMain = [
   { title: "Alunos", url: "/secretaria/alunos", icon: Book },
   { title: "Professores", url: "/secretaria/professor", icon: Users },
   { title: "Cursos", url: "/secretaria/cursos", icon: GraduationCap },
-  { title: "Materias", url: "/secretaria/materias", icon: GraduationCap },
+  { title: "Matérias", url: "/secretaria/materias", icon: GraduationCap },
   { title: "Post", url: "/secretaria/posts", icon: AlertTriangle },
   
 ];

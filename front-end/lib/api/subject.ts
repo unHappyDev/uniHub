@@ -1,4 +1,4 @@
-import apiSpring from "./client";
+import apiSpring from "./clientSpring";
 import { CreateSubjectDTO } from "@/types/Subject";
 
 // Buscar todas as matérias

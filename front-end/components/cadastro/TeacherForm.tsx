@@ -40,7 +40,7 @@ export default function TeacherForm({
 
     const dto: CreateTeacherDTO = {
       registerUser: {
-        name: formData.nome, // backend espera "name"
+        name: formData.nome,
         email: formData.email,
         password: "12341234",
         role: "PROFESSOR",

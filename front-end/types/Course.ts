@@ -8,7 +8,7 @@ export interface Course {
   id: string;
   courseName: string;
   subjects?: Subject[];
-  studentCount?: number;
+  countStudents?: number;
 }
 
 export interface CreateCourseDTO {

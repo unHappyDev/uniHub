@@ -24,7 +24,6 @@ export default function AlunosPage() {
   const fetchStudents = async () => {
     try {
       const data = await getStudents();
-
       const normalized = Array.isArray(data)
         ? data.map((s: any, index: number) => ({
             id: s.id ?? String(index + 1),
@@ -34,14 +33,10 @@ export default function AlunosPage() {
             courseId: s.courseId ?? null,
           }))
         : [];
-
       setStudents(normalized);
     } catch (error: any) {
-      if (error.response?.status === 404) {
-        setStudents([]);
-      } else {
-        console.error("Erro ao buscar alunos:", error);
-      }
+      console.error("Erro ao buscar alunos:", error);
+      setStudents([]);
     }
   };
 
@@ -97,9 +92,7 @@ export default function AlunosPage() {
   };
 
   const filteredStudents = students.filter((s) => {
-    const matchesName = s.nome
-      ?.toLowerCase()
-      .includes(filterName.toLowerCase());
+    const matchesName = s.nome?.toLowerCase().includes(filterName.toLowerCase());
     const courseName =
       typeof s.curso === "string" ? s.curso : s.curso?.courseName || "";
     const matchesCourse = courseName

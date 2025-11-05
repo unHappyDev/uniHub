@@ -31,4 +31,4 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
       PEPPER: ${PEPPER}
     ports:
-      - "8443:8080"
+      - "8080:8080"

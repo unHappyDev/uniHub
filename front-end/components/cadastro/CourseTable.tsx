@@ -53,7 +53,7 @@ export default function CourseTable({
                 >
                   <td className="px-4 py-3">{c.courseName}</td>
                   <td className="px-4 py-3">{c.subjects?.length ?? 0}</td>
-                  <td className="px-4 py-3">{c.studentCount ?? 0}</td>
+                  <td className="px-4 py-3">{c.countStudents ?? 0}</td>
                   <td className="px-4 py-3 text-center">
                     <div className="flex justify-center gap-3">
                       <button
@@ -109,7 +109,7 @@ export default function CourseTable({
                 <span className="font-semibold text-orange-500">
                   Qtd. Alunos:
                 </span>{" "}
-                {c.studentCount ?? 0}
+                {c.countStudents ?? 0}
               </p>
               <div className="flex justify-end gap-2 mt-3">
                 <button

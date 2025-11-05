@@ -1,4 +1,4 @@
-import apiSpring from "./client";
+import apiSpring from "./clientSpring";
 import { Course, CreateCourseDTO } from "@/types/Course";
 
 // Buscar todos os cursos (com matérias)
@@ -7,7 +7,7 @@ export const getCourses = async (): Promise<Course[]> => {
   return response.data;
 };
 
-// Buscar só nomes dos cursos
+// Buscar nomes dos cursos
 export const getCourseNames = async (): Promise<Course[]> => {
   const response = await apiSpring.get("/course/names");
   return response.data;
@@ -31,26 +31,18 @@ export const deleteCourse = async (id: string) => {
   return response.data;
 };
 
-//  Adicionar matéria ao curso
-export const addSubjectToCourse = async (
-  courseId: string,
-  subjectId: string,
-) => {
+// Adicionar matéria
+export const addSubjectToCourse = async (courseId: string, subjectId: string) => {
   const response = await apiSpring.put(
     `/course/addSubject/${courseId}`,
     [subjectId],
-    {
-      headers: { "Content-Type": "application/json" },
-    },
+    { headers: { "Content-Type": "application/json" } }
   );
   return response.data;
 };
 
-//  Remover matéria do curso
-export const removeSubjectFromCourse = async (
-  courseId: string,
-  subjectId: string,
-) => {
+// Remover matéria
+export const removeSubjectFromCourse = async (courseId: string, subjectId: string) => {
   const response = await apiSpring.delete(`/course/deleteSubject/${courseId}`, {
     data: [subjectId],
   });
