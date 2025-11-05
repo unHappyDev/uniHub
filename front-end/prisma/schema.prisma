@@ -48,7 +48,6 @@ model ActivationToken {
   updated_at DateTime @updatedAt @db.Timestamptz
 
   @@index([user_id])
-  
 }
 
 model Session {
