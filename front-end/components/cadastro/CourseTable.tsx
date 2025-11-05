@@ -16,6 +16,11 @@ export default function CourseTable({
   onEdit,
   onManageSubjects,
 }: CourseTableProps) {
+  // Ordena os cursos em ordem alfabética (A–Z)
+  const sortedCourses = [...courses].sort((a, b) =>
+    a.courseName.localeCompare(b.courseName, "pt", { sensitivity: "base" })
+  );
+
   return (
     <div className="mt-6">
       {/* Desktop */}
@@ -36,17 +41,17 @@ export default function CourseTable({
             </tr>
           </thead>
           <tbody>
-            {courses.length === 0 ? (
+            {sortedCourses.length === 0 ? (
               <tr>
                 <td
-                  colSpan={3}
+                  colSpan={4}
                   className="text-center py-6 text-gray-400 bg-neutral-900"
                 >
                   Nenhum curso cadastrado
                 </td>
               </tr>
             ) : (
-              courses.map((c) => (
+              sortedCourses.map((c) => (
                 <tr
                   key={c.id}
                   className="border-t border-orange-500/30 transition hover:bg-neutral-900"
@@ -85,12 +90,12 @@ export default function CourseTable({
 
       {/* Mobile */}
       <div className="md:hidden flex flex-col gap-6">
-        {courses.length === 0 ? (
+        {sortedCourses.length === 0 ? (
           <div className="text-center text-gray-400 bg-glass border border-orange-400/40 rounded-2xl p-6 shadow-glow">
             Nenhum curso cadastrado
           </div>
         ) : (
-          courses.map((c) => (
+          sortedCourses.map((c) => (
             <div
               key={c.id}
               className="flex flex-col gap-2 bg-glass border border-orange-400/40 rounded-2xl p-6 text-gray-200 shadow-glow transition hover:shadow-orange-500/30"
