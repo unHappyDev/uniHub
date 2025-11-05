@@ -69,6 +69,15 @@ public class DataSeed implements CommandLineRunner {
                 true,
                 null)));
 
+        userRepository.findByEmail("admin@admin.com").orElseGet(() -> userRepository.save(new User(
+                null,
+                "admin",
+                "admin@admin.com",
+                "$2a$04$LfBpkw0M8qaMr/JvrafNjuD6EFp58MSCY6JHl3VgEGxSolAV9uhjy",
+                UserRoles.ADMIN,
+                true,
+                null)));
+
         sessionRepository.findByToken("33333-33333-33333-33333")
                 .map(session -> {
                     session.setExpiresAt(OffsetDateTime.now().plusHours(3));

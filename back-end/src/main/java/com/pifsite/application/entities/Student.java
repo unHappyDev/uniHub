@@ -28,7 +28,7 @@ public class Student {
     private UUID studentId;
 
     @MapsId
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "student_id")
     private User user;
 
