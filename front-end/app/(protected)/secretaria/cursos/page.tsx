@@ -50,10 +50,20 @@ export default function CursosPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir este curso?")) return;
+  if (!confirm("Tem certeza que deseja excluir este curso?")) return;
+
+  try {
     await deleteCourse(id);
-    fetchCourses();
-  };
+    await fetchCourses();
+  } catch (error: any) {
+    if (error?.response?.status === 409) {
+      alert("Não é possível excluir este curso pois há alunos vinculados a ele.");
+    } else {
+      alert("Erro ao excluir o curso.");
+      console.error(error);
+    }
+  }
+};
 
   const handleEdit = (course: Course) => {
     setEditingCourse(course);

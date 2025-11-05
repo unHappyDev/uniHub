@@ -33,7 +33,6 @@ export default function MateriasPage() {
       setSubjects(normalized);
     } catch (error: any) {
       if (error.response?.status === 404) {
-
         setSubjects([]);
       } else {
         console.error("Erro ao buscar matérias:", error);
@@ -135,6 +134,7 @@ export default function MateriasPage() {
             onAdd={handleAdd}
             onEdit={handleEdit}
             editingSubject={editingSubject}
+            subjects={subjects} // ✅ passa a lista pra validar duplicados
           />
         </Modal>
       </div>

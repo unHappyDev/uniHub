@@ -7,12 +7,14 @@ interface SubjectFormProps {
   onAdd: (subject: CreateSubjectDTO) => Promise<void>;
   onEdit: (subject: Subject) => Promise<void>;
   editingSubject: Subject | null;
+  subjects: Subject[]; // ✅ nova prop para validação
 }
 
 export default function SubjectForm({
   onAdd,
   onEdit,
   editingSubject,
+  subjects,
 }: SubjectFormProps) {
   const [formData, setFormData] = useState<Subject>({
     id: "",
@@ -56,6 +58,19 @@ export default function SubjectForm({
       return;
     }
 
+    // ✅ Validação de nome duplicado
+    const nomeDuplicado = subjects.some(
+      (s) =>
+        s.subjectName.trim().toLowerCase() ===
+          formData.subjectName.trim().toLowerCase() &&
+        s.id !== formData.id // permite editar o mesmo
+    );
+
+    if (nomeDuplicado) {
+      setErrorMessage("Já existe uma matéria com este nome.");
+      return;
+    }
+
     try {
       if (editingSubject) {
         await onEdit(formData);
@@ -77,7 +92,6 @@ export default function SubjectForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 text-white">
-    
       <div>
         <label className="block text-sm mb-1 uppercase">Nome da Matéria</label>
         <input
@@ -91,14 +105,13 @@ export default function SubjectForm({
         />
       </div>
 
-      
       <div>
         <label className="block text-sm mb-1 uppercase">Carga Horária</label>
         <input
           type="number"
           name="workloadHours"
           min="1"
-          value={formData.workloadHours || ""} 
+          value={formData.workloadHours || ""}
           onChange={handleChange}
           required
           className="no-spinner w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40 

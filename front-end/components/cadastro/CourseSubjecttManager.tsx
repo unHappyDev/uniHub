@@ -17,7 +17,8 @@ export default function CourseSubjectsManager({
   onUpdated,
 }: CourseSubjectsManagerProps) {
   const [allSubjects, setAllSubjects] = useState<Subject[]>([]);
-  const [selectedSubjectId, setSelectedSubjectId] = useState<string>("");
+  const [selectedSubjectIds, setSelectedSubjectIds] = useState<string[]>([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [subjects, setSubjects] = useState<Subject[]>(course.subjects || []);
 
@@ -29,7 +30,7 @@ export default function CourseSubjectsManager({
       if (error.response?.status === 404) {
         setAllSubjects([]);
       } else {
-        console.error(" Erro ao buscar matérias:", error);
+        console.error("Erro ao buscar matérias:", error);
       }
     }
   };
@@ -39,19 +40,20 @@ export default function CourseSubjectsManager({
   }, []);
 
   const handleAddSubject = async () => {
-    if (!selectedSubjectId) return;
-
+    if (selectedSubjectIds.length === 0) return;
     setIsLoading(true);
     try {
-      await addSubjectToCourse(course.id, selectedSubjectId);
-
-      const added = allSubjects.find((s) => s.subjectId === selectedSubjectId);
-      if (added) setSubjects((prev) => [...prev, added]);
-      setSelectedSubjectId("");
+      for (const subjectId of selectedSubjectIds) {
+        await addSubjectToCourse(course.id, subjectId);
+        const added = allSubjects.find((s) => s.subjectId === subjectId);
+        if (added) setSubjects((prev) => [...prev, added]);
+      }
+      setSelectedSubjectIds([]);
+      setIsDropdownOpen(false);
       onUpdated();
     } catch (e) {
-      console.error("Erro ao adicionar matéria:", e);
-      alert("Erro ao adicionar matéria ao curso.");
+      console.error("Erro ao adicionar matérias:", e);
+      alert("Erro ao adicionar matérias ao curso.");
     } finally {
       setIsLoading(false);
     }
@@ -59,7 +61,6 @@ export default function CourseSubjectsManager({
 
   const handleRemoveSubject = async (subjectId: string) => {
     if (!confirm("Deseja remover esta matéria do curso?")) return;
-
     setIsLoading(true);
     try {
       await removeSubjectFromCourse(course.id, subjectId);
@@ -77,35 +78,66 @@ export default function CourseSubjectsManager({
     (s) => !subjects.some((sub) => sub.subjectId === s.subjectId),
   );
 
+  const toggleSubject = (id: string) => {
+    setSelectedSubjectIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+  };
+
   return (
     <div className="p-4 text-white">
       <h2 className="text-xl font-semibold mb-6 text-center">
         Gerenciar Matérias — {course.courseName}
       </h2>
 
-      <div className="flex gap-3 mb-6">
-        <select
-          value={selectedSubjectId}
-          onChange={(e) => setSelectedSubjectId(e.target.value)}
-          className="flex-1 bg-[#1a1a1dc3] border border-orange-400/30 text-white px-4 py-2 rounded-xl outline-none"
-        >
-          <option value="">Selecione uma matéria...</option>
-          {availableSubjects.map((s) => (
-            <option key={s.subjectId} value={s.subjectId}>
-              {s.subjectName}
-            </option>
-          ))}
-        </select>
+      {/* --- Dropdown com checkboxes --- */}
+      <div className="flex gap-3 mb-6 relative">
+        <div className="flex-1">
+          <button
+            type="button"
+            onClick={() => setIsDropdownOpen((o) => !o)}
+            className="w-full bg-[#1a1a1dc3] border border-orange-400/30 text-white px-4 py-2 rounded-xl text-left cursor-pointer"
+          >
+            {selectedSubjectIds.length > 0
+              ? `${selectedSubjectIds.length} selecionada(s)`
+              : "Selecione matérias..."}
+          </button>
+
+          {isDropdownOpen && (
+            <div className="absolute z-10 mt-2 w-full bg-[#1a1a1d] border border-orange-400/30 rounded-xl max-h-60 overflow-y-auto shadow-lg">
+              {availableSubjects.length === 0 ? (
+                <p className="text-gray-400 text-center py-2">
+                  Nenhuma matéria disponível
+                </p>
+              ) : (
+                availableSubjects.map((s) => (
+                  <label
+                    key={s.subjectId}
+                    className="flex items-center gap-2 px-4 py-2 hover:bg-neutral-800 cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedSubjectIds.includes(s.subjectId)}
+                      onChange={() => toggleSubject(s.subjectId)}
+                    />
+                    <span>{s.subjectName}</span>
+                  </label>
+                ))
+              )}
+            </div>
+          )}
+        </div>
 
         <button
           onClick={handleAddSubject}
-          disabled={!selectedSubjectId || isLoading}
-          className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-xl transition disabled:opacity-50"
+          disabled={selectedSubjectIds.length === 0 || isLoading}
+          className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-xl transition disabled:opacity-50 cursor-pointer"
         >
           Adicionar
         </button>
       </div>
 
+      {/* --- Tabela de matérias --- */}
       <div className="border border-orange-400/30 rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
