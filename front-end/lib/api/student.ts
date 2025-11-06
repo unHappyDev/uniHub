@@ -1,13 +1,13 @@
 import { CreateStudentDTO } from "@/types/Student";
-import apiSpring from "./client";
+import apiSpring from "./clientSpring";
 
-//  Buscar todos os alunos
+// Buscar alunos
 export const getStudents = async () => {
   const response = await apiSpring.get("/student");
   return response.data;
 };
 
-//  Criar aluno (enviando o JSON compatível com backend)
+// Criar aluno
 export const createStudent = async (student: CreateStudentDTO) => {
   console.log("📤 Enviando aluno ao backend:", student);
   const response = await apiSpring.post("/student", student);
@@ -20,7 +20,7 @@ export const updateStudent = async (id: string, student: any) => {
   return response.data;
 };
 
-//  Excluir aluno
+// Excluir aluno
 export const deleteStudent = async (id: string) => {
   const response = await apiSpring.delete(`/student/${id}`);
   return response.data;

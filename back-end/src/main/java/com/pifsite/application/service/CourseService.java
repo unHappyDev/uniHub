@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.pifsite.application.exceptions.ResourceNotFoundException;
 import com.pifsite.application.exceptions.EntityInUseException;
+import com.pifsite.application.repository.StudentRepository;
 import com.pifsite.application.repository.SubjectRepository;
 import com.pifsite.application.repository.CourseRepository;
 import com.pifsite.application.dto.CourseSubjectsDTO;
@@ -28,13 +29,15 @@ public class CourseService {
 
     private final CourseRepository courseRepository;
     private final SubjectRepository subjectRepository;
+    private final StudentRepository studentRepository;
 
     public Set<CourseDTO> getAllCourses() {
 
         Set<Course> courses = courseRepository.getAllCoursesWithSubjects();
 
         Set<CourseDTO> setCourses = courses.stream()
-                .map(course -> new CourseDTO(course.getCourseId(), course.getCourseName(),
+                .map(course -> new CourseDTO(course.getCourseId(), studentRepository.countByCourse(course),
+                        course.getCourseName(),
                         course.getSubjects() != null ? course.getSubjects() : Collections.emptySet()))
                 .collect(Collectors.toSet());
 

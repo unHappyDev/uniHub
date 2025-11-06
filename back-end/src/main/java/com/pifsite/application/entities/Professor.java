@@ -30,7 +30,7 @@ public class Professor {
     private UUID professorId;
 
     @MapsId
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "professor_id")
     private User user;
 

@@ -21,17 +21,25 @@ export default function ProfessoresPage() {
   const [filterName, setFilterName] = useState("");
 
   const fetchTeachers = async () => {
-    const data = await getTeachers();
+    try {
+      const data = await getTeachers();
 
-    const normalized: Teacher[] = Array.isArray(data)
-      ? data.map((t: any, i: number) => ({
-          id: t.id?.toString() ?? String(i + 1),
-          nome: t.nome ?? t.name ?? t.username ?? "",
-          email: t.email ?? "",
-        }))
-      : [];
+      const normalized: Teacher[] = Array.isArray(data)
+        ? data.map((t: any, i: number) => ({
+            id: t.id?.toString() ?? String(i + 1),
+            nome: t.nome ?? t.name ?? t.username ?? "",
+            email: t.email ?? "",
+          }))
+        : [];
 
-    setTeachers(normalized);
+      setTeachers(normalized);
+    } catch (error: any) {
+       if (error.response?.status === 404) {
+        setTeachers([]);
+      } else {
+        console.error("Erro ao buscar professores:", error);
+      }
+    }
   };
 
   const handleAdd = async (teacherDTO: CreateTeacherDTO) => {
