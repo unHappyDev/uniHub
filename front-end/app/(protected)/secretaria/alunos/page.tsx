@@ -35,8 +35,11 @@ export default function AlunosPage() {
         : [];
       setStudents(normalized);
     } catch (error: any) {
-      console.error("Erro ao buscar alunos:", error);
-      setStudents([]);
+       if (error.response?.status === 404) {
+        setStudents([]);
+      } else {
+        console.error("Erro ao buscar alunos:", error);
+      }
     }
   };
 
