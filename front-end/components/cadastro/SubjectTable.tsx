@@ -34,7 +34,7 @@ export default function SubjectTable({
               </tr>
             ) : (
               subjects.map((s) => (
-                <tr key={s.id} className="border-t border-orange-500/30 hover:bg-neutral-900 transition">
+                <tr key={s.subjectId} className="border-t border-orange-500/30 hover:bg-neutral-900 transition">
                   <td className="px-4 py-3">{s.subjectName}</td>
                   <td className="px-4 py-3">{s.workloadHours}h</td>
                   <td className="px-4 py-3 text-center">
@@ -42,7 +42,7 @@ export default function SubjectTable({
                       <button onClick={() => onEdit(s)} className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm">
                         Editar
                       </button>
-                      <button onClick={() => onDelete(s.id)} className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm">
+                      <button onClick={() => onDelete(s.subjectId)} className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm">
                         Excluir
                       </button>
                     </div>
@@ -62,14 +62,14 @@ export default function SubjectTable({
           </div>
         ) : (
           subjects.map((s) => (
-            <div key={s.id} className="flex flex-col gap-2 bg-glass border border-orange-400/40 rounded-2xl p-6 text-gray-200 shadow-glow transition hover:shadow-orange-500/30">
+            <div key={s.subjectId} className="flex flex-col gap-2 bg-glass border border-orange-400/40 rounded-2xl p-6 text-gray-200 shadow-glow transition hover:shadow-orange-500/30">
               <p><span className="font-semibold text-orange-500">Matéria:</span> {s.subjectName}</p>
               <p><span className="font-semibold text-orange-500">Carga Horária:</span> {s.workloadHours}h</p>
               <div className="flex justify-end gap-2 mt-3">
                 <button onClick={() => onEdit(s)} className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm">
                   Editar
                 </button>
-                <button onClick={() => onDelete(s.id)} className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm">
+                <button onClick={() => onDelete(s.subjectId)} className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm">
                   Excluir
                 </button>
               </div>

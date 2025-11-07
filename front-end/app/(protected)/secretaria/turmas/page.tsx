@@ -18,8 +18,12 @@ export default function ClassroomsPage() {
     try {
       const data = await getClassrooms();
       setClassrooms(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Erro ao carregar turmas:", err);
+    } catch (error: any) {
+       if (error.response?.status === 404) {
+        setClassrooms([]);
+      } else {
+        console.error("Erro ao buscar turmas:", error);
+      }
     }
   };
 

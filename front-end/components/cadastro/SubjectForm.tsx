@@ -7,7 +7,7 @@ interface SubjectFormProps {
   onAdd: (subject: CreateSubjectDTO) => Promise<void>;
   onEdit: (subject: Subject) => Promise<void>;
   editingSubject: Subject | null;
-  subjects: Subject[]; // ✅ nova prop para validação
+  subjects: Subject[];
 }
 
 export default function SubjectForm({
@@ -58,12 +58,11 @@ export default function SubjectForm({
       return;
     }
 
-    // ✅ Validação de nome duplicado
     const nomeDuplicado = subjects.some(
       (s) =>
         s.subjectName.trim().toLowerCase() ===
           formData.subjectName.trim().toLowerCase() &&
-        s.subjectId !== formData.subjectId // permite editar o mesmo
+        s.subjectId !== formData.subjectId 
     );
 
     if (nomeDuplicado) {

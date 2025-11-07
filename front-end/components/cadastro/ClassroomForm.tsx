@@ -226,7 +226,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
             </Button>
           </DialogTrigger>
 
-          <DialogContent className="bg-[#111] border border-orange-400/40 text-white">
+          <DialogContent className="bg-[#111]  border border-orange-400/40 text-white">
             <DialogHeader>
               <DialogTitle>Selecionar alunos</DialogTitle>
             </DialogHeader>
@@ -246,33 +246,32 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
               ))}
             </div>
             <DialogFooter>
-              <Button
+              <button
                 onClick={() => setStudentsDialogOpen(false)}
-                className="bg-orange-500 hover:bg-orange-600"
+                className="bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-semibold px-4 py-3 rounded-xl uppercase cursor-pointer transition-all"
               >
                 Concluir
-              </Button>
+              </button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
 
+      {/* Botões */}
       <div className="flex gap-3 justify-end">
-        <Button
+        <button
           type="button"
-          variant="secondary"
           onClick={onClose}
-          className="bg-gray-700 hover:bg-gray-600"
+          className="bg-gray-700 hover:bg-gray-600 text-white font-semibold px-4 py-3 rounded-xl uppercase cursor-pointer transition-all"
         >
           Cancelar
-        </Button>
-        <Button
+        </button>
+        <button
           type="submit"
-          className="bg-gradient-to-r from-orange-500/50 to-yellow-400/30 
-                     hover:from-orange-500/60 hover:to-yellow-400/40 text-white"
+          className="bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-semibold px-4 py-3 rounded-xl uppercase cursor-pointer transition-all"
         >
           {classroom ? "Salvar Alterações" : "Cadastrar Turma"}
-        </Button>
+        </button>
       </div>
     </form>
   );

@@ -90,7 +90,6 @@ export default function CourseSubjectsManager({
         Gerenciar Matérias — {course.courseName}
       </h2>
 
-      {/* --- Dropdown com checkboxes --- */}
       <div className="flex gap-3 mb-6 relative">
         <div className="flex-1">
           <button

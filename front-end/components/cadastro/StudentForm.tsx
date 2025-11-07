@@ -29,27 +29,23 @@ export default function StudentForm({
     courseId: "",
   });
 
-  const [errorMessage, setErrorMessage] = useState<string | null>(null); // 🆕 estado para mensagem de erro
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  //  Carrega cursos ao iniciar
   useEffect(() => {
     async function fetchCourses() {
       try {
         const data = await getCourses();
-        console.log("📘 Cursos recebidos do backend:", data);
+        console.log("Cursos recebidos do backend:", data);
         setCourses(data);
       } catch (err) {
-        console.error("❌ Erro ao buscar cursos:", err);
+        console.error("Erro ao buscar cursos:", err);
       }
     }
     fetchCourses();
   }, []);
 
-  //  Preenche ou limpa o form ao editar
   useEffect(() => {
     if (editingStudent) {
-      console.log("✏️ Editando aluno:", editingStudent);
-
       const matchedCourse = courses.find(
         (c) =>
           c.courseName.toLowerCase().trim() ===
@@ -67,7 +63,6 @@ export default function StudentForm({
           : editingStudent.courseId || "",
       });
     } else {
-      console.log("🆕 Novo aluno - limpando form");
       setFormData({
         nome: "",
         email: "",
@@ -77,20 +72,17 @@ export default function StudentForm({
     }
   }, [editingStudent, courses]);
 
-  // Atualiza estado do form
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }) as Student);
-    setErrorMessage(null); // 🆕 limpa erro quando usuário digita
+    setErrorMessage(null); 
   };
 
-  // Submete o form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    console.log("🚀 Submetendo formData:", formData);
+;
 
     if (!formData.courseId) {
       alert("Selecione um curso antes de cadastrar!");
@@ -107,11 +99,6 @@ export default function StudentForm({
       },
     };
 
-    console.log(
-      "📤 Enviando aluno ao backend:",
-      JSON.stringify(studentDTO, null, 2),
-    );
-
     try {
       if (editingStudent) {
         const updatedStudent: Student = {
@@ -126,16 +113,15 @@ export default function StudentForm({
         await onAdd(studentDTO as any);
       }
 
-      console.log("✅ Cadastro concluído!");
       setFormData({
         nome: "",
         email: "",
         curso: "",
         courseId: "",
       });
-      setErrorMessage(null); // limpa erro depois de sucesso
+      setErrorMessage(null);
     } catch (error: any) {
-      console.error("❌ Erro ao enviar aluno:", error);
+      console.error("Erro ao enviar aluno:", error);
 
       if (error.response) {
         const status = error.response.status;

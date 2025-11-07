@@ -24,7 +24,7 @@ export default function MateriasPage() {
 
       const normalized: Subject[] = Array.isArray(data)
         ? data.map((s: any) => ({
-            id: s.subjectId ?? s.id,
+            subjectId: s.subjectId ?? s.id,
             subjectName: s.subjectName ?? s.name ?? "",
             workloadHours: s.workloadHours ?? s.cargaHoraria ?? 0,
           }))
@@ -47,8 +47,8 @@ export default function MateriasPage() {
   };
 
   const handleEdit = async (subject: Subject) => {
-    if (!subject.id) return;
-    await updateSubject(subject.id, subject);
+    if (!subject.subjectId) return;
+    await updateSubject(subject.subjectId, subject);
     await fetchSubjects();
     setIsModalOpen(false);
   };
