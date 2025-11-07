@@ -61,7 +61,6 @@ export default function ClassroomsPage() {
           Gerenciar Turmas
         </h1>
 
-        {/* 🔍 Filtros e botão */}
         <div className="bg-glass border border-orange-400/40 rounded-2xl p-6 mb-10 shadow-glow transition-all hover:shadow-orange-500/30">
           <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
             <input
@@ -87,14 +86,12 @@ export default function ClassroomsPage() {
           </div>
         </div>
 
-        {/* 🧾 Tabela de turmas */}
         <ClassroomTable
           classrooms={filteredClassrooms}
           onEdit={handleEdit}
           onDelete={handleDelete}
         />
 
-        {/* 🧡 Modal de criação/edição */}
         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
           <h2 className="text-xl font-semibold mb-4 text-center text-white uppercase">
             {editingClassroom ? "Editar Turma" : "Nova Turma"}

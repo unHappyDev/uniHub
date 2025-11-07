@@ -10,7 +10,6 @@ import { Teacher } from "@/types/Teacher";
 import { Subject } from "@/types/Subject";
 import { Student } from "@/types/Student";
 
-// ✅ Shadcn imports
 import {
   Select,
   SelectTrigger,
@@ -77,7 +76,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         setSubjects(s);
         setStudents(mappedStudents);
       } catch (err) {
-        console.error("❌ Erro ao carregar dados:", err);
+        console.error("Erro ao carregar dados:", err);
       }
     };
     fetchData();
@@ -120,14 +119,14 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
       onSaved();
       onClose();
     } catch (error: any) {
-      console.error("❌ Erro ao salvar turma:", error);
+      console.error("Erro ao salvar turma:", error);
       alert("Erro ao salvar turma. Veja o console.");
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-7 text-white">
-      {/* Professor */}
+
       <div>
         <label className="block text-sm mb-1 uppercase">Professor</label>
         <Select
@@ -149,7 +148,6 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         </Select>
       </div>
 
-      {/* Matéria */}
       <div>
         <label className="block text-sm mb-1 uppercase">Matéria</label>
         <Select
@@ -171,7 +169,6 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         </Select>
       </div>
 
-      {/* Semestre */}
       <div>
         <label className="block text-sm mb-1 uppercase">Semestre</label>
         <input
@@ -186,7 +183,6 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         />
       </div>
 
-      {/* Início e Término */}
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="block text-sm mb-1 uppercase">Início</label>
@@ -214,7 +210,6 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         </div>
       </div>
 
-      {/* Alunos (Select Múltiplo com Dialog) */}
       <div>
         <label className="block text-sm mb-1 uppercase">Alunos</label>
 
@@ -262,7 +257,6 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         </Dialog>
       </div>
 
-      {/* Botões */}
       <div className="flex gap-3 justify-end">
         <Button
           type="button"

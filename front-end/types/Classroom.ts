@@ -5,8 +5,8 @@ export interface ClassroomStudent {
 
 export interface Classroom {
   classroomId: string;
-  professor: string; // Nome do professor
-  subject: string;   // Nome da matéria
+  professor: string;
+  subject: string;
   semester: string;
   startAt: string;
   endAt: string;
