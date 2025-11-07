@@ -11,14 +11,16 @@ import {
 import { useAuthSession } from "@/hooks/useAuthSession";
 
 import { Separator } from "@radix-ui/react-separator";
-import { Book, Users, GraduationCap, AlertTriangle, HomeIcon } from "lucide-react";
+import { Book, Users, GraduationCap, AlertTriangle, HomeIcon, UserPlus, ListOrdered } from "lucide-react";
 
 const navMain = [
   { title: "Início", url: "/secretaria", icon: HomeIcon },
-  { title: "Alunos", url: "/secretaria/alunos", icon: Book },
-  { title: "Professores", url: "/secretaria/professor", icon: Users },
+  { title: "Alunos", url: "/secretaria/alunos", icon: UserPlus },
+  { title: "Professores", url: "/secretaria/professor", icon: UserPlus },
+  { title: "Matérias", url: "/secretaria/materias", icon: Book },
   { title: "Cursos", url: "/secretaria/cursos", icon: GraduationCap },
-  { title: "Matérias", url: "/secretaria/materias", icon: GraduationCap },
+  { title: "Turmas", url: "/secretaria/turmas", icon: Users },
+  { title: "Notas", url: "/secretaria/notas", icon: ListOrdered },
   { title: "Post", url: "/secretaria/posts", icon: AlertTriangle },
   
 ];

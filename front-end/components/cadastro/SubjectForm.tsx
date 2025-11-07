@@ -17,7 +17,7 @@ export default function SubjectForm({
   subjects,
 }: SubjectFormProps) {
   const [formData, setFormData] = useState<Subject>({
-    id: "",
+    subjectId: "",
     subjectName: "",
     workloadHours: 0,
   });
@@ -28,7 +28,7 @@ export default function SubjectForm({
     if (editingSubject) {
       setFormData(editingSubject);
     } else {
-      setFormData({ id: "", subjectName: "", workloadHours: 0 });
+      setFormData({ subjectId: "", subjectName: "", workloadHours: 0 });
     }
   }, [editingSubject]);
 
@@ -63,7 +63,7 @@ export default function SubjectForm({
       (s) =>
         s.subjectName.trim().toLowerCase() ===
           formData.subjectName.trim().toLowerCase() &&
-        s.id !== formData.id // permite editar o mesmo
+        s.subjectId !== formData.subjectId // permite editar o mesmo
     );
 
     if (nomeDuplicado) {
@@ -82,7 +82,7 @@ export default function SubjectForm({
         await onAdd(dto);
       }
 
-      setFormData({ id: "", subjectName: "", workloadHours: 0 });
+      setFormData({ subjectId: "", subjectName: "", workloadHours: 0 });
       setErrorMessage(null);
     } catch (error: any) {
       console.error("Erro ao salvar matéria:", error);
