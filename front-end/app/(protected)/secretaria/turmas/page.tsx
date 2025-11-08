@@ -6,6 +6,7 @@ import { Classroom } from "@/types/Classroom";
 import ClassroomTable from "@/components/cadastro/ClassroomTable";
 import ClassroomForm from "@/components/cadastro/ClassroomForm";
 import { Modal } from "@/components/ui/modal";
+import { toast } from "sonner";
 
 export default function ClassroomsPage() {
   const [classrooms, setClassrooms] = useState<Classroom[]>([]);
@@ -31,12 +32,40 @@ export default function ClassroomsPage() {
     loadData();
   }, []);
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Excluir turma?")) {
-      await deleteClassroom(id);
-      await loadData();
-    }
-  };
+  const handleDelete = (id: string) => {
+  toast.custom((t) => (
+    <div className="bg-[#1a1a1d] border border-orange-400/40 text-white p-4 rounded-xl shadow-md">
+      <p className="font-semibold mb-2">Excluir turma?</p>
+      <p className="text-sm text-gray-300 mb-4">
+        Essa ação não pode ser desfeita.
+      </p>
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={() => toast.dismiss(t)}
+          className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-md text-sm"
+        >
+          Cancelar
+        </button>
+        <button
+          onClick={async () => {
+            try {
+              await deleteClassroom(id);
+              toast.dismiss(t);
+              toast.success("Turma excluída com sucesso!");
+              await loadData();
+            } catch (error) {
+              console.error("Erro ao excluir turma:", error);
+              toast.error("Erro ao excluir turma.");
+            }
+          }}
+          className="bg-red-600 hover:bg-red-500 px-3 py-1 rounded-md text-sm"
+        >
+          Excluir
+        </button>
+      </div>
+    </div>
+  ));
+};
 
   const handleEdit = (classroom: Classroom) => {
     setEditingClassroom(classroom);

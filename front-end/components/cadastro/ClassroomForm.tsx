@@ -1,11 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { CreateClassroomDTO, Classroom } from "@/types/Classroom";
 import { getTeachers } from "@/lib/api/teacher";
 import { getSubjects } from "@/lib/api/subject";
 import { getStudents } from "@/lib/api/student";
-import { createClassroom, updateClassroom } from "@/lib/api/classroom";
+import {
+  createClassroom,
+  updateClassroom,
+  addStudentsToClassroom,
+  removeStudentsFromClassroom,
+} from "@/lib/api/classroom";
 import { Teacher } from "@/types/Teacher";
 import { Subject } from "@/types/Subject";
 import { Student } from "@/types/Student";
@@ -49,6 +55,14 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
   const [students, setStudents] = useState<Student[]>([]);
   const [studentsDialogOpen, setStudentsDialogOpen] = useState(false);
 
+  const formatDateForInput = (isoString: string) => {
+    if (!isoString) return "";
+    const date = new Date(isoString);
+    const offset = date.getTimezoneOffset();
+    const local = new Date(date.getTime() - offset * 60 * 1000);
+    return local.toISOString().slice(0, 16);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -75,16 +89,50 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         setTeachers(mappedTeachers);
         setSubjects(s);
         setStudents(mappedStudents);
+
+        if (classroom) {
+          const normalize = (str: string) =>
+            str
+              ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim()
+              : "";
+
+          const matchedTeacher = mappedTeachers.find(
+            (t) => normalize(t.nome) === normalize(classroom.professor)
+          );
+
+          const matchedSubject = s.find(
+            (sub: Subject) =>
+              normalize(sub.subjectName) === normalize(classroom.subject)
+          );
+
+          const matchedStudents = classroom.students
+            .map((st) => {
+              const found = mappedStudents.find(
+                (stu) => normalize(stu.nome) === normalize(st.name)
+              );
+              return found?.id;
+            })
+            .filter(Boolean) as string[];
+
+          setFormData({
+            professorId: matchedTeacher?.id ?? "",
+            subjectId: matchedSubject?.subjectId ?? "",
+            semester: classroom.semester ?? "",
+            startAt: classroom.startAt ? formatDateForInput(classroom.startAt) : "",
+            endAt: classroom.endAt ? formatDateForInput(classroom.endAt) : "",
+            studentsIds: matchedStudents,
+          });
+        }
       } catch (err) {
         console.error("Erro ao carregar dados:", err);
+        toast.error("Erro ao carregar dados.");
       }
     };
-    fetchData();
-  }, []);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
+    fetchData();
+  }, [classroom]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -102,9 +150,9 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
     e.preventDefault();
 
     const payload: CreateClassroomDTO = {
-      professorId: formData.professorId.trim(),
-      subjectId: formData.subjectId.trim(),
-      semester: formData.semester.trim(),
+      professorId: formData.professorId?.trim(),
+      subjectId: formData.subjectId?.trim(),
+      semester: formData.semester?.trim() || " ",
       startAt: new Date(formData.startAt).toISOString(),
       endAt: new Date(formData.endAt).toISOString(),
       studentsIds: formData.studentsIds.map((id) => id.trim()),
@@ -113,20 +161,49 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
     try {
       if (classroom) {
         await updateClassroom(classroom.classroomId, payload);
+
+        const normalize = (s: string) =>
+          s
+            ? s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim()
+            : "";
+
+        const oldStudentIds: string[] =
+          (classroom.students || [])
+            .map((st) => {
+              const found = students.find(
+                (s) => normalize(s.nome) === normalize(st.name)
+              );
+              return found?.id;
+            })
+            .filter(Boolean) as string[] || [];
+
+        const newStudentIds = formData.studentsIds || [];
+        const toAdd = newStudentIds.filter((id) => !oldStudentIds.includes(id));
+        const toRemove = oldStudentIds.filter((id) => !newStudentIds.includes(id));
+
+        const calls: Promise<any>[] = [];
+        if (toAdd.length > 0) calls.push(addStudentsToClassroom(classroom.classroomId, toAdd));
+        if (toRemove.length > 0) calls.push(removeStudentsFromClassroom(classroom.classroomId, toRemove));
+        if (calls.length > 0) await Promise.all(calls);
+
+        toast.success("Turma atualizada com sucesso!");
       } else {
         await createClassroom(payload);
+        toast.success("Turma criada com sucesso!");
       }
+
       onSaved();
       onClose();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Erro ao salvar turma:", error);
-      alert("Erro ao salvar turma. Veja o console.");
+      toast.error("Erro ao salvar turma.");
     }
   };
 
+
   return (
     <form onSubmit={handleSubmit} className="space-y-7 text-white">
-
+      {/* Professor */}
       <div>
         <label className="block text-sm mb-1 uppercase">Professor</label>
         <Select
@@ -148,6 +225,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         </Select>
       </div>
 
+      {/* Matéria */}
       <div>
         <label className="block text-sm mb-1 uppercase">Matéria</label>
         <Select
@@ -169,6 +247,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         </Select>
       </div>
 
+      {/* Semestre */}
       <div>
         <label className="block text-sm mb-1 uppercase">Semestre</label>
         <input
@@ -183,6 +262,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         />
       </div>
 
+      {/* Datas */}
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="block text-sm mb-1 uppercase">Início</label>
@@ -210,9 +290,9 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         </div>
       </div>
 
+      {/* Alunos */}
       <div>
         <label className="block text-sm mb-1 uppercase">Alunos</label>
-
         <Dialog open={studentsDialogOpen} onOpenChange={setStudentsDialogOpen}>
           <DialogTrigger asChild>
             <Button
@@ -226,10 +306,11 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
             </Button>
           </DialogTrigger>
 
-          <DialogContent className="bg-[#111]  border border-orange-400/40 text-white">
+          <DialogContent className="bg-[#111] border border-orange-400/40 text-white">
             <DialogHeader>
               <DialogTitle>Selecionar alunos</DialogTitle>
             </DialogHeader>
+
             <div className="max-h-64 overflow-y-auto space-y-2 mt-4">
               {students.map((s) => (
                 <div
@@ -245,13 +326,17 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
                 </div>
               ))}
             </div>
+
             <DialogFooter>
-              <button
+              <Button
+                type="button"
                 onClick={() => setStudentsDialogOpen(false)}
-                className="bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-semibold px-4 py-3 rounded-xl uppercase cursor-pointer transition-all"
+                className="bg-gradient-to-r from-orange-500/50 to-yellow-400/30 
+                           hover:from-orange-500/60 hover:to-yellow-400/40 
+                           text-white font-semibold px-4 py-3 rounded-xl uppercase"
               >
                 Concluir
-              </button>
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -259,19 +344,19 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
 
       {/* Botões */}
       <div className="flex gap-3 justify-end">
-        <button
+        <Button
           type="button"
           onClick={onClose}
-          className="bg-gray-700 hover:bg-gray-600 text-white font-semibold px-4 py-3 rounded-xl uppercase cursor-pointer transition-all"
+          className="bg-gray-700 hover:bg-gray-600 text-white font-semibold px-4 py-3 rounded-xl uppercase"
         >
           Cancelar
-        </button>
-        <button
+        </Button>
+        <Button
           type="submit"
-          className="bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-semibold px-4 py-3 rounded-xl uppercase cursor-pointer transition-all"
+          className="bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-semibold px-4 py-3 rounded-xl uppercase"
         >
           {classroom ? "Salvar Alterações" : "Cadastrar Turma"}
-        </button>
+        </Button>
       </div>
     </form>
   );

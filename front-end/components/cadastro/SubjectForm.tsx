@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { CreateSubjectDTO, Subject } from "@/types/Subject";
 
 interface SubjectFormProps {
@@ -10,19 +11,12 @@ interface SubjectFormProps {
   subjects: Subject[];
 }
 
-export default function SubjectForm({
-  onAdd,
-  onEdit,
-  editingSubject,
-  subjects,
-}: SubjectFormProps) {
+export default function SubjectForm({ onAdd, onEdit, editingSubject, subjects }: SubjectFormProps) {
   const [formData, setFormData] = useState<Subject>({
     subjectId: "",
     subjectName: "",
     workloadHours: 0,
   });
-
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (editingSubject) {
@@ -32,41 +26,30 @@ export default function SubjectForm({
     }
   }, [editingSubject]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
     setFormData((prev) => ({
       ...prev,
-      [name]:
-        name === "workloadHours"
-          ? value === ""
-            ? 0
-            : Number(value)
-          : value,
+      [name]: name === "workloadHours" ? Number(value) : value,
     }));
-
-    setErrorMessage(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.subjectName || !formData.workloadHours) {
-      setErrorMessage("Preencha todos os campos.");
+      toast.warning("Preencha todos os campos.");
       return;
     }
 
     const nomeDuplicado = subjects.some(
       (s) =>
-        s.subjectName.trim().toLowerCase() ===
-          formData.subjectName.trim().toLowerCase() &&
-        s.subjectId !== formData.subjectId 
+        s.subjectName.trim().toLowerCase() === formData.subjectName.trim().toLowerCase() &&
+        s.subjectId !== formData.subjectId
     );
 
     if (nomeDuplicado) {
-      setErrorMessage("Já existe uma matéria com este nome.");
+      toast.error("Já existe uma matéria com este nome.");
       return;
     }
 
@@ -80,12 +63,9 @@ export default function SubjectForm({
         };
         await onAdd(dto);
       }
-
       setFormData({ subjectId: "", subjectName: "", workloadHours: 0 });
-      setErrorMessage(null);
-    } catch (error: any) {
-      console.error("Erro ao salvar matéria:", error);
-      setErrorMessage("Erro ao cadastrar matéria. Tente novamente.");
+    } catch {
+      toast.error("Erro ao salvar matéria. Tente novamente.");
     }
   };
 
@@ -99,8 +79,7 @@ export default function SubjectForm({
           value={formData.subjectName}
           onChange={handleChange}
           required
-          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40 
-                     transition-all text-white placeholder-gray-400 px-5 py-3 rounded-xl outline-none shadow-inner"
+          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40 transition-all text-white px-5 py-3 rounded-xl shadow-inner"
         />
       </div>
 
@@ -113,26 +92,18 @@ export default function SubjectForm({
           value={formData.workloadHours || ""}
           onChange={handleChange}
           required
-          className="no-spinner w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40 
-                     transition-all text-white placeholder-gray-400 px-5 py-3 rounded-xl outline-none shadow-inner"
+          
+          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40
+             transition-all text-white px-5 py-3 rounded-xl shadow-inner no-spinner"
         />
       </div>
 
       <button
         type="submit"
-        className="w-full bg-gradient-to-r from-orange-500/50 to-yellow-400/30 
-                   hover:from-orange-500/60 hover:to-yellow-400/40 
-                   text-white font-semibold px-6 py-3 rounded-xl 
-                   transition-all uppercase cursor-pointer"
+        className="w-full bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-semibold px-6 py-3 rounded-xl transition-all uppercase cursor-pointer"
       >
         {editingSubject ? "Salvar Alterações" : "Cadastrar Matéria"}
       </button>
-
-      {errorMessage && (
-        <p className="text-red-500 text-center mt-2 font-semibold">
-          {errorMessage}
-        </p>
-      )}
     </form>
   );
 }

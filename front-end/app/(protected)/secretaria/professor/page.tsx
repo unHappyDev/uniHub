@@ -11,6 +11,7 @@ import {
 import TeacherForm from "@/components/cadastro/TeacherForm";
 import TeacherTable from "@/components/cadastro/TeacherTable";
 import { Modal } from "@/components/ui/modal";
+import { toast } from "sonner";
 
 const DEFAULT_PASSWORD = "12341234";
 
@@ -23,7 +24,6 @@ export default function ProfessoresPage() {
   const fetchTeachers = async () => {
     try {
       const data = await getTeachers();
-
       const normalized: Teacher[] = Array.isArray(data)
         ? data.map((t: any, i: number) => ({
             id: t.id?.toString() ?? String(i + 1),
@@ -31,10 +31,9 @@ export default function ProfessoresPage() {
             email: t.email ?? "",
           }))
         : [];
-
       setTeachers(normalized);
     } catch (error: any) {
-       if (error.response?.status === 404) {
+      if (error.response?.status === 404) {
         setTeachers([]);
       } else {
         console.error("Erro ao buscar professores:", error);
@@ -46,19 +45,49 @@ export default function ProfessoresPage() {
     await createTeacher(teacherDTO);
     await fetchTeachers();
     setIsModalOpen(false);
+    toast.success("Professor cadastrado com sucesso!");
   };
 
   const handleEdit = async (id: string, teacherDTO: CreateTeacherDTO) => {
     await updateTeacher(id, teacherDTO);
     await fetchTeachers();
     setIsModalOpen(false);
+    toast.success("Professor atualizado com sucesso!");
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Tem certeza que deseja excluir este professor?")) {
-      await deleteTeacher(id);
-      await fetchTeachers();
-    }
+  const handleDelete = (id: string) => {
+    toast.custom((t) => (
+      <div className="bg-[#1a1a1d] border border-orange-400/40 text-white p-4 rounded-xl shadow-md">
+        <p className="font-semibold mb-2">Excluir professor?</p>
+        <p className="text-sm text-gray-300 mb-4">
+          Essa ação não pode ser desfeita.
+        </p>
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={() => toast.dismiss(t)}
+            className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-md text-sm"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={async () => {
+              try {
+                await deleteTeacher(id);
+                toast.dismiss(t);
+                toast.success("Professor excluído com sucesso!");
+                await fetchTeachers();
+              } catch (error) {
+                console.error("Erro ao excluir professor:", error);
+                toast.error("Erro ao excluir professor.");
+              }
+            }}
+            className="bg-red-600 hover:bg-red-500 px-3 py-1 rounded-md text-sm"
+          >
+            Excluir
+          </button>
+        </div>
+      </div>
+    ));
   };
 
   useEffect(() => {
@@ -70,7 +99,7 @@ export default function ProfessoresPage() {
   );
 
   return (
-    <div className="p-8 text-white flex flex-col min-h-screen ">
+    <div className="p-8 text-white flex flex-col min-h-screen">
       <div className="max-w-6xl mx-auto w-full">
         <h1 className="text-3xl font-medium mb-8 text-center uppercase">
           Cadastro de Professores

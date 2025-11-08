@@ -7,40 +7,29 @@ export const getClassrooms = async (): Promise<Classroom[]> => {
   return response.data;
 };
 
-//  Criar nova turma
-export const createClassroom = async (
-  dto: CreateClassroomDTO,
-): Promise<void> => {
+// Criar nova turma
+export const createClassroom = async (dto: CreateClassroomDTO): Promise<void> => {
   await apiSpring.post("/classroom", dto);
 };
 
-//  Atualizar turma existente
-export const updateClassroom = async (
-  id: string,
-  dto: CreateClassroomDTO,
-): Promise<void> => {
+// Atualizar turma existente
+export const updateClassroom = async (id: string, dto: CreateClassroomDTO): Promise<void> => {
   await apiSpring.put(`/classroom/${id}`, dto);
 };
 
 // Adicionar alunos à turma
-export const addStudentsToClassroom = async (
-  id: string,
-  studentIds: string[],
-): Promise<void> => {
+export const addStudentsToClassroom = async (id: string, studentIds: string[]): Promise<void> => {
   await apiSpring.put(`/classroom/addStudents/${id}`, studentIds);
 };
 
 // Remover alunos da turma
-export const removeStudentsFromClassroom = async (
-  id: string,
-  studentIds: string[],
-): Promise<void> => {
+export const removeStudentsFromClassroom = async (id: string, studentIds: string[]): Promise<void> => {
   await apiSpring.delete(`/classroom/removeStudents/${id}`, {
     data: studentIds,
   });
 };
 
-//  Deletar turma
+// Deletar turma
 export const deleteClassroom = async (id: string): Promise<void> => {
   await apiSpring.delete(`/classroom/${id}`);
 };

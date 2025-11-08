@@ -5,12 +5,8 @@ import { Student, CreateStudentDTO } from "@/types/Student";
 import StudentForm from "@/components/cadastro/StudentForm";
 import StudentTable from "@/components/cadastro/StudentTable";
 import { Modal } from "@/components/ui/modal";
-import {
-  getStudents,
-  createStudent,
-  updateStudent,
-  deleteStudent,
-} from "@/lib/api/student";
+import { toast } from "sonner";
+import { createStudent, getStudents, updateStudent, deleteStudent } from "@/lib/api/student";
 
 const DEFAULT_PASSWORD = "12341234";
 
@@ -35,7 +31,7 @@ export default function AlunosPage() {
         : [];
       setStudents(normalized);
     } catch (error: any) {
-       if (error.response?.status === 404) {
+      if (error.response?.status === 404) {
         setStudents([]);
       } else {
         console.error("Erro ao buscar alunos:", error);
@@ -60,6 +56,7 @@ export default function AlunosPage() {
     await createStudent(dto);
     await fetchStudents();
     setIsModalOpen(false);
+    toast.success("Aluno cadastrado com sucesso!");
   };
 
   const handleUpdate = async (student: Student) => {
@@ -76,12 +73,42 @@ export default function AlunosPage() {
     await updateStudent(student.id, dto);
     await fetchStudents();
     setIsModalOpen(false);
+    toast.success("Aluno atualizado com sucesso!");
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir este aluno?")) return;
-    await deleteStudent(id);
-    fetchStudents();
+  const confirmDeleteStudent = (id: string) => {
+    toast.custom((t) => (
+      <div className="bg-[#1a1a1d] border border-orange-400/40 text-white p-4 rounded-xl shadow-md">
+        <p className="font-semibold mb-2">Excluir aluno?</p>
+        <p className="text-sm text-gray-300 mb-4">
+          Essa ação não pode ser desfeita.
+        </p>
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={() => toast.dismiss(t)}
+            className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-md text-sm"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={async () => {
+              try {
+                await deleteStudent(id);
+                toast.dismiss(t);
+                toast.success("Aluno excluído com sucesso!");
+                await fetchStudents();
+              } catch (error) {
+                console.error("Erro ao excluir aluno:", error);
+                toast.error("Erro ao excluir aluno.");
+              }
+            }}
+            className="bg-red-600 hover:bg-red-500 px-3 py-1 rounded-md text-sm"
+          >
+            Excluir
+          </button>
+        </div>
+      </div>
+    ));
   };
 
   const handleEdit = (student: Student) => {
@@ -109,7 +136,7 @@ export default function AlunosPage() {
   }, []);
 
   return (
-    <div className="p-8 text-white flex flex-col min-h-screen ">
+    <div className="p-8 text-white flex flex-col min-h-screen">
       <div className="max-w-6xl mx-auto w-full">
         <h1 className="text-3xl font-medium mb-8 text-center uppercase">
           Cadastro de Alunos
@@ -142,7 +169,7 @@ export default function AlunosPage() {
 
         <StudentTable
           students={filteredStudents}
-          onDelete={handleDelete}
+          onDelete={confirmDeleteStudent}
           onEdit={handleEdit}
         />
 
