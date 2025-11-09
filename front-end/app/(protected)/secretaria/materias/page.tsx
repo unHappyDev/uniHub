@@ -11,6 +11,7 @@ import {
   updateSubject,
   deleteSubject,
 } from "@/lib/api/subject";
+import { toast } from "sonner";
 
 export default function MateriasPage() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -21,15 +22,13 @@ export default function MateriasPage() {
   const fetchSubjects = async () => {
     try {
       const data = await getSubjects();
-
       const normalized: Subject[] = Array.isArray(data)
         ? data.map((s: any) => ({
-            id: s.subjectId ?? s.id,
+            subjectId: s.subjectId ?? s.id,
             subjectName: s.subjectName ?? s.name ?? "",
             workloadHours: s.workloadHours ?? s.cargaHoraria ?? 0,
           }))
         : [];
-
       setSubjects(normalized);
     } catch (error: any) {
       if (error.response?.status === 404) {
@@ -44,37 +43,50 @@ export default function MateriasPage() {
     await createSubject(subject);
     await fetchSubjects();
     setIsModalOpen(false);
+    toast.success("Matéria cadastrada com sucesso!");
   };
 
   const handleEdit = async (subject: Subject) => {
-    if (!subject.id) return;
-    await updateSubject(subject.id, subject);
+    if (!subject.subjectId) return;
+    await updateSubject(subject.subjectId, subject);
     await fetchSubjects();
     setIsModalOpen(false);
+    toast.success("Matéria atualizada com sucesso!");
   };
 
-  const handleDelete = async (id: string) => {
-    console.log("handleDelete chamado com id:", id);
-
-    if (!confirm("Tem certeza que deseja excluir esta matéria?")) return;
-
-    try {
-      console.log(" Enviando DELETE para:", `/subject/${id}`);
-
-      const response = await deleteSubject(id);
-
-      console.log("Resposta da API ao deletar:", response);
-
-      await fetchSubjects();
-    } catch (err: any) {
-      console.error("Erro ao deletar matéria:", err);
-
-      if (err.response) {
-        console.error("Resposta do servidor:", err.response.data);
-        console.error("Status:", err.response.status);
-        console.error("Headers:", err.response.headers);
-      }
-    }
+  const handleDelete = (id: string) => {
+    toast.custom((t) => (
+      <div className="bg-[#1a1a1d] border border-orange-400/40 text-white p-4 rounded-xl shadow-md">
+        <p className="font-semibold mb-2">Excluir matéria?</p>
+        <p className="text-sm text-gray-300 mb-4">
+          Essa ação não pode ser desfeita.
+        </p>
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={() => toast.dismiss(t)}
+            className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-md text-sm"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={async () => {
+              try {
+                await deleteSubject(id);
+                toast.dismiss(t);
+                toast.success("Matéria excluída com sucesso!");
+                await fetchSubjects();
+              } catch (error) {
+                console.error("Erro ao excluir matéria:", error);
+                toast.error("Erro ao excluir matéria.");
+              }
+            }}
+            className="bg-red-600 hover:bg-red-500 px-3 py-1 rounded-md text-sm"
+          >
+            Excluir
+          </button>
+        </div>
+      </div>
+    ));
   };
 
   const handleEditClick = (subject: Subject) => {
@@ -134,7 +146,7 @@ export default function MateriasPage() {
             onAdd={handleAdd}
             onEdit={handleEdit}
             editingSubject={editingSubject}
-            subjects={subjects} // ✅ passa a lista pra validar duplicados
+            subjects={subjects}
           />
         </Modal>
       </div>

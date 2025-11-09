@@ -16,7 +16,7 @@ export default function CourseTable({
   onEdit,
   onManageSubjects,
 }: CourseTableProps) {
-  // Ordena os cursos em ordem alfabética (A–Z)
+
   const sortedCourses = [...courses].sort((a, b) =>
     a.courseName.localeCompare(b.courseName, "pt", { sensitivity: "base" })
   );

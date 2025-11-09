@@ -107,7 +107,7 @@ public class ClassroomService {
             classroom.setSubject(subject);
         }
 
-        if (registerClassroomDTO.semester() != null && registerClassroomDTO.semester().isBlank()) {
+        if (registerClassroomDTO.semester() != null && !registerClassroomDTO.semester().isBlank()) {
 
             classroom.setSemester(registerClassroomDTO.semester());
         }

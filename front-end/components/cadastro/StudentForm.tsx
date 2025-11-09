@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { CreateStudentDTO, Student } from "@/types/Student";
 import { getCourses } from "@/lib/api/course";
+import { toast } from "sonner";
 
 interface Course {
   id: string;
@@ -29,33 +30,26 @@ export default function StudentForm({
     courseId: "",
   });
 
-  const [errorMessage, setErrorMessage] = useState<string | null>(null); // 🆕 estado para mensagem de erro
-
-  //  Carrega cursos ao iniciar
   useEffect(() => {
     async function fetchCourses() {
       try {
         const data = await getCourses();
-        console.log("📘 Cursos recebidos do backend:", data);
         setCourses(data);
-      } catch (err) {
-        console.error("❌ Erro ao buscar cursos:", err);
+      } catch {
+        toast.error("Erro ao carregar cursos.");
       }
     }
     fetchCourses();
   }, []);
 
-  //  Preenche ou limpa o form ao editar
   useEffect(() => {
     if (editingStudent) {
-      console.log("✏️ Editando aluno:", editingStudent);
-
       const matchedCourse = courses.find(
         (c) =>
           c.courseName.toLowerCase().trim() ===
           (typeof editingStudent.curso === "string"
             ? editingStudent.curso.toLowerCase().trim()
-            : editingStudent.curso?.courseName.toLowerCase().trim()),
+            : editingStudent.curso?.courseName.toLowerCase().trim())
       );
 
       setFormData({
@@ -67,33 +61,22 @@ export default function StudentForm({
           : editingStudent.courseId || "",
       });
     } else {
-      console.log("🆕 Novo aluno - limpando form");
-      setFormData({
-        nome: "",
-        email: "",
-        curso: "",
-        courseId: "",
-      });
+      setFormData({ nome: "", email: "", curso: "", courseId: "" });
     }
   }, [editingStudent, courses]);
 
-  // Atualiza estado do form
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }) as Student);
-    setErrorMessage(null); // 🆕 limpa erro quando usuário digita
   };
 
-  // Submete o form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("🚀 Submetendo formData:", formData);
-
     if (!formData.courseId) {
-      alert("Selecione um curso antes de cadastrar!");
+      toast.warning("Selecione um curso antes de cadastrar!");
       return;
     }
 
@@ -107,52 +90,25 @@ export default function StudentForm({
       },
     };
 
-    console.log(
-      "📤 Enviando aluno ao backend:",
-      JSON.stringify(studentDTO, null, 2),
-    );
-
     try {
       if (editingStudent) {
-        const updatedStudent: Student = {
+        await onEdit({
           ...editingStudent,
           nome: formData.nome,
           email: formData.email,
           curso: formData.curso,
           courseId: formData.courseId,
-        };
-        await onEdit(updatedStudent);
+        });
       } else {
         await onAdd(studentDTO as any);
       }
-
-      console.log("✅ Cadastro concluído!");
-      setFormData({
-        nome: "",
-        email: "",
-        curso: "",
-        courseId: "",
-      });
-      setErrorMessage(null); // limpa erro depois de sucesso
+      setFormData({ nome: "", email: "", curso: "", courseId: "" });
     } catch (error: any) {
-      console.error("❌ Erro ao enviar aluno:", error);
-
-      if (error.response) {
-        const status = error.response.status;
-
-        if (status === 409) {
-          setErrorMessage("Nome ou e-mail já existente!");
-        } else if (status === 401) {
-          setErrorMessage("Nome ou e-mail já existente!");
-        } else if (status === 400) {
-          setErrorMessage(
-            "Dados inválidos. Verifique os campos e tente novamente.",
-          );
-        } else {
-          setErrorMessage("Erro ao cadastrar aluno. Tente novamente.");
-        }
+      const status = error?.response?.status;
+      if (status === 409 || status === 401) {
+        toast.error("Nome ou e-mail já existente!");
       } else {
-        setErrorMessage("Erro de conexão com o servidor.");
+        toast.error("Erro ao cadastrar aluno. Tente novamente.");
       }
     }
   };
@@ -167,7 +123,7 @@ export default function StudentForm({
           value={formData.nome}
           onChange={handleChange}
           required
-          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:border-orange-400/10 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-5 py-3 rounded-xl outline-none shadow-inner"
+          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40 transition-all text-white px-5 py-3 rounded-xl shadow-inner"
         />
       </div>
 
@@ -179,7 +135,7 @@ export default function StudentForm({
           value={formData.email}
           onChange={handleChange}
           required
-          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:border-orange-400/10 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-5 py-3 rounded-xl outline-none shadow-inner"
+          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40 transition-all text-white px-5 py-3 rounded-xl shadow-inner"
         />
       </div>
 
@@ -190,7 +146,7 @@ export default function StudentForm({
           value={formData.courseId ?? ""}
           onChange={handleChange}
           required
-          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:border-orange-400/10 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-5 py-3 rounded-xl outline-none shadow-inner appearance-none"
+          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40 transition-all text-white px-5 py-3 rounded-xl shadow-inner"
         >
           <option value="">Selecione um curso</option>
           {courses.map((course) => (
@@ -203,16 +159,10 @@ export default function StudentForm({
 
       <button
         type="submit"
-        className="w-full bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-semibold px-6 py-3 rounded-xl  transition-all  uppercase cursor-pointer"
+        className="w-full bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-semibold px-6 py-3 rounded-xl transition-all uppercase cursor-pointer"
       >
         {editingStudent ? "Salvar Alterações" : "Cadastrar Aluno"}
       </button>
-
-      {errorMessage && (
-        <p className="text-red-500 text-center mt-2 font-semibold">
-          {errorMessage}
-        </p>
-      )}
     </form>
   );
 }

@@ -1,12 +1,10 @@
-import React from 'react'; 
-import { Toaster } from '@/components/ui/sonner';
+import React from 'react';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div>
       
       {children}
-      <Toaster richColors position="top-right" />
     </div>
   );
 }

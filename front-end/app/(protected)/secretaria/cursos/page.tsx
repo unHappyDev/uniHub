@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { Course, CreateCourseDTO } from "@/types/Course";
 import {
   getCourses,
@@ -10,7 +11,6 @@ import {
 } from "@/lib/api/course";
 import CourseForm from "@/components/cadastro/CourseForm";
 import CourseTable from "@/components/cadastro/CourseTable";
-
 import { Modal } from "@/components/ui/modal";
 import CourseSubjectsManager from "@/components/cadastro/CourseSubjecttManager";
 
@@ -32,38 +32,76 @@ export default function CursosPage() {
         setCourses([]);
       } else {
         console.error("Erro ao buscar cursos:", error?.message || error);
+        toast.error("Erro ao buscar cursos.");
       }
     }
   };
 
   const handleAdd = async (course: CreateCourseDTO) => {
-    await createCourse(course);
-    await fetchCourses();
-    setIsModalOpen(false);
+    try {
+      await createCourse(course);
+      await fetchCourses();
+      toast.success("Curso cadastrado com sucesso!");
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Erro ao cadastrar curso:", error);
+      toast.error("Erro ao cadastrar o curso.");
+    }
   };
 
   const handleUpdate = async (course: Course) => {
     if (!course.id) return;
-    await updateCourse(course.id, { courseName: course.courseName });
-    await fetchCourses();
-    setIsModalOpen(false);
+    try {
+      await updateCourse(course.id, { courseName: course.courseName });
+      await fetchCourses();
+      toast.success("Curso atualizado com sucesso!");
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Erro ao atualizar curso:", error);
+      toast.error("Erro ao atualizar o curso.");
+    }
   };
 
-  const handleDelete = async (id: string) => {
-  if (!confirm("Tem certeza que deseja excluir este curso?")) return;
-
-  try {
-    await deleteCourse(id);
-    await fetchCourses();
-  } catch (error: any) {
-    if (error?.response?.status === 409) {
-      alert("Não é possível excluir este curso pois há alunos vinculados a ele.");
-    } else {
-      alert("Erro ao excluir o curso.");
-      console.error(error);
-    }
-  }
-};
+  const handleDelete = (id: string) => {
+    const t = toast.custom((t) => (
+      <div className="bg-[#1a1a1d] border border-orange-500/30 text-white p-5 rounded-2xl shadow-lg max-w-sm">
+        <p className="text-lg font-semibold mb-2">Excluir curso?</p>
+        <p className="text-sm text-gray-300 mb-4">
+          Essa ação não pode ser desfeita.
+        </p>
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={() => toast.dismiss(t)}
+            className="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-all"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={async () => {
+              toast.dismiss(t);
+              try {
+                await deleteCourse(id);
+                await fetchCourses();
+                toast.success("Curso excluído com sucesso!");
+              } catch (error: any) {
+                if (error?.response?.status === 409) {
+                  toast.error(
+                    "Não é possível excluir este curso, pois há alunos vinculados."
+                  );
+                } else {
+                  toast.error("Erro ao excluir o curso.");
+                  console.error(error);
+                }
+              }
+            }}
+            className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition-all"
+          >
+            Excluir
+          </button>
+        </div>
+      </div>
+    ));
+  };
 
   const handleEdit = (course: Course) => {
     setEditingCourse(course);
@@ -76,7 +114,7 @@ export default function CursosPage() {
   };
 
   const filteredCourses = courses.filter((c) =>
-    c.courseName.toLowerCase().includes(filterName.toLowerCase()),
+    c.courseName.toLowerCase().includes(filterName.toLowerCase())
   );
 
   const handleManageSubjects = (course: Course) => {
@@ -85,7 +123,7 @@ export default function CursosPage() {
 
   const closeSubjectsModal = () => {
     setManagingCourse(null);
-    fetchCourses(); 
+    fetchCourses();
   };
 
   useEffect(() => {
