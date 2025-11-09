@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
 import { CreateClassroomDTO, Classroom } from "@/types/Classroom";
 import { getTeachers } from "@/lib/api/teacher";
@@ -54,6 +54,9 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [studentsDialogOpen, setStudentsDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const errorToastRef = useRef(false); // mantém estado do toast
 
   const formatDateForInput = (isoString: string) => {
     if (!isoString) return "";
@@ -101,8 +104,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
           );
 
           const matchedSubject = s.find(
-            (sub: Subject) =>
-              normalize(sub.subjectName) === normalize(classroom.subject)
+            (sub: Subject) => normalize(sub.subjectName) === normalize(classroom.subject)
           );
 
           const matchedStudents = classroom.students
@@ -123,9 +125,14 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
             studentsIds: matchedStudents,
           });
         }
+
+        errorToastRef.current = false; 
       } catch (err) {
         console.error("Erro ao carregar dados:", err);
-        toast.error("Erro ao carregar dados.");
+        if (!errorToastRef.current) {
+          toast.error("Erro ao carregar dados.");
+          errorToastRef.current = true;
+        }
       }
     };
 
@@ -148,6 +155,8 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return; // previne submit duplo
+    setIsSubmitting(true);
 
     const payload: CreateClassroomDTO = {
       professorId: formData.professorId?.trim(),
@@ -197,8 +206,11 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
     } catch (error) {
       console.error("Erro ao salvar turma:", error);
       toast.error("Erro ao salvar turma.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
 
 
   return (
