@@ -56,7 +56,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
   const [studentsDialogOpen, setStudentsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const errorToastRef = useRef(false); // mantém estado do toast
+  const errorToastRef = useRef(false);
 
   const formatDateForInput = (isoString: string) => {
     if (!isoString) return "";
@@ -155,7 +155,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isSubmitting) return; // previne submit duplo
+    if (isSubmitting) return;
     setIsSubmitting(true);
 
     const payload: CreateClassroomDTO = {
