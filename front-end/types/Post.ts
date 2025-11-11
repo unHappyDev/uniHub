@@ -3,10 +3,7 @@ export interface Post {
   title: string;
   body: string;
   createdAt: string;
-  owner: {
-    id: string;
-    username: string;
-  };
+  owner: string;
 }
 
 export interface CreatePostDTO {

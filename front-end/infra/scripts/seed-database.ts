@@ -10,36 +10,10 @@ async function main() {
   console.log("> Seeding database...");
   await execAsync(`npx prisma migrate reset --force --skip-seed`);
 
-  await seedUser(
-    "admin",
-    "admin@admin.com",
-    "$2a$04$LfBpkw0M8qaMr/JvrafNjuD6EFp58MSCY6JHl3VgEGxSolAV9uhjy",
-    "ADMIN",
-  );
-  await seedUser(
-    "user",
-    "user@user.com",
-    "$2a$04$LfBpkw0M8qaMr/JvrafNjuD6EFp58MSCY6JHl3VgEGxSolAV9uhjy",
-    "USER",
-  );
-  await seedUser(
-    "joao",
-    "joao@user.com",
-    "$2a$04$LfBpkw0M8qaMr/JvrafNjuD6EFp58MSCY6JHl3VgEGxSolAV9uhjy",
-    "USER",
-  );
-  await seedUser(
-    "professor",
-    "professor@user.com",
-    "$2a$04$LfBpkw0M8qaMr/JvrafNjuD6EFp58MSCY6JHl3VgEGxSolAV9uhjy",
-    "PROFESSOR",
-  );
-
   console.log("\n> Database seeded!");
   console.log("------------------------------");
   console.log("> You can now log in with:");
   console.log("> admin@admin.com / 12341234");
-  console.log("> user@user.com / 12341234");
   console.log("------------------------------");
 }
 

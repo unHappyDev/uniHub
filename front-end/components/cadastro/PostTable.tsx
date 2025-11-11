@@ -9,6 +9,7 @@ interface PostTableProps {
 }
 
 export default function PostTable({ posts, onDelete, onEdit }: PostTableProps) {
+
   return (
     <div className="mt-6">
       {/* Desktop */}
@@ -36,7 +37,7 @@ export default function PostTable({ posts, onDelete, onEdit }: PostTableProps) {
                   className="border-t border-orange-500/30 transition hover:bg-neutral-900"
                 >
                   <td className="px-4 py-3">{p.title}</td>
-                  <td className="px-4 py-3">{p.owner?.username ?? "—"}</td>
+                  <td className="px-4 py-3">{p.owner ?? "—"}</td>
                   <td className="px-4 py-3">
                     {new Date(p.createdAt).toLocaleDateString("pt-BR")}
                   </td>
@@ -80,7 +81,7 @@ export default function PostTable({ posts, onDelete, onEdit }: PostTableProps) {
               </p>
               <p>
                 <span className="font-semibold text-orange-500">Autor:</span>{" "}
-                {p.owner?.username ?? "—"}
+                {p.owner ?? "—"}
               </p>
               <p>
                 <span className="font-semibold text-orange-500">Data:</span>{" "}

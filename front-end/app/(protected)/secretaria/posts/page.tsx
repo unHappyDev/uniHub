@@ -91,7 +91,7 @@ export default function PostsPage() {
   const filteredPosts = posts.filter((p) => {
     const matchesTitle = p.title?.toLowerCase().includes(filterTitle.toLowerCase());
     const matchesAuthor =
-      p.owner?.username?.toLowerCase().includes(filterAuthor.toLowerCase()) ?? false;
+      p.owner.toLowerCase().includes(filterAuthor.toLowerCase()) ?? false;
     return matchesTitle && matchesAuthor;
   });
 
