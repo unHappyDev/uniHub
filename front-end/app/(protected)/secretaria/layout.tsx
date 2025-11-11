@@ -21,7 +21,7 @@ const navMain = [
   { title: "Cursos", url: "/secretaria/cursos", icon: GraduationCap },
   { title: "Turmas", url: "/secretaria/turmas", icon: Users },
   { title: "Notas", url: "/secretaria/notas", icon: ListOrdered },
-  { title: "Post", url: "/secretaria/posts", icon: AlertTriangle },
+  { title: "Avisos", url: "/secretaria/avisos", icon: AlertTriangle },
   
 ];
 

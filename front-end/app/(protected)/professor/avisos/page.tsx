@@ -12,6 +12,7 @@ export default function PostsPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
+  const [viewingPost, setViewingPost] = useState<Post | null>(null);
   const [filterTitle, setFilterTitle] = useState("");
   const [filterAuthor, setFilterAuthor] = useState("");
 
@@ -83,15 +84,23 @@ export default function PostsPage() {
     setIsModalOpen(true);
   };
 
+  const handleView = (post: Post) => {
+    setViewingPost(post);
+  };
+
   const closeModal = () => {
     setEditingPost(null);
     setIsModalOpen(false);
   };
 
+  const closeViewModal = () => {
+    setViewingPost(null);
+  };
+
   const filteredPosts = posts.filter((p) => {
     const matchesTitle = p.title?.toLowerCase().includes(filterTitle.toLowerCase());
     const matchesAuthor =
-      p.owner.toLowerCase().includes(filterAuthor.toLowerCase()) ?? false;
+      p.owner?.toLowerCase().includes(filterAuthor.toLowerCase()) ?? false;
     return matchesTitle && matchesAuthor;
   });
 
@@ -106,7 +115,6 @@ export default function PostsPage() {
           Gerenciamento de Posts
         </h1>
 
-        {/* Filtros e botão */}
         <div className="bg-glass border border-orange-400/40 rounded-2xl p-6 mb-10 shadow-glow transition-all hover:shadow-orange-500/30">
           <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
             <input
@@ -132,10 +140,13 @@ export default function PostsPage() {
           </div>
         </div>
 
-        {/* Tabela */}
-        <PostTable posts={filteredPosts} onDelete={confirmDeletePost} onEdit={handleEdit} />
+        <PostTable
+          posts={filteredPosts}
+          onDelete={confirmDeletePost}
+          onEdit={handleEdit}
+          onView={handleView} 
+        />
 
-        {/* Modal */}
         <Modal isOpen={isModalOpen} onClose={closeModal}>
           <h2 className="text-xl font-semibold mb-4 text-center text-white uppercase">
             {editingPost ? "Editar Post" : "Novo Post"}
@@ -146,6 +157,23 @@ export default function PostsPage() {
             editingPost={editingPost}
           />
         </Modal>
+
+        {viewingPost && (
+          <Modal isOpen={!!viewingPost} onClose={closeViewModal}>
+            <div className="text-white max-w-2xl mx-auto">
+              <h2 className="text-2xl font-bold text-orange-400 mb-2 text-center">
+                {viewingPost.title}
+              </h2>
+              <p className="text-sm text-gray-400 text-center mb-6">
+                Por {viewingPost.owner ?? "—"} em{" "}
+                {new Date(viewingPost.createdAt).toLocaleDateString("pt-BR")}
+              </p>
+              <div className="bg-[#121212b0] border border-orange-400/20 rounded-xl p-5 text-gray-200 whitespace-pre-line leading-relaxed break-all">
+                {viewingPost.body || "Sem conteúdo disponível."}
+              </div>
+            </div>
+          </Modal>
+        )}
       </div>
     </div>
   );

@@ -6,10 +6,15 @@ interface PostTableProps {
   posts: Post[];
   onDelete: (id: string) => Promise<void> | void;
   onEdit: (post: Post) => void;
+  onView: (post: Post) => void;
 }
 
-export default function PostTable({ posts, onDelete, onEdit }: PostTableProps) {
-
+export default function PostTable({
+  posts,
+  onDelete,
+  onEdit,
+  onView,
+}: PostTableProps) {
   return (
     <div className="mt-6">
       {/* Desktop */}
@@ -26,7 +31,10 @@ export default function PostTable({ posts, onDelete, onEdit }: PostTableProps) {
           <tbody>
             {posts.length === 0 ? (
               <tr>
-                <td colSpan={4} className="text-center py-6 text-gray-400 bg-neutral-900">
+                <td
+                  colSpan={4}
+                  className="text-center py-6 text-gray-400 bg-neutral-900"
+                >
                   Nenhum post encontrado
                 </td>
               </tr>
@@ -34,7 +42,8 @@ export default function PostTable({ posts, onDelete, onEdit }: PostTableProps) {
               posts.map((p) => (
                 <tr
                   key={p.postId}
-                  className="border-t border-orange-500/30 transition hover:bg-neutral-900"
+                  onClick={() => onView(p)}
+                  className="border-t border-orange-500/30 transition hover:bg-neutral-900 cursor-pointer"
                 >
                   <td className="px-4 py-3">{p.title}</td>
                   <td className="px-4 py-3">{p.owner ?? "—"}</td>
@@ -44,13 +53,19 @@ export default function PostTable({ posts, onDelete, onEdit }: PostTableProps) {
                   <td className="px-4 py-3 text-center">
                     <div className="flex justify-center gap-3">
                       <button
-                        onClick={() => onEdit(p)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEdit(p);
+                        }}
                         className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm transition"
                       >
                         Editar
                       </button>
                       <button
-                        onClick={() => p.postId && onDelete(p.postId)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (p.postId) onDelete(p.postId);
+                        }}
                         className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm transition"
                       >
                         Excluir
@@ -74,10 +89,12 @@ export default function PostTable({ posts, onDelete, onEdit }: PostTableProps) {
           posts.map((p) => (
             <div
               key={p.postId}
-              className="flex flex-col gap-2 bg-glass border border-orange-400/40 rounded-2xl p-7 text-gray-200 shadow-glow transition-all hover:shadow-orange-500/30"
+              onClick={() => onView(p)}
+              className="flex flex-col gap-2 bg-glass border border-orange-400/40 rounded-2xl p-7 text-gray-200 shadow-glow transition-all hover:shadow-orange-500/30 cursor-pointer"
             >
               <p>
-                <span className="font-semibold text-orange-500">Título:</span> {p.title}
+                <span className="font-semibold text-orange-500">Título:</span>{" "}
+                {p.title}
               </p>
               <p>
                 <span className="font-semibold text-orange-500">Autor:</span>{" "}
@@ -90,13 +107,19 @@ export default function PostTable({ posts, onDelete, onEdit }: PostTableProps) {
 
               <div className="flex justify-end gap-2 mt-3">
                 <button
-                  onClick={() => onEdit(p)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(p);
+                  }}
                   className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm transition"
                 >
                   Editar
                 </button>
                 <button
-                  onClick={() => p.postId && onDelete(p.postId)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (p.postId) onDelete(p.postId);
+                  }}
                   className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm transition"
                 >
                   Excluir

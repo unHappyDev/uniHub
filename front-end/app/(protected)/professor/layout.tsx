@@ -12,10 +12,10 @@ import { Separator } from "@radix-ui/react-separator";
 import { Book, HomeIcon, AlertTriangle, CalendarDays } from "lucide-react";
 
 const navMain = [
-  { title: "início", url: "/aluno", icon: HomeIcon },
-  { title: "notas", url: "/aluno/notas", icon: Book },
-  { title: "horário", url: "/aluno/horario", icon: CalendarDays},
-  { title: "avisos", url: "/aluno/avisos", icon: AlertTriangle },
+  { title: "início", url: "/professor", icon: HomeIcon },
+  { title: "notas", url: "/professor/notas", icon: Book },
+  { title: "horário", url: "/professor/horario", icon: CalendarDays},
+  { title: "avisos", url: "/professor/avisos", icon: AlertTriangle },
 ];
 
 const navSecondary = [{ title: "Ajuda", url: "/ajuda" }];
