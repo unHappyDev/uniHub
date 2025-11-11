@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.pifsite.application.exceptions.UnauthorizedActionException;
 import com.pifsite.application.exceptions.ResourceNotFoundException;
 import com.pifsite.application.repository.PostRepository;
+import com.pifsite.application.security.UserRoles;
 import com.pifsite.application.dto.CreatePostDTO;
 import com.pifsite.application.entities.Post;
 import com.pifsite.application.entities.User;
@@ -52,6 +53,15 @@ public class PostService {
         Post post = this.postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post with ID " + id + " not found"));
 
+
+        Authentication userData = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) userData.getPrincipal();
+
+        if (!post.getOwner().equals(user)) {
+
+            throw new UnauthorizedActionException("you can't update a post that is not yours");
+        }
+
         if (postDTO.title() != null && !postDTO.title().isBlank()) {
 
             post.setTitle(postDTO.title());
@@ -72,7 +82,7 @@ public class PostService {
         Authentication userData = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) userData.getPrincipal();
 
-        if (!post.getOwner().equals(user)) {
+        if (!post.getOwner().equals(user) && !user.getRole().equals(UserRoles.ADMIN)) {
 
             throw new UnauthorizedActionException("you can't delete a post that is not yours");
         }
