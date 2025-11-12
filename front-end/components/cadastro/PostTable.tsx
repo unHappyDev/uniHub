@@ -42,7 +42,7 @@ export default function PostTable({
               posts.map((p) => (
                 <tr
                   key={p.postId}
-                  onClick={() => onView(p)}
+                  onClick={() => onView(p)} 
                   className="border-t border-orange-500/30 transition hover:bg-neutral-900 cursor-pointer"
                 >
                   <td className="px-4 py-3">{p.title}</td>

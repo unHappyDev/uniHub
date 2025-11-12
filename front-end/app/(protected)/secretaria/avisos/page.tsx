@@ -8,6 +8,21 @@ import { Modal } from "@/components/ui/modal";
 import { toast } from "sonner";
 import { getPosts, createPost, updatePost, deletePost } from "@/lib/api/post";
 
+function handleApiError(error: any, action: string) {
+
+  console.warn(`Erro ao ${action} post:`, error?.response?.data || error);
+
+  if (error.response?.status === 403) {
+    toast.error(`Você não tem permissão para ${action} este post.`);
+  } else if (error.response?.status === 401) {
+    toast.error("Sessão expirada. Faça login novamente.");
+  } else {
+    toast.error(`Erro ao ${action} post.`);
+  }
+
+  return;
+}
+
 export default function PostsPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,24 +39,34 @@ export default function PostsPage() {
       if (error.response?.status === 404) {
         setPosts([]);
       } else {
-        console.error("Erro ao buscar posts:", error);
+        handleApiError(error, "buscar");
       }
     }
   };
 
   const handleAdd = async (post: CreatePostDTO) => {
-    await createPost(post);
-    await fetchPosts();
-    setIsModalOpen(false);
-    toast.success("Post criado com sucesso!");
+    try {
+      await createPost(post);
+      await fetchPosts();
+      setIsModalOpen(false);
+      toast.success("Post criado com sucesso!");
+    } catch (error: any) {
+      handleApiError(error, "criar");
+      return;
+    }
   };
 
   const handleUpdate = async (post: Post) => {
     if (!post.postId) return;
-    await updatePost(post.postId, { title: post.title, body: post.body });
-    await fetchPosts();
-    setIsModalOpen(false);
-    toast.success("Post atualizado com sucesso!");
+    try {
+      await updatePost(post.postId, { title: post.title, body: post.body });
+      await fetchPosts();
+      setIsModalOpen(false);
+      toast.success("Post atualizado com sucesso!");
+    } catch (error: any) {
+      handleApiError(error, "editar");
+      return;
+    }
   };
 
   const confirmDeletePost = (id: string) => {
@@ -65,9 +90,10 @@ export default function PostsPage() {
                 toast.dismiss(t);
                 toast.success("Post excluído com sucesso!");
                 await fetchPosts();
-              } catch (error) {
-                console.error("Erro ao excluir post:", error);
-                toast.error("Erro ao excluir post.");
+              } catch (error: any) {
+                toast.dismiss(t);
+                handleApiError(error, "excluir");
+                return;
               }
             }}
             className="bg-red-600 hover:bg-red-500 px-3 py-1 rounded-md text-sm"
@@ -98,7 +124,9 @@ export default function PostsPage() {
   };
 
   const filteredPosts = posts.filter((p) => {
-    const matchesTitle = p.title?.toLowerCase().includes(filterTitle.toLowerCase());
+    const matchesTitle = p.title
+      ?.toLowerCase()
+      .includes(filterTitle.toLowerCase());
     const matchesAuthor =
       p.owner?.toLowerCase().includes(filterAuthor.toLowerCase()) ?? false;
     return matchesTitle && matchesAuthor;
@@ -144,7 +172,7 @@ export default function PostsPage() {
           posts={filteredPosts}
           onDelete={confirmDeletePost}
           onEdit={handleEdit}
-          onView={handleView} 
+          onView={handleView}
         />
 
         <Modal isOpen={isModalOpen} onClose={closeModal}>
@@ -168,7 +196,7 @@ export default function PostsPage() {
                 Por {viewingPost.owner ?? "—"} em{" "}
                 {new Date(viewingPost.createdAt).toLocaleDateString("pt-BR")}
               </p>
-              <div className="bg-[#121212b0] border border-orange-400/20 rounded-xl p-5 text-gray-200 whitespace-pre-line leading-relaxed break-all">
+              <div className="bg-[#121212b0] border border-orange-400/20 rounded-xl p-5 text-gray-200 whitespace-pre-line leading-relaxed">
                 {viewingPost.body || "Sem conteúdo disponível."}
               </div>
             </div>

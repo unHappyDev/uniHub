@@ -47,8 +47,8 @@ export default function PostForm({ onAdd, onEdit, editingPost }: PostFormProps) 
         await onAdd(formData);
       }
       setFormData({ title: "", body: "" });
-    } catch {
-      toast.error("Erro ao salvar o post.");
+    } catch (error) {
+      console.error("Erro ao salvar post:", error);
     }
   };
 
