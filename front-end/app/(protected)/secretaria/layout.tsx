@@ -22,6 +22,7 @@ const navMain = [
   { title: "Turmas", url: "/secretaria/turmas", icon: Users },
   { title: "Notas", url: "/secretaria/notas", icon: ListOrdered },
   { title: "Avisos", url: "/secretaria/avisos", icon: AlertTriangle },
+  { title: "Presenças", url: "/secretaria/attendance", icon: AlertTriangle },
   
 ];
 
