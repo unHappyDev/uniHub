@@ -43,6 +43,10 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
+        // System.out.println("----------------------------------------------");
+        // System.out.println(path);
+        // System.out.println("----------------------------------------------");
+
         if (path.startsWith("/swagger-ui")
                 || path.startsWith("/v3/api-docs")
                 || path.equals("/swagger-ui.html")
@@ -55,7 +59,9 @@ public class SecurityFilter extends OncePerRequestFilter {
 
             String token = this.recoverToken(request);
 
-            // System.out.println(token);
+            System.out.println("----------------------------------------------");
+            System.out.println(token);
+            System.out.println("----------------------------------------------");
 
             Session session = sessionService.validateSession(token);
 
