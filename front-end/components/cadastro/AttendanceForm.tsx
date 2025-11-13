@@ -116,7 +116,7 @@ export default function AttendanceForm({ onSubmit, defaultValues }: Props) {
                   onValueChange={field.onChange}
                   value={field.value || ""}
                 >
-                  <SelectTrigger className="w-full bg-[#1a1a1dc3] border border-orange-400/40 text-white">
+                  <SelectTrigger className="w-full bg-[#1a1a1dc3] border border-orange-400/40 text-white cursor-pointer">
                     <SelectValue placeholder="Selecione um aluno" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#151a1b] text-white border border-orange-400/40 z-[9999]">
@@ -150,7 +150,7 @@ export default function AttendanceForm({ onSubmit, defaultValues }: Props) {
                   onValueChange={field.onChange}
                   value={field.value || ""}
                 >
-                  <SelectTrigger className="w-full bg-[#1a1a1dc3] border border-orange-400/40 text-white">
+                  <SelectTrigger className="w-full bg-[#1a1a1dc3] border border-orange-400/40 text-white cursor-pointer">
                     <SelectValue placeholder="Selecione uma turma" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#151a1b] text-white border border-orange-400/40 z-[9999]">
@@ -187,7 +187,7 @@ export default function AttendanceForm({ onSubmit, defaultValues }: Props) {
                   type="datetime-local"
                   {...field}
                   value={field.value ? formatDateForInput(field.value) : ""}
-                  className="w-full bg-[#1a1a1dc3] border border-orange-400/40 text-white"
+                  className="w-full bg-[#1a1a1dc3] border border-orange-400/40 text-white cursor-pointer"
                 />
               </FormControl>
               <FormMessage />
@@ -202,7 +202,8 @@ export default function AttendanceForm({ onSubmit, defaultValues }: Props) {
             <FormItem className="flex items-center justify-between border p-3 rounded-lg bg-[#1a1a1dc3]">
               <FormLabel>Presente?</FormLabel>
               <FormControl>
-                <Switch
+                <Switch 
+                  className="cursor-pointer"
                   checked={field.value}
                   onCheckedChange={field.onChange}
                 />
@@ -213,7 +214,7 @@ export default function AttendanceForm({ onSubmit, defaultValues }: Props) {
 
         <Button
           type="submit"
-          className="w-full bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white"
+          className="w-full bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white cursor-pointer"
         >
           Salvar
         </Button>

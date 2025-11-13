@@ -224,7 +224,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
             setFormData((prev) => ({ ...prev, professorId: value }))
           }
         >
-          <SelectTrigger className="w-full bg-[#1a1a1dc3] border border-orange-400/40 text-white">
+          <SelectTrigger className="w-full bg-[#1a1a1dc3] border border-orange-400/40 text-white cursor-pointer">
             <SelectValue placeholder="Selecione um professor" />
           </SelectTrigger>
           <SelectContent className="bg-[#151a1b] text-white">
@@ -246,7 +246,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
             setFormData((prev) => ({ ...prev, subjectId: value }))
           }
         >
-          <SelectTrigger className="w-full bg-[#1a1a1dc3] border border-orange-400/40 text-white">
+          <SelectTrigger className="w-full bg-[#1a1a1dc3] border border-orange-400/40 text-white cursor-pointer">
             <SelectValue placeholder="Selecione uma matéria" />
           </SelectTrigger>
           <SelectContent className="bg-[#151a1b] text-white">
@@ -270,7 +270,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
           placeholder="Ex: 2025.1"
           required
           className="w-full bg-[#1a1a1dc3] border border-orange-400/40 
-                     text-white px-5 py-3 rounded-xl outline-none"
+                     text-white px-5 py-3 rounded-xl outline-none cursor-pointer"
         />
       </div>
 
@@ -285,7 +285,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
             onChange={handleChange}
             required
             className="w-full bg-[#1a1a1dc3] border border-orange-400/40 
-                       text-white px-5 py-3 rounded-xl outline-none"
+                       text-white px-5 py-3 rounded-xl outline-none cursor-pointer"
           />
         </div>
         <div>
@@ -297,7 +297,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
             onChange={handleChange}
             required
             className="w-full bg-[#1a1a1dc3] border border-orange-400/40 
-                       text-white px-5 py-3 rounded-xl outline-none"
+                       text-white px-5 py-3 rounded-xl outline-none cursor-pointer"
           />
         </div>
       </div>
@@ -310,7 +310,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
             <Button
               type="button"
               className="w-full bg-[#1a1a1dc3] border border-orange-400/40 
-                         text-white px-5 py-3 rounded-xl justify-between"
+                         text-white px-5 py-3 rounded-xl justify-between cursor-pointer"
             >
               {formData.studentsIds.length > 0
                 ? `${formData.studentsIds.length} aluno(s) selecionado(s)`
@@ -318,7 +318,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
             </Button>
           </DialogTrigger>
 
-          <DialogContent className="bg-[#111] border border-orange-400/40 text-white">
+          <DialogContent className="bg-[#111] border border-orange-400/40 text-white cursor-pointer">
             <DialogHeader>
               <DialogTitle>Selecionar alunos</DialogTitle>
             </DialogHeader>
@@ -345,7 +345,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
                 onClick={() => setStudentsDialogOpen(false)}
                 className="bg-gradient-to-r from-orange-500/50 to-yellow-400/30 
                            hover:from-orange-500/60 hover:to-yellow-400/40 
-                           text-white font-semibold px-4 py-3 rounded-xl uppercase"
+                           text-white font-semibold px-4 py-3 rounded-xl uppercase cursor-pointer"
               >
                 Concluir
               </Button>
@@ -359,13 +359,13 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         <Button
           type="button"
           onClick={onClose}
-          className="bg-gray-700 hover:bg-gray-600 text-white font-semibold px-4 py-3 rounded-xl uppercase"
+          className="bg-gray-700 hover:bg-gray-600 text-white font-semibold px-4 py-3 rounded-xl uppercase cursor-pointer"
         >
           Cancelar
         </Button>
         <Button
           type="submit"
-          className="bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-semibold px-4 py-3 rounded-xl uppercase"
+          className="bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-semibold px-4 py-3 rounded-xl uppercase cursor-pointer"
         >
           {classroom ? "Salvar Alterações" : "Cadastrar Turma"}
         </Button>

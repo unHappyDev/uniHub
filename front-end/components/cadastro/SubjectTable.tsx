@@ -39,10 +39,10 @@ export default function SubjectTable({
                   <td className="px-4 py-3">{s.workloadHours}h</td>
                   <td className="px-4 py-3 text-center">
                     <div className="flex justify-center gap-3">
-                      <button onClick={() => onEdit(s)} className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm">
+                      <button onClick={() => onEdit(s)} className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm cursor-pointer">
                         Editar
                       </button>
-                      <button onClick={() => onDelete(s.subjectId)} className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm">
+                      <button onClick={() => onDelete(s.subjectId)} className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm cursor-pointer">
                         Excluir
                       </button>
                     </div>
@@ -66,10 +66,10 @@ export default function SubjectTable({
               <p><span className="font-semibold text-orange-500">Matéria:</span> {s.subjectName}</p>
               <p><span className="font-semibold text-orange-500">Carga Horária:</span> {s.workloadHours}h</p>
               <div className="flex justify-end gap-2 mt-3">
-                <button onClick={() => onEdit(s)} className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm">
+                <button onClick={() => onEdit(s)} className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm cursor-pointer">
                   Editar
                 </button>
-                <button onClick={() => onDelete(s.subjectId)} className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm">
+                <button onClick={() => onDelete(s.subjectId)} className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm transition cursor-pointer">
                   Excluir
                 </button>
               </div>

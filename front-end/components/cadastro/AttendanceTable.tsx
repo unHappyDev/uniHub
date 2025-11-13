@@ -29,8 +29,8 @@ export default function AttendanceTable({ data, onEdit, onDelete }: Props) {
             <td className="p-2">{new Date(att.attendanceDate).toLocaleString()}</td>
             <td className="p-2">{att.presence ? "✅" : "❌"}</td>
             <td className="p-2 flex gap-2 justify-center">
-              <Button size="sm" onClick={() => onEdit(att)}>Editar</Button>
-              <Button variant="destructive" size="sm" onClick={() => onDelete(att.id)}>
+              <Button className="cursor-pointer" size="sm" onClick={() => onEdit(att)}>Editar</Button>
+              <Button className="cursor-pointer" variant="destructive" size="sm" onClick={() => onDelete(att.id)}>
                 Excluir
               </Button>
             </td>

@@ -57,7 +57,7 @@ export default function PostTable({
                           e.stopPropagation();
                           onEdit(p);
                         }}
-                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm transition"
+                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm transition cursor-pointer"
                       >
                         Editar
                       </button>
@@ -66,7 +66,7 @@ export default function PostTable({
                           e.stopPropagation();
                           if (p.postId) onDelete(p.postId);
                         }}
-                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm transition"
+                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm transition cursor-pointer"
                       >
                         Excluir
                       </button>
