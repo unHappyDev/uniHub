@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import apiNext from "./clientNext"; // ✅ login vai para Next.js
+import apiNext from "./clientNext";
 
 interface LoginCredentials {
   email: string;

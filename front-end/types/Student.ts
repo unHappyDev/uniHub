@@ -1,4 +1,3 @@
-// Tipo usado no front-end
 export interface Student {
   id?: string;
   nome: string;
@@ -7,7 +6,6 @@ export interface Student {
   courseId: string;
 }
 
-// Tipo usado ao enviar/criar no backend
 export interface CreateStudentDTO {
   userId?: string | null;
   registerUser: {
