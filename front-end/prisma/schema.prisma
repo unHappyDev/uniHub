@@ -13,6 +13,17 @@ enum Role {
   ADMIN
   MODERATOR
   PROFESSOR
+  STUDENT
+}
+
+enum WeekDay {
+  SEGUNDA
+  TERCA
+  QUARTA
+  QUINTA
+  SEXTA
+  SABADO
+  DOMINGO
 }
 
 model User {
@@ -35,7 +46,6 @@ model User {
   @@index([email])
   @@index([username])
   @@index([created_at])
-
   @@map("users")
 }
 
@@ -62,7 +72,6 @@ model Session {
   @@index([user_id])
   @@index([token])
   @@index([expires_at])
-
   @@map("session")
 }
 
@@ -157,21 +166,32 @@ model Professor {
 }
 
 model Classroom {
-  classroom_id String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  professor    String    @db.Uuid
-  subject      String    @db.Uuid
+  classroom_id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  professor    String  @db.Uuid
+  subject      String  @db.Uuid
   semester     String?
-  start_at     DateTime? @db.Timestamptz
-  end_at       DateTime? @db.Timestamptz
 
   professorRef Professor @relation(fields: [professor], references: [professor_id])
   subjectRef   Subject   @relation(fields: [subject], references: [subject_id])
 
-  attendances Attendance[]
+  schedules   ClassroomSchedule[]
   students    ClassroomStudent[]
+  attendances Attendance[]
   grades      Grade[]
 
   @@map("classrooms")
+}
+
+model ClassroomSchedule {
+  schedule_id String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  day_of_week   WeekDay
+  start_at    DateTime @db.Time
+  end_at      DateTime @db.Time
+
+  classroom   Classroom @relation(fields: [classroom_ref], references: [classroom_id])
+  classroom_ref String    @db.Uuid
+
+  @@map("classroom_schedule")
 }
 
 model Attendance {
