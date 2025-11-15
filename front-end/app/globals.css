@@ -124,13 +124,40 @@
 }
 
 @layer utilities {
+
   .no-spinner::-webkit-inner-spin-button,
   .no-spinner::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
+
   .no-spinner {
     -moz-appearance: textfield;
+    appearance: none;
+  }
+
+  textarea::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .scroll-gutter-stable {
+    scrollbar-gutter: stable;
+  }
+
+  textarea::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0);
+    border-radius: 10px;;
+  }
+
+  textarea::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #f97316aa, #facc15aa);
+    border-radius: 10px;
+    border: 2px solid #1a1a1d;
+
+  }
+
+  textarea::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, #fb923c, #facc15);
   }
 }
 

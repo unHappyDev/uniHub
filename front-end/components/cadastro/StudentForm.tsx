@@ -4,6 +4,14 @@ import { useEffect, useState } from "react";
 import { CreateStudentDTO, Student } from "@/types/Student";
 import { getCourses } from "@/lib/api/course";
 import { toast } from "sonner";
+import { User, Mail, BookOpen } from "lucide-react";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 interface Course {
   id: string;
@@ -49,7 +57,7 @@ export default function StudentForm({
           c.courseName.toLowerCase().trim() ===
           (typeof editingStudent.curso === "string"
             ? editingStudent.curso.toLowerCase().trim()
-            : editingStudent.curso?.courseName.toLowerCase().trim())
+            : editingStudent.curso?.courseName.toLowerCase().trim()),
       );
 
       setFormData({
@@ -66,7 +74,7 @@ export default function StudentForm({
   }, [editingStudent, courses]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }) as Student);
@@ -115,46 +123,84 @@ export default function StudentForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-7 text-white">
-      <div>
-        <label className="block text-sm mb-1 uppercase">Nome</label>
-        <input
-          type="text"
-          name="nome"
-          value={formData.nome}
-          onChange={handleChange}
-          required
-          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40 transition-all text-white px-5 py-3 rounded-xl shadow-inner"
-        />
+      <div className="space-y-2">
+        <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
+          Nome
+        </label>
+
+        <div className="relative">
+          <User
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50"
+            size={18}
+          />
+          <input
+            type="text"
+            name="nome"
+            value={formData.nome}
+            onChange={handleChange}
+            required
+            className="w-full bg-[#1a1a1dc3] border border-orange-400/40 
+                     text-white px-10 py-3 rounded-xl outline-none cursor-pointer"
+          />
+        </div>
       </div>
 
-      <div>
-        <label className="block text-sm mb-1 uppercase">Email</label>
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40 transition-all text-white px-5 py-3 rounded-xl shadow-inner"
-        />
+      <div className="space-y-2">
+        <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
+          Email
+        </label>
+
+        <div className="relative">
+          <Mail
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50"
+            size={18}
+          />
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            className="w-full bg-[#1a1a1dc3] border border-orange-400/40 
+                     text-white px-10 py-3 rounded-xl outline-none cursor-pointer"
+          />
+        </div>
       </div>
 
-      <div>
-        <label className="block text-sm mb-1 uppercase">Curso</label>
-        <select
-          name="courseId"
-          value={formData.courseId ?? ""}
-          onChange={handleChange}
-          required
-          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40 transition-all text-white px-5 py-3 rounded-xl shadow-inner"
-        >
-          <option value="">Selecione um curso</option>
-          {courses.map((course) => (
-            <option key={course.id} value={course.id} className="bg-[#151a1b]">
-              {course.courseName}
-            </option>
-          ))}
-        </select>
+      <div className="space-y-2">
+        <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
+          Curso
+        </label>
+
+        <div className="relative">
+          <BookOpen
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50"
+            size={18}
+          />
+
+          <Select
+            value={formData.courseId ?? ""}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ ...prev, courseId: value }))
+            }
+          >
+            <SelectTrigger className="w-full bg-[#1a1a1dc3] border border-orange-400/40 text-white cursor-pointer rounded-xl px-10 py-3">
+              <SelectValue placeholder="Selecione um curso" />
+            </SelectTrigger>
+
+            <SelectContent className="bg-[#151a1b] text-white border border-orange-400/20">
+              {courses.map((course) => (
+                <SelectItem
+                  key={course.id}
+                  value={course.id}
+                  className="hover:bg-orange-500/10 focus:bg-orange-500/20 text-white"
+                >
+                  {course.courseName}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <button

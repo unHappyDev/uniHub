@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Teacher } from "@/types/Teacher";
+import { Pencil, Trash2 } from "lucide-react";
 
 interface TeacherTableProps {
   teachers: Teacher[];
@@ -40,7 +41,7 @@ export default function TeacherTable({
               teachers.map((t) => (
                 <tr
                   key={t.id}
-                  className="border-t border-orange-500/30 transition hover:bg-neutral-900"
+                  className="border-t border-orange-500/30 transition"
                 >
                   <td className="px-4 py-3">{t.nome}</td>
                   <td className="px-4 py-3">{t.email}</td>
@@ -48,14 +49,15 @@ export default function TeacherTable({
                     <div className="flex justify-center gap-3">
                       <button
                         onClick={() => onEdit(t)}
-                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm transition cursor-pointer"
+                        className="text-green-400 hover:text-green-500 transition flex items-center gap-1 cursor-pointer"
                       >
-                        Editar
+                        <Pencil size={16} /> Editar
                       </button>
                       <button
                         onClick={() => t.id && onDelete(t.id)}
-                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm transition cursor-pointer">
-                        Excluir
+                        className="text-red-400 hover:text-red-500 transition flex items-center gap-1 cursor-pointer"
+                      >
+                        <Trash2 size={16} /> Excluir
                       </button>
                     </div>
                   </td>
@@ -90,15 +92,15 @@ export default function TeacherTable({
               <div className="flex justify-end gap-2 mt-3">
                 <button
                   onClick={() => onEdit(t)}
-                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm transition cursor-pointer"
+                  className="text-green-400 hover:text-green-500 transition flex items-center gap-1 cursor-pointer"
                 >
-                  Editar
+                  <Pencil size={16} /> Editar
                 </button>
                 <button
                   onClick={() => t.id && onDelete(t.id)}
-                  className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm transition cursor-pointer"
+                  className="text-red-400 hover:text-red-500 transition flex items-center gap-1 cursor-pointer"
                 >
-                  Excluir
+                  <Trash2 size={16} /> Excluir
                 </button>
               </div>
             </div>

@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { CreatePostDTO, Post } from "@/types/Post";
 import { toast } from "sonner";
+import { Pencil } from "lucide-react";
+import { FileText } from "lucide-react";
 
 interface PostFormProps {
   onAdd: (data: CreatePostDTO) => Promise<void>;
@@ -10,7 +12,11 @@ interface PostFormProps {
   editingPost: Post | null;
 }
 
-export default function PostForm({ onAdd, onEdit, editingPost }: PostFormProps) {
+export default function PostForm({
+  onAdd,
+  onEdit,
+  editingPost,
+}: PostFormProps) {
   const [formData, setFormData] = useState<CreatePostDTO>({
     title: "",
     body: "",
@@ -27,7 +33,9 @@ export default function PostForm({ onAdd, onEdit, editingPost }: PostFormProps) 
     }
   }, [editingPost]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -54,28 +62,56 @@ export default function PostForm({ onAdd, onEdit, editingPost }: PostFormProps) 
 
   return (
     <form onSubmit={handleSubmit} className="space-y-7 text-white">
-      <div>
-        <label className="block text-sm mb-1 uppercase">Título</label>
-        <input
-          type="text"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          required
-          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40 transition-all text-white px-5 py-3 rounded-xl shadow-inner"
-        />
+      <div className="space-y-2">
+        <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
+          Título
+        </label>
+
+        <div className="relative">
+          <Pencil
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50"
+            size={18}
+          />
+          <input
+            type="text"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            required
+            className="w-full bg-[#1a1a1dc3] border border-orange-400/40 
+                     text-white px-10 py-3 rounded-xl outline-none cursor-pointer"
+          />
+        </div>
       </div>
 
-      <div>
-        <label className="block text-sm mb-1 uppercase">Conteúdo</label>
-        <textarea
-          name="body"
-          value={formData.body}
-          onChange={handleChange}
-          required
-          rows={5}
-          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40 transition-all text-white px-5 py-3 rounded-xl shadow-inner resize-none"
-        />
+      <div className="space-y-2">
+        <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
+          Conteúdo
+        </label>
+
+        <div className="relative">
+          <FileText
+            className="absolute left-4 top-4 text-orange-400/50"
+            size={18}
+          />
+
+          <textarea
+            name="body"
+            value={formData.body}
+            onChange={handleChange}
+            required
+            rows={5}
+            className="
+  w-full bg-[#1a1a1dc3] border border-orange-400/40 
+  text-white px-10 py-3 rounded-xl outline-none cursor-pointer
+  resize-none leading-relaxed   
+  overflow-y-auto
+  scroll-orange  
+  scroll-gutter-stable
+"
+            placeholder="Digite o conteúdo..."
+          />
+        </div>
       </div>
 
       <button

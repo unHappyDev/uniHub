@@ -163,7 +163,7 @@ export default function CursosPage() {
         />
 
         <Modal isOpen={isModalOpen} onClose={closeModal}>
-          <h2 className="text-xl font-semibold mb-4 text-center text-white uppercase">
+          <h2 className="text-xl font-semibold mb-4 text-center text-orange-300/80 uppercase">
             {editingCourse ? "Editar Curso" : "Novo Curso"}
           </h2>
           <CourseForm

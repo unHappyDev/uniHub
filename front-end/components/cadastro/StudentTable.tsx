@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Student } from "@/types/Student";
+import { Pencil, Trash2 } from "lucide-react";
 
 interface StudentTableProps {
   students: Student[];
@@ -41,7 +42,7 @@ export default function StudentTable({
               students.map((s) => (
                 <tr
                   key={s.id}
-                  className="border-t border-orange-500/30 transition hover:bg-neutral-900"
+                  className="border-t border-orange-500/30 transition"
                 >
                   <td className="px-4 py-3">{s.nome}</td>
                   <td className="px-4 py-3">{s.email}</td>
@@ -54,15 +55,15 @@ export default function StudentTable({
                     <div className="flex justify-center gap-3">
                       <button
                         onClick={() => onEdit(s)}
-                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm transition cursor-pointer"
+                        className="text-green-400 hover:text-green-500 transition flex items-center gap-1 cursor-pointer"
                       >
-                        Editar
+                        <Pencil size={16} /> Editar
                       </button>
                       <button
                         onClick={() => s.id && onDelete(s.id)}
-                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm transition cursor-pointer"
+                        className="text-red-400 hover:text-red-500 transition flex items-center gap-1 cursor-pointer"
                       >
-                        Excluir
+                        <Trash2 size={16} /> Excluir
                       </button>
                     </div>
                   </td>
@@ -103,15 +104,15 @@ export default function StudentTable({
               <div className="flex justify-end gap-2 mt-3">
                 <button
                   onClick={() => onEdit(s)}
-                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm transition cursor-pointer"
+                  className="text-green-400 hover:text-green-500 transition flex items-center gap-1 cursor-pointer"
                 >
-                  Editar
+                  <Pencil size={16} /> Editar
                 </button>
                 <button
                   onClick={() => s.id && onDelete(s.id)}
-                  className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm transition cursor-pointer"
+                  className="text-red-400 hover:text-red-500 transition flex items-center gap-1 cursor-pointer"
                 >
-                  Excluir
+                  <Trash2 size={16} /> Excluir
                 </button>
               </div>
             </div>

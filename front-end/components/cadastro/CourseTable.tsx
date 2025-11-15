@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Course } from "@/types/Course";
+import { BookOpen, Pencil, Trash2 } from "lucide-react";
 
 interface CourseTableProps {
   courses: Course[];
@@ -16,9 +17,8 @@ export default function CourseTable({
   onEdit,
   onManageSubjects,
 }: CourseTableProps) {
-
   const sortedCourses = [...courses].sort((a, b) =>
-    a.courseName.localeCompare(b.courseName, "pt", { sensitivity: "base" })
+    a.courseName.localeCompare(b.courseName, "pt", { sensitivity: "base" }),
   );
 
   return (
@@ -54,7 +54,7 @@ export default function CourseTable({
               sortedCourses.map((c) => (
                 <tr
                   key={c.id}
-                  className="border-t border-orange-500/30 transition hover:bg-neutral-900"
+                  className="border-t border-orange-500/30 transition"
                 >
                   <td className="px-4 py-3">{c.courseName}</td>
                   <td className="px-4 py-3">{c.subjects?.length ?? 0}</td>
@@ -63,21 +63,23 @@ export default function CourseTable({
                     <div className="flex justify-center gap-3">
                       <button
                         onClick={() => onEdit(c)}
-                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm transition cursor-pointer"
+                        className="flex items-center gap-1 text-green-400 hover:text-green-500 transition cursor-pointer"
                       >
-                        Editar
+                        <Pencil size={16} /> Editar
                       </button>
+
                       <button
                         onClick={() => c.id && onDelete(c.id)}
-                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm transition cursor-pointer"
+                        className="flex items-center gap-1 text-red-400 hover:text-red-500 transition cursor-pointer"
                       >
-                        Excluir
+                        <Trash2 size={16} /> Excluir
                       </button>
+
                       <button
                         onClick={() => onManageSubjects(c)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm transition cursor-pointer"
+                        className="flex items-center gap-1 text-blue-400 hover:text-blue-500 transition cursor-pointer"
                       >
-                        Matérias
+                        <BookOpen size={16} /> Matérias
                       </button>
                     </div>
                   </td>
@@ -119,21 +121,23 @@ export default function CourseTable({
               <div className="flex justify-end gap-2 mt-3">
                 <button
                   onClick={() => onEdit(c)}
-                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm"
+                  className="flex items-center gap-1 text-green-400 hover:text-green-500 transition cursor-pointer"
                 >
-                  Editar
+                  <Pencil size={16} /> Editar
                 </button>
+
                 <button
                   onClick={() => c.id && onDelete(c.id)}
-                  className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm"
+                  className="flex items-center gap-1 text-red-400 hover:text-red-500 transition cursor-pointer"
                 >
-                  Excluir
+                  <Trash2 size={16} /> Excluir
                 </button>
+
                 <button
                   onClick={() => onManageSubjects(c)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm"
+                  className="flex items-center gap-1 text-blue-400 hover:text-blue-500 transition cursor-pointer"
                 >
-                  Matérias
+                  <BookOpen size={16} /> Matérias
                 </button>
               </div>
             </div>

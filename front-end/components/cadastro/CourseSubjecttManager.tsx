@@ -86,7 +86,7 @@ export default function CourseSubjectsManager({
 
   return (
     <div className="p-4 text-white">
-      <h2 className="text-xl font-semibold mb-6 text-center">
+      <h2 className="text-xl font-semibold mb-4 text-center text-orange-300/80 uppercase">
         Gerenciar Matérias — {course.courseName}
       </h2>
 
@@ -136,7 +136,6 @@ export default function CourseSubjectsManager({
         </button>
       </div>
 
-      {/* --- Tabela de matérias --- */}
       <div className="border border-orange-400/30 rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { CreateTeacherDTO, Teacher } from "@/types/Teacher";
+import { Mail, User } from "lucide-react";
 
 interface TeacherFormProps {
   onAdd: (teacher: CreateTeacherDTO) => Promise<void>;
@@ -10,7 +11,11 @@ interface TeacherFormProps {
   editingTeacher: Teacher | null;
 }
 
-export default function TeacherForm({ onAdd, onEdit, editingTeacher }: TeacherFormProps) {
+export default function TeacherForm({
+  onAdd,
+  onEdit,
+  editingTeacher,
+}: TeacherFormProps) {
   const [formData, setFormData] = useState<Teacher>({
     id: "",
     nome: "",
@@ -61,28 +66,48 @@ export default function TeacherForm({ onAdd, onEdit, editingTeacher }: TeacherFo
 
   return (
     <form onSubmit={handleSubmit} className="space-y-7 text-white">
-      <div>
-        <label className="block text-sm mb-1 uppercase">Nome</label>
-        <input
-          type="text"
-          name="nome"
-          value={formData.nome}
-          onChange={handleChange}
-          required
-          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40 transition-all text-white px-5 py-3 rounded-xl shadow-inner"
-        />
+      <div className="space-y-2">
+        <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
+          Nome
+        </label>
+
+        <div className="relative">
+          <User
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50"
+            size={18}
+          />
+          <input
+            type="text"
+            name="nome"
+            value={formData.nome}
+            onChange={handleChange}
+            required
+            className="w-full bg-[#1a1a1dc3] border border-orange-400/40 
+                     text-white px-10 py-3 rounded-xl outline-none cursor-pointer"
+          />
+        </div>
       </div>
 
-      <div>
-        <label className="block text-sm mb-1 uppercase">Email</label>
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40 transition-all text-white px-5 py-3 rounded-xl shadow-inner"
-        />
+      <div className="space-y-2">
+        <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
+          Email
+        </label>
+
+        <div className="relative">
+          <Mail
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50"
+            size={18}
+          />
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            className="w-full bg-[#1a1a1dc3] border border-orange-400/40 
+                     text-white px-10 py-3 rounded-xl outline-none cursor-pointer"
+          />
+        </div>
       </div>
 
       <button
