@@ -43,7 +43,7 @@ public class SubjectController {
 
     @PostMapping
     @Operation(summary = "Create Subject", description = "Create a Subject and save on the database")
-    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString())")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.enums.UserRoles).ADMIN.toString())")
     public ResponseEntity<?> createSubject(@RequestBody CreateSubjectDTO subjectDTO) {
 
         subjectService.createSubject(subjectDTO);
@@ -60,7 +60,7 @@ public class SubjectController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete Subject", description = "Delete a Subject on database by its ID")
-    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString())")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.enums.UserRoles).ADMIN.toString())")
     public ResponseEntity<String> deleteSubject(@PathVariable UUID id) {
 
         subjectService.deleteOneSubject(id);

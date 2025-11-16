@@ -9,7 +9,6 @@ import com.pifsite.application.repository.ClassroomRepository;
 import com.pifsite.application.repository.ProfessorRepository;
 import com.pifsite.application.repository.StudentRepository;
 import com.pifsite.application.repository.SubjectRepository;
-import com.pifsite.application.security.WeekDay;
 import com.pifsite.application.entities.ClassroomSchedule;
 import com.pifsite.application.dto.ClassroomScheduleDTO;
 import com.pifsite.application.dto.ClassroomStudentDTO;
@@ -35,6 +34,7 @@ public class ClassroomService {
     private final ProfessorRepository professorRepository;
     private final StudentRepository studentRepository;
     private final SubjectRepository subjectRepository;
+    private final ScheduleService scheduleService;
 
     public Set<ClassroomDTO> getAll() {
 
@@ -85,21 +85,21 @@ public class ClassroomService {
         newClassroom.setProfessor(professor);
         newClassroom.setSemester(registerClassroomDTO.semester());
 
-        Set<ClassroomSchedule> schedules = registerClassroomDTO.schedules().stream().map(s -> {
-            ClassroomSchedule schedule = new ClassroomSchedule();
-            schedule.setDayOfWeek(WeekDay.fromString(s.dayOfWeek()));
-            schedule.setStartAt(s.startAt());
-            schedule.setEndAt(s.endAt());
-            schedule.setClassroom(newClassroom);
-            return schedule;
-        }).collect(Collectors.toSet());
-
-        newClassroom.setSchedules(schedules);
-
         List<Student> students = this.studentRepository.findAllById(registerClassroomDTO.studentsIds());
         newClassroom.getStudents().addAll(students);
 
-        this.classroomRepository.save(newClassroom);
+        Classroom savedClassroom = this.classroomRepository.save(newClassroom);
+
+        Set<ClassroomSchedule> schedules = scheduleService.createClassroomSchedules(null,
+                registerClassroomDTO.schedules());
+
+        savedClassroom.getSchedules().clear();
+        savedClassroom.getSchedules().addAll(schedules.stream().map(sc -> {
+            sc.setClassroom(savedClassroom);
+            return sc;
+        }).collect(Collectors.toSet()));
+
+        this.classroomRepository.save(savedClassroom);
     }
 
     public void updateClassroom(CreateClassroomDTO registerClassroomDTO, UUID id) {

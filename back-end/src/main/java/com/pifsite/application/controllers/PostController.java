@@ -43,7 +43,7 @@ public class PostController {
 
     @PostMapping
     @Operation(summary = "Create Post", description = "Create a Post and save on the database")
-    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.enums.UserRoles).ADMIN.toString(), T(com.pifsite.application.enums.UserRoles).PROFESSOR.toString())")
     public ResponseEntity<?> createPost(@RequestBody CreatePostDTO postDTO) {
 
         postService.createPost(postDTO);
@@ -60,7 +60,7 @@ public class PostController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete Post", description = "Delete a Post on database by its ID")
-    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.enums.UserRoles).ADMIN.toString(), T(com.pifsite.application.enums.UserRoles).PROFESSOR.toString())")
     public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
 
         postService.deleteOnePost(id);

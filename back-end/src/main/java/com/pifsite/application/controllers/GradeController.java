@@ -43,7 +43,7 @@ public class GradeController {
 
     @PostMapping
     @Operation(summary = "Create Grade", description = "Create a Grade and save on the database")
-    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.enums.UserRoles).ADMIN.toString(), T(com.pifsite.application.enums.UserRoles).PROFESSOR.toString())")
     public ResponseEntity<?> createGrade(@RequestBody CreateGradeDTO gradeDTO) {
 
         gradeService.crateGrade(gradeDTO);
@@ -52,7 +52,7 @@ public class GradeController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update Grade", description = "Update a Grade on database by its ID")
-    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.enums.UserRoles).ADMIN.toString(), T(com.pifsite.application.enums.UserRoles).PROFESSOR.toString())")
     public ResponseEntity<?> updateGrade(@RequestBody CreateGradeDTO gradeDTO, @PathVariable UUID id) {
 
         gradeService.updateGrade(gradeDTO, id);
@@ -61,7 +61,7 @@ public class GradeController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete Grade", description = "Delete a Grade on database by its ID")
-    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.enums.UserRoles).ADMIN.toString(), T(com.pifsite.application.enums.UserRoles).PROFESSOR.toString())")
     public ResponseEntity<String> deleteGrade(@PathVariable UUID id) {
 
         gradeService.deleteOneGrade(id);
