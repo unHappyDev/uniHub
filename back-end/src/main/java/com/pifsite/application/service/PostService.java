@@ -29,7 +29,7 @@ public class PostService {
         List<PostDTO> posts = this.postRepository.getAllPosts();
 
         if (posts.isEmpty()) {
-            throw new ResourceNotFoundException("there is no posts in the database"); // melhorar depois
+            throw new ResourceNotFoundException("there is no posts in the database");
         }
 
         return posts;

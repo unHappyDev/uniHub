@@ -52,7 +52,7 @@ public class ClassroomService {
             Set<ClassroomScheduleDTO> scheduleDTOs = c.getSchedules().stream()
                     .map(s -> new ClassroomScheduleDTO(
                             s.getScheduleId(),
-                            s.getDayOfWeek().toString(),
+                            s.getDayOfWeek(),
                             s.getStartAt(),
                             s.getEndAt()))
                     .collect(Collectors.toSet());

@@ -1,6 +1,8 @@
 package com.pifsite.application.service;
 
 import com.pifsite.application.repository.ClassroomScheduleRepository;
+import com.pifsite.application.exceptions.ResourceNotFoundException;
+import com.pifsite.application.repository.ClassroomRepository;
 import com.pifsite.application.entities.ClassroomSchedule;
 import com.pifsite.application.dto.ClassroomScheduleDTO;
 import com.pifsite.application.entities.Classroom;
@@ -13,6 +15,7 @@ import jakarta.transaction.Transactional;
 
 import java.util.stream.Collectors;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 import java.util.Set;
 
@@ -22,24 +25,41 @@ public class ScheduleService {
     @Autowired
     private ClassroomScheduleRepository scheduleRepository;
 
+    @Autowired
+    private ClassroomRepository classroomRepository;
+
+    public List<ClassroomScheduleDTO> getAll() {
+
+        List<ClassroomScheduleDTO> schedules = this.scheduleRepository.getAll();
+
+        if (schedules.isEmpty()) {
+            throw new ResourceNotFoundException("there is no Schedules in the database");
+        }
+
+        return schedules;
+    }
+
     public Set<ClassroomSchedule> createClassroomSchedules(
-            Classroom classroom,
+            UUID classroomId,
             Set<ClassroomScheduleDTO> scheduleDTOs) {
+
+        Classroom classroom = classroomId == null ? null : classroomRepository.findById(classroomId).orElse(null);
 
         Set<ClassroomSchedule> schedules = scheduleDTOs.stream().map(dto -> {
             ClassroomSchedule sc = new ClassroomSchedule();
-            sc.setDayOfWeek(WeekDay.fromString(dto.dayOfWeek()));
+            sc.setDayOfWeek(dto.dayOfWeek());
             sc.setStartAt(dto.startAt());
             sc.setEndAt(dto.endAt());
             sc.setClassroom(classroom);
             return sc;
         }).collect(Collectors.toSet());
 
-        if(classroom == null){
-            return schedules;
+        if (classroomId != null) {
+
+            return new HashSet<>(scheduleRepository.saveAll(schedules));
         }
 
-        return new HashSet<>(scheduleRepository.saveAll(schedules));
+        return schedules;
     }
 
     @Transactional
@@ -48,9 +68,9 @@ public class ScheduleService {
         ClassroomSchedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new RuntimeException("Schedule não encontrado."));
 
-        if (dto.dayOfWeek() != null && !dto.dayOfWeek().isBlank()) {
+        if (dto.dayOfWeek() != null) {
 
-            WeekDay parsed = WeekDay.fromString(dto.dayOfWeek());
+            WeekDay parsed = dto.dayOfWeek();
             if (parsed == null) {
                 throw new RuntimeException("Dia da semana inválido: " + dto.dayOfWeek());
             }
