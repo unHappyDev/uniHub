@@ -193,7 +193,7 @@ export default function StudentForm({
                 <SelectItem
                   key={course.id}
                   value={course.id}
-                  className="hover:bg-orange-500/10 focus:bg-orange-500/20 text-white"
+                  className="hover:bg-orange-500/10 focus:bg-orange-500/20 text-white cursor-pointer"
                 >
                   {course.courseName}
                 </SelectItem>

@@ -15,8 +15,7 @@ import { Book, Users, GraduationCap, AlertTriangle, HomeIcon, UserPlus, ListOrde
 
 const navMain = [
   { title: "Início", url: "/secretaria", icon: HomeIcon },
-  { title: "Alunos", url: "/secretaria/alunos", icon: UserPlus },
-  { title: "Professores", url: "/secretaria/professor", icon: UserPlus },
+  { title: "Cadastro", url: "/secretaria/cadastro", icon: UserPlus },
   { title: "Matérias", url: "/secretaria/materias", icon: BookOpen },
   { title: "Cursos", url: "/secretaria/cursos", icon: GraduationCap },
   { title: "Turmas", url: "/secretaria/turmas", icon: Users },
