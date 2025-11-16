@@ -133,7 +133,7 @@ export default function ProfessoresPage() {
         />
 
         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-          <h2 className="text-xl font-semibold mb-4 text-center text-white uppercase">
+          <h2 className="text-xl font-semibold mb-4 text-center text-orange-300/80 uppercase">
             {editingTeacher ? "Editar Professor" : "Novo Professor"}
           </h2>
           <TeacherForm

@@ -43,7 +43,7 @@ public class AttendanceController {
 
     @PostMapping
     @Operation(summary = "Create Attendance", description = "Create a Attendance and save on the database")
-    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.enums.UserRoles).ADMIN.toString(), T(com.pifsite.application.enums.UserRoles).PROFESSOR.toString())")
     public ResponseEntity<?> createAttendance(@RequestBody CreateAttendanceDTO attendanceDTO) {
 
         attendanceService.crateAttendance(attendanceDTO);
@@ -52,7 +52,7 @@ public class AttendanceController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update Attendance", description = "Update a Attendance on database by its ID")
-    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.enums.UserRoles).ADMIN.toString(), T(com.pifsite.application.enums.UserRoles).PROFESSOR.toString())")
     public ResponseEntity<?> updateAttendance(@RequestBody CreateAttendanceDTO attendanceDTO, @PathVariable UUID id) {
 
         attendanceService.updateAttendance(attendanceDTO, id);
@@ -61,7 +61,7 @@ public class AttendanceController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete Attendance", description = "Delete a Attendance on database by its ID")
-    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.enums.UserRoles).ADMIN.toString(), T(com.pifsite.application.enums.UserRoles).PROFESSOR.toString())")
     public ResponseEntity<String> deleteAttendance(@PathVariable UUID id) {
 
         attendanceService.deleteOneAttendance(id);

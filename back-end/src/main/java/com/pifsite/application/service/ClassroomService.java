@@ -9,6 +9,8 @@ import com.pifsite.application.repository.ClassroomRepository;
 import com.pifsite.application.repository.ProfessorRepository;
 import com.pifsite.application.repository.StudentRepository;
 import com.pifsite.application.repository.SubjectRepository;
+import com.pifsite.application.entities.ClassroomSchedule;
+import com.pifsite.application.dto.ClassroomScheduleDTO;
 import com.pifsite.application.dto.ClassroomStudentDTO;
 import com.pifsite.application.dto.CreateClassroomDTO;
 import com.pifsite.application.entities.Classroom;
@@ -32,6 +34,7 @@ public class ClassroomService {
     private final ProfessorRepository professorRepository;
     private final StudentRepository studentRepository;
     private final SubjectRepository subjectRepository;
+    private final ScheduleService scheduleService;
 
     public Set<ClassroomDTO> getAll() {
 
@@ -46,13 +49,20 @@ public class ClassroomService {
                     .map(s -> new ClassroomStudentDTO(s.getUser().getUsername(), s.getCourse().getCourseName()))
                     .collect(Collectors.toSet());
 
+            Set<ClassroomScheduleDTO> scheduleDTOs = c.getSchedules().stream()
+                    .map(s -> new ClassroomScheduleDTO(
+                            s.getScheduleId(),
+                            s.getDayOfWeek(),
+                            s.getStartAt(),
+                            s.getEndAt()))
+                    .collect(Collectors.toSet());
+
             return new ClassroomDTO(
                     c.getClassroomId(),
                     c.getProfessor().getUser().getUsername(),
                     c.getSubject().getSubjectName(),
                     c.getSemester(),
-                    c.getStartAt(),
-                    c.getEndAt(),
+                    scheduleDTOs,
                     studentDTOs);
         }).collect(Collectors.toSet());
 
@@ -69,19 +79,27 @@ public class ClassroomService {
                         "Subject with ID " + registerClassroomDTO.subjectId() + " not found"));
         ;
 
-        List<Student> students = this.studentRepository.findAllById(registerClassroomDTO.studentsIds());
-
         Classroom newClassroom = new Classroom();
 
         newClassroom.setSubject(subject);
         newClassroom.setProfessor(professor);
         newClassroom.setSemester(registerClassroomDTO.semester());
-        newClassroom.setStartAt(registerClassroomDTO.startAt());
-        newClassroom.setEndAt(registerClassroomDTO.endAt());
 
+        List<Student> students = this.studentRepository.findAllById(registerClassroomDTO.studentsIds());
         newClassroom.getStudents().addAll(students);
 
-        this.classroomRepository.save(newClassroom);
+        Classroom savedClassroom = this.classroomRepository.save(newClassroom);
+
+        Set<ClassroomSchedule> schedules = scheduleService.createClassroomSchedules(null,
+                registerClassroomDTO.schedules());
+
+        savedClassroom.getSchedules().clear();
+        savedClassroom.getSchedules().addAll(schedules.stream().map(sc -> {
+            sc.setClassroom(savedClassroom);
+            return sc;
+        }).collect(Collectors.toSet()));
+
+        this.classroomRepository.save(savedClassroom);
     }
 
     public void updateClassroom(CreateClassroomDTO registerClassroomDTO, UUID id) {
@@ -110,16 +128,6 @@ public class ClassroomService {
         if (registerClassroomDTO.semester() != null && !registerClassroomDTO.semester().isBlank()) {
 
             classroom.setSemester(registerClassroomDTO.semester());
-        }
-
-        if (registerClassroomDTO.startAt() != null) {
-
-            classroom.setStartAt(registerClassroomDTO.startAt());
-        }
-
-        if (registerClassroomDTO.endAt() != null) {
-
-            classroom.setEndAt(registerClassroomDTO.endAt());
         }
 
         classroomRepository.save(classroom);

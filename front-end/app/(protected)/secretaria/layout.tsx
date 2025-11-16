@@ -11,17 +11,19 @@ import {
 import { useAuthSession } from "@/hooks/useAuthSession";
 
 import { Separator } from "@radix-ui/react-separator";
-import { Book, Users, GraduationCap, AlertTriangle, HomeIcon, UserPlus, ListOrdered } from "lucide-react";
+import { Book, Users, GraduationCap, AlertTriangle, HomeIcon, UserPlus, ListOrdered, BookOpen, FileText, ClipboardList, Clock } from "lucide-react";
 
 const navMain = [
   { title: "Início", url: "/secretaria", icon: HomeIcon },
   { title: "Alunos", url: "/secretaria/alunos", icon: UserPlus },
   { title: "Professores", url: "/secretaria/professor", icon: UserPlus },
-  { title: "Matérias", url: "/secretaria/materias", icon: Book },
+  { title: "Matérias", url: "/secretaria/materias", icon: BookOpen },
   { title: "Cursos", url: "/secretaria/cursos", icon: GraduationCap },
   { title: "Turmas", url: "/secretaria/turmas", icon: Users },
-  { title: "Notas", url: "/secretaria/notas", icon: ListOrdered },
+  { title: "Notas", url: "/secretaria/notas", icon: FileText },
   { title: "Avisos", url: "/secretaria/avisos", icon: AlertTriangle },
+  { title: "Presenças", url: "/secretaria/attendance", icon: ClipboardList },
+  { title: "Horários", url: "/secretaria/horario", icon: Clock },
   
 ];
 
@@ -50,7 +52,7 @@ export default function DashboardLayout({
       </AppSidebar>
 
       <SidebarInset>
-        <header className="relative flex h-25 items-center px-4 border-b border-orange-500/40">
+        <header className="relative flex h-25 items-center px-4 bg-[#0d0d0f] border-b border-orange-500/20">
           <SidebarTrigger className="-ml-1 cursor-pointer" />
           <Separator
             orientation="vertical"

@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Classroom } from "@/types/Classroom";
+import { Pencil, Trash2 } from "lucide-react";
 
 interface Props {
   classrooms: Classroom[];
@@ -9,7 +10,11 @@ interface Props {
   onDelete: (id: string) => void;
 }
 
-export default function ClassroomTable({ classrooms, onEdit, onDelete }: Props) {
+export default function ClassroomTable({
+  classrooms,
+  onEdit,
+  onDelete,
+}: Props) {
   return (
     <div className="mt-6">
       {/* Desktop */}
@@ -17,9 +22,13 @@ export default function ClassroomTable({ classrooms, onEdit, onDelete }: Props) 
         <table className="min-w-full rounded-xl text-white">
           <thead>
             <tr className="text-orange-400 uppercase text-sm">
-              <th className="px-4 py-3 text-left whitespace-nowrap">Professor</th>
+              <th className="px-4 py-3 text-left whitespace-nowrap">
+                Professor
+              </th>
               <th className="px-4 py-3 text-left whitespace-nowrap">Matéria</th>
-              <th className="px-4 py-3 text-left whitespace-nowrap">Semestre</th>
+              <th className="px-4 py-3 text-left whitespace-nowrap">
+                Semestre
+              </th>
               <th className="px-4 py-3 text-left whitespace-nowrap">Início</th>
               <th className="px-4 py-3 text-left whitespace-nowrap">Término</th>
               <th className="px-4 py-3 text-left whitespace-nowrap">Alunos</th>
@@ -66,15 +75,15 @@ export default function ClassroomTable({ classrooms, onEdit, onDelete }: Props) 
                     <div className="flex justify-center gap-3">
                       <button
                         onClick={() => onEdit(c)}
-                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm transition cursor-pointer"
+                        className="text-green-400 hover:text-green-500 transition flex items-center gap-1 cursor-pointer"
                       >
-                        Editar
+                        <Pencil size={16} /> Editar
                       </button>
                       <button
                         onClick={() => onDelete(c.classroomId)}
-                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm transition cursor-pointer"
+                        className="text-red-400 hover:text-red-500 transition flex items-center gap-1 cursor-pointer"
                       >
-                        Excluir
+                        <Trash2 size={16} /> Excluir
                       </button>
                     </div>
                   </td>
@@ -98,7 +107,9 @@ export default function ClassroomTable({ classrooms, onEdit, onDelete }: Props) 
               className="flex flex-col gap-2 bg-glass border border-orange-400/40 rounded-2xl p-7 text-gray-200 shadow-glow transition-all hover:shadow-orange-500/30"
             >
               <p>
-                <span className="font-semibold text-orange-500">Professor:</span>{" "}
+                <span className="font-semibold text-orange-500">
+                  Professor:
+                </span>{" "}
                 {c.professor || "—"}
               </p>
               <p>
@@ -125,15 +136,15 @@ export default function ClassroomTable({ classrooms, onEdit, onDelete }: Props) 
               <div className="flex justify-end gap-2 mt-3">
                 <button
                   onClick={() => onEdit(c)}
-                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm transition cursor-pointer"
+                  className="text-green-400 hover:text-green-500 transition flex items-center gap-1 cursor-pointer"
                 >
-                  Editar
+                  <Pencil size={16} /> Editar
                 </button>
                 <button
                   onClick={() => onDelete(c.classroomId)}
-                  className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm transition cursor-pointer"
+                  className="text-red-400 hover:text-red-500 transition flex items-center gap-1 cursor-pointer"
                 >
-                  Excluir
+                  <Trash2 size={16} /> Excluir
                 </button>
               </div>
             </div>

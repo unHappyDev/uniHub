@@ -41,7 +41,7 @@ export default function DashboardLayout({
       </AppSidebar>
 
       <SidebarInset>
-        <header className="relative flex h-25 items-center px-4 border-b border-orange-500/40">
+        <header className="relative flex h-25 items-center px-4 bg-[#0d0d0f] border-b border-orange-500/20">
           <SidebarTrigger className="-ml-1 cursor-pointer" />
           <Separator
             orientation="vertical"

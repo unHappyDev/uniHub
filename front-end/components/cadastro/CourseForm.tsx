@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Course, CreateCourseDTO } from "@/types/Course";
+import { GraduationCap } from "lucide-react";
 
 interface CourseFormProps {
   onAdd: (course: CreateCourseDTO) => Promise<void>;
@@ -51,20 +52,26 @@ export default function CourseForm({ onAdd, onEdit, editingCourse }: CourseFormP
 
   return (
     <form onSubmit={handleSubmit} className="space-y-7 text-white">
-      <div>
-        <label className="block text-sm mb-1 uppercase">Nome do Curso</label>
-        <input
-          type="text"
-          name="courseName"
-          value={formData.courseName}
-          onChange={handleChange}
-          required
-          placeholder="Digite o nome do curso"
-          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 
-                     focus:border-orange-400/10 focus:ring-2 focus:ring-orange-500/40 
-                     transition-all text-white placeholder-gray-400 px-5 py-3 
-                     rounded-xl outline-none shadow-inner"
-        />
+      <div className="space-y-2">
+        <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
+          Nome
+        </label>
+
+        <div className="relative">
+          <GraduationCap
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50"
+            size={18}
+          />
+          <input
+            type="text"
+            name="courseName"
+            value={formData.courseName}
+            onChange={handleChange}
+            required
+            className="w-full bg-[#1a1a1dc3] border border-orange-400/40 
+                     text-white px-10 py-3 rounded-xl outline-none cursor-pointer"
+          />
+        </div>
       </div>
 
       <button

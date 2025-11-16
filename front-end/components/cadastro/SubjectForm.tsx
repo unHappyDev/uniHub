@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { CreateSubjectDTO, Subject } from "@/types/Subject";
+import { BookOpen, Clock, User } from "lucide-react";
 
 interface SubjectFormProps {
   onAdd: (subject: CreateSubjectDTO) => Promise<void>;
@@ -11,7 +12,12 @@ interface SubjectFormProps {
   subjects: Subject[];
 }
 
-export default function SubjectForm({ onAdd, onEdit, editingSubject, subjects }: SubjectFormProps) {
+export default function SubjectForm({
+  onAdd,
+  onEdit,
+  editingSubject,
+  subjects,
+}: SubjectFormProps) {
   const [formData, setFormData] = useState<Subject>({
     subjectId: "",
     subjectName: "",
@@ -44,8 +50,9 @@ export default function SubjectForm({ onAdd, onEdit, editingSubject, subjects }:
 
     const nomeDuplicado = subjects.some(
       (s) =>
-        s.subjectName.trim().toLowerCase() === formData.subjectName.trim().toLowerCase() &&
-        s.subjectId !== formData.subjectId
+        s.subjectName.trim().toLowerCase() ===
+          formData.subjectName.trim().toLowerCase() &&
+        s.subjectId !== formData.subjectId,
     );
 
     if (nomeDuplicado) {
@@ -71,31 +78,52 @@ export default function SubjectForm({ onAdd, onEdit, editingSubject, subjects }:
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 text-white">
-      <div>
-        <label className="block text-sm mb-1 uppercase">Nome da Matéria</label>
-        <input
-          type="text"
-          name="subjectName"
-          value={formData.subjectName}
-          onChange={handleChange}
-          required
-          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40 transition-all text-white px-5 py-3 rounded-xl shadow-inner"
-        />
-      </div>
+      <div className="space-y-2">
+        <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
+          Nome da Matéria
+        </label>
 
-      <div>
-        <label className="block text-sm mb-1 uppercase">Carga Horária</label>
-        <input
-          type="number"
-          name="workloadHours"
-          min="1"
-          value={formData.workloadHours || ""}
-          onChange={handleChange}
-          required
-          
-          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 focus:ring-2 focus:ring-orange-500/40
-             transition-all text-white px-5 py-3 rounded-xl shadow-inner no-spinner"
-        />
+        <div className="relative">
+          <BookOpen
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50"
+            size={18}
+          />
+          <input
+            type="text"
+            name="subjectName"
+            value={formData.subjectName}
+            onChange={handleChange}
+            required
+            className="w-full bg-[#1a1a1dc3] border border-orange-400/40 
+                     text-white px-11 py-3 rounded-xl outline-none cursor-pointer"
+          />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
+          Carga Horária
+        </label>
+
+        <div className="relative">
+          <Clock
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50"
+            size={18}
+          />
+
+          <input
+            type="number"
+            name="workloadHours"
+            min="1"
+            value={formData.workloadHours || ""}
+            onChange={handleChange}
+            required
+            className="w-full bg-[#1a1a1dc3] border border-orange-400/40 
+                     text-white px-11 py-3 rounded-xl outline-none cursor-pointer
+        no-spinner
+      "
+            placeholder="Ex: 40"
+          />
+        </div>
       </div>
 
       <button

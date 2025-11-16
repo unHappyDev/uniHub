@@ -1,6 +1,7 @@
 "use client";
 
 import { Post } from "@/types/Post";
+import { Pencil, Trash2 } from "lucide-react";
 
 interface PostTableProps {
   posts: Post[];
@@ -42,7 +43,7 @@ export default function PostTable({
               posts.map((p) => (
                 <tr
                   key={p.postId}
-                  onClick={() => onView(p)} 
+                  onClick={() => onView(p)}
                   className="border-t border-orange-500/30 transition hover:bg-neutral-900 cursor-pointer"
                 >
                   <td className="px-4 py-3">{p.title}</td>
@@ -57,18 +58,18 @@ export default function PostTable({
                           e.stopPropagation();
                           onEdit(p);
                         }}
-                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm transition"
+                        className="text-green-400 hover:text-green-500 transition flex items-center gap-1 cursor-pointer"
                       >
-                        Editar
+                        <Pencil size={16} /> Editar
                       </button>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           if (p.postId) onDelete(p.postId);
                         }}
-                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm transition"
+                        className="text-red-400 hover:text-red-500 transition flex items-center gap-1 cursor-pointer"
                       >
-                        Excluir
+                        <Trash2 size={16} /> Excluir
                       </button>
                     </div>
                   </td>
@@ -111,18 +112,18 @@ export default function PostTable({
                     e.stopPropagation();
                     onEdit(p);
                   }}
-                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm transition"
+                  className="text-green-400 hover:text-green-500 transition flex items-center gap-1 cursor-pointer"
                 >
-                  Editar
+                  <Pencil size={16} /> Editar
                 </button>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     if (p.postId) onDelete(p.postId);
                   }}
-                  className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm transition"
+                  className="text-red-400 hover:text-red-500 transition flex items-center gap-1 cursor-pointer"
                 >
-                  Excluir
+                  <Trash2 size={16} /> Excluir
                 </button>
               </div>
             </div>

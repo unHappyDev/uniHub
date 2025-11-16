@@ -6,6 +6,7 @@ interface User {
   name: string;
   email: string;
   avatar: string;
+  role: "ADMIN" | "PROFESSOR" | "USER";
 }
 
 export function useAuthSession() {
@@ -18,9 +19,10 @@ export function useAuthSession() {
         const { data } = await axios.get("/api/v1/verify-session");
 
         setUser({
-          name: data.user.username, // 🔁 Corrigido
-          email: data.user.email,   // 🔁 Corrigido
-          avatar: "/imagens/user.svg", // Ainda é fixo, você pode melhorar depois
+          name: data.user.username,
+          email: data.user.email,
+          avatar: "/imagens/user.svg",
+          role: data.user.role, 
         });
       } catch (error) {
         console.error("Erro ao verificar sessão", error);

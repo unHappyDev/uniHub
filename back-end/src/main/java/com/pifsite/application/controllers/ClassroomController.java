@@ -43,7 +43,7 @@ public class ClassroomController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString())")
+    @PreAuthorize("hasRole(T(com.pifsite.application.enums.UserRoles).ADMIN.toString())")
     @Operation(summary = "Create Classroom", description = "Create a Classroom save on the database")
     public ResponseEntity<?> createClassroom(@RequestBody CreateClassroomDTO ClassroomDTO) {
 
@@ -53,7 +53,7 @@ public class ClassroomController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update Classroom", description = "Update a Classroom on database by its ID")
-    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.enums.UserRoles).ADMIN.toString(), T(com.pifsite.application.enums.UserRoles).PROFESSOR.toString())")
     public ResponseEntity<?> updateClassroom(@RequestBody CreateClassroomDTO classroomDTO, @PathVariable UUID id) {
 
         classroomService.updateClassroom(classroomDTO, id);
@@ -62,7 +62,7 @@ public class ClassroomController {
 
     @PutMapping("addStudents/{id}")
     @Operation(summary = "Update Classroom", description = "Update a Classroom on database by its ID")
-    @PreAuthorize("hasAnyRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString(), T(com.pifsite.application.security.UserRoles).PROFESSOR.toString())")
+    @PreAuthorize("hasAnyRole(T(com.pifsite.application.enums.UserRoles).ADMIN.toString(), T(com.pifsite.application.enums.UserRoles).PROFESSOR.toString())")
     public ResponseEntity<?> addStudent(@RequestBody List<UUID> studentsId, @PathVariable UUID id) {
 
         classroomService.addStudent(id, studentsId);
@@ -70,7 +70,7 @@ public class ClassroomController {
     }
 
     @DeleteMapping("removeStudents/{id}")
-    @PreAuthorize("hasRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString())")
+    @PreAuthorize("hasRole(T(com.pifsite.application.enums.UserRoles).ADMIN.toString())")
     @Operation(summary = "Delete Classroom", description = "Delete a Classroom on database by its ID")
     public ResponseEntity<String> deleteUser(@RequestBody List<UUID> studentsId, @PathVariable UUID id) {
 
@@ -79,7 +79,7 @@ public class ClassroomController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole(T(com.pifsite.application.security.UserRoles).ADMIN.toString())")
+    @PreAuthorize("hasRole(T(com.pifsite.application.enums.UserRoles).ADMIN.toString())")
     @Operation(summary = "Delete Classroom", description = "Delete a Classroom on database by its ID")
     public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
 

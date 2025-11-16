@@ -1,5 +1,9 @@
 package com.pifsite.application.entities;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import com.pifsite.application.enums.UserRoles;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,11 +25,6 @@ import lombok.Setter;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
-
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
-import com.pifsite.application.security.UserRoles;
 
 @Entity
 @Setter

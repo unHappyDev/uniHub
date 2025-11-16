@@ -10,8 +10,8 @@ import com.pifsite.application.exceptions.ResourceNotFoundException;
 import com.pifsite.application.exceptions.EntityInUseException;
 import com.pifsite.application.repository.SubjectRepository;
 import com.pifsite.application.dto.CreateSubjectDTO;
-import com.pifsite.application.security.UserRoles;
 import com.pifsite.application.entities.Subject;
+import com.pifsite.application.enums.UserRoles;
 import com.pifsite.application.dto.SubjectDTO;
 import com.pifsite.application.entities.User;
 

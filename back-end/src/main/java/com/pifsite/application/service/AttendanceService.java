@@ -32,7 +32,7 @@ public class AttendanceService {
         List<AttendanceDTO> Attendances = this.attendanceRepository.getAll();
 
         if (Attendances.isEmpty()) {
-            throw new ResourceNotFoundException("there is no Attendances in the database"); // melhorar depois
+            throw new ResourceNotFoundException("there is no Attendances in the database");
         }
 
         return Attendances;

@@ -176,7 +176,7 @@ export default function PostsPage() {
         />
 
         <Modal isOpen={isModalOpen} onClose={closeModal}>
-          <h2 className="text-xl font-semibold mb-4 text-center text-white uppercase">
+          <h2 className="text-xl font-semibold mb-4 text-center text-orange-300/80 uppercase">
             {editingPost ? "Editar Post" : "Novo Post"}
           </h2>
           <PostForm

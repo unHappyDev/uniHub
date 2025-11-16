@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import com.pifsite.application.exceptions.UnauthorizedActionException;
 import com.pifsite.application.exceptions.ResourceNotFoundException;
 import com.pifsite.application.repository.PostRepository;
-import com.pifsite.application.security.UserRoles;
 import com.pifsite.application.dto.CreatePostDTO;
+import com.pifsite.application.enums.UserRoles;
 import com.pifsite.application.entities.Post;
 import com.pifsite.application.entities.User;
 import com.pifsite.application.dto.PostDTO;
@@ -29,7 +29,7 @@ public class PostService {
         List<PostDTO> posts = this.postRepository.getAllPosts();
 
         if (posts.isEmpty()) {
-            throw new ResourceNotFoundException("there is no posts in the database"); // melhorar depois
+            throw new ResourceNotFoundException("there is no posts in the database");
         }
 
         return posts;

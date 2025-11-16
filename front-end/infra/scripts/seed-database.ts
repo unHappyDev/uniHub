@@ -8,7 +8,8 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log("> Seeding database...");
-  await execAsync(`npx prisma migrate reset --force --skip-seed`);
+  // await execAsync(`npx prisma migrate reset --force --skip-seed`); para resetar o banco
+  await execAsync(`npx prisma migrate deploy`);
 
   console.log("\n> Database seeded!");
   console.log("------------------------------");
