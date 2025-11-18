@@ -289,7 +289,7 @@ export default function CadastroUnificado() {
 
   return (
     <div className="p-8 text-white">
-      <h1 className="text-3xl font-medium mb-8 text-center uppercase">
+      <h1 className="text-2xl font-semibold text-orange-300/90 uppercase tracking-wide text-center mb-10">
         Gerenciamento de Cadastros
       </h1>
       <div className="flex flex-col gap-5 bg-glass border border-orange-400/40 rounded-2xl p-6 mb-10 shadow-glow">

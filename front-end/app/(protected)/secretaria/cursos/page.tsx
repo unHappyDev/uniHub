@@ -133,7 +133,7 @@ export default function CursosPage() {
   return (
     <div className="p-8 text-white flex flex-col min-h-screen">
       <div className="max-w-5xl mx-auto w-full">
-        <h1 className="text-3xl font-medium mb-8 text-center uppercase">
+        <h1 className="text-2xl font-semibold text-orange-300/90 uppercase tracking-wide text-center mb-10">
           Cadastro de Cursos
         </h1>
 
