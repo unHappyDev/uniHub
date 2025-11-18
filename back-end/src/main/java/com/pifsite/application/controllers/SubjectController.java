@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 
 import com.pifsite.application.service.SubjectService;
-import com.pifsite.application.dto.CreateSubjectDTO;
 import com.pifsite.application.dto.SubjectDTO;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,7 +43,7 @@ public class SubjectController {
     @PostMapping
     @Operation(summary = "Create Subject", description = "Create a Subject and save on the database")
     @PreAuthorize("hasAnyRole(T(com.pifsite.application.enums.UserRoles).ADMIN.toString())")
-    public ResponseEntity<?> createSubject(@RequestBody CreateSubjectDTO subjectDTO) {
+    public ResponseEntity<?> createSubject(@RequestBody SubjectDTO subjectDTO) {
 
         subjectService.createSubject(subjectDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Subject created");
@@ -52,7 +51,7 @@ public class SubjectController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update Subject", description = "Update a Subject on database by its ID")
-    public ResponseEntity<?> updateSubject(@RequestBody CreateSubjectDTO subjectDTO, @PathVariable UUID id) {
+    public ResponseEntity<?> updateSubject(@RequestBody SubjectDTO subjectDTO, @PathVariable UUID id) {
 
         subjectService.updateSubject(subjectDTO, id);
         return ResponseEntity.status(HttpStatus.OK).body("Matéria Atualizada");

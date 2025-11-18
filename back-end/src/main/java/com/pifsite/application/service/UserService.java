@@ -43,6 +43,14 @@ public class UserService {
         return users;
     }
 
+    public UserDTO getLoggedUser() {
+
+        Authentication user = SecurityContextHolder.getContext().getAuthentication();
+        User reqUser = (User) user.getPrincipal();
+
+        return new UserDTO(reqUser.getId(), reqUser.getUsername(), reqUser.getEmail(), reqUser.getRole());
+    }
+
     public User createUser(CreateUserDTO registerUserDTO) {
 
         if (this.userRepository.findByEmail(registerUserDTO.email()).isPresent()) {

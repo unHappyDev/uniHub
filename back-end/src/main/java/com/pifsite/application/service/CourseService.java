@@ -9,7 +9,6 @@ import com.pifsite.application.repository.StudentRepository;
 import com.pifsite.application.repository.SubjectRepository;
 import com.pifsite.application.repository.CourseRepository;
 import com.pifsite.application.dto.CourseSubjectsDTO;
-import com.pifsite.application.dto.CreateCourseDTO;
 import com.pifsite.application.dto.CourseNameDTO;
 import com.pifsite.application.entities.Subject;
 import com.pifsite.application.entities.Course;
@@ -59,7 +58,7 @@ public class CourseService {
         return courses;
     }
 
-    public Course crateCourse(CreateCourseDTO courseDTO) {
+    public Course crateCourse(CourseNameDTO courseDTO) {
 
         Course newCourse = new Course();
         newCourse.setCourseName(courseDTO.courseName());
@@ -69,7 +68,7 @@ public class CourseService {
 
     public void createCourseWithSubjects(CourseSubjectsDTO courseSubjectsDTO) {
 
-        CreateCourseDTO newCourseDTO = new CreateCourseDTO(courseSubjectsDTO.courseName());
+        CourseNameDTO newCourseDTO = new CourseNameDTO(null, courseSubjectsDTO.courseName());
         UUID courseId = crateCourse(newCourseDTO).getCourseId();
 
         System.out.println(courseSubjectsDTO.subjects());

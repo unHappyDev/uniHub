@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 
 import com.pifsite.application.service.CourseService;
 import com.pifsite.application.dto.CourseSubjectsDTO;
-import com.pifsite.application.dto.CreateCourseDTO;
 import com.pifsite.application.dto.CourseNameDTO;
 import com.pifsite.application.dto.CourseDTO;
 
@@ -55,7 +54,7 @@ public class CourseController {
     @PostMapping
     @Operation(summary = "Create Course without subjects", description = "Create a Course without subjects and save on the database")
     @PreAuthorize("hasRole(T(com.pifsite.application.enums.UserRoles).ADMIN.toString())")
-    public ResponseEntity<?> createCourse(@RequestBody CreateCourseDTO courseDTO) {
+    public ResponseEntity<?> createCourse(@RequestBody CourseNameDTO courseDTO) {
 
         courseService.crateCourse(courseDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Course created");

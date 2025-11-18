@@ -9,7 +9,6 @@ import com.pifsite.application.exceptions.UnauthorizedActionException;
 import com.pifsite.application.exceptions.ResourceNotFoundException;
 import com.pifsite.application.exceptions.EntityInUseException;
 import com.pifsite.application.repository.SubjectRepository;
-import com.pifsite.application.dto.CreateSubjectDTO;
 import com.pifsite.application.entities.Subject;
 import com.pifsite.application.enums.UserRoles;
 import com.pifsite.application.dto.SubjectDTO;
@@ -37,7 +36,7 @@ public class SubjectService {
         return subjects;
     }
 
-    public void createSubject(CreateSubjectDTO subjectDTO) {
+    public void createSubject(SubjectDTO subjectDTO) {
 
         Authentication userData = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) userData.getPrincipal();
@@ -53,7 +52,7 @@ public class SubjectService {
         this.subjectRepository.save(newSubject);
     }
 
-    public void updateSubject(CreateSubjectDTO subjectDTO, UUID id) {
+    public void updateSubject(SubjectDTO subjectDTO, UUID id) {
 
         Subject subject = this.subjectRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Subject with ID " + id + " not found"));

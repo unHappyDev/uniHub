@@ -40,6 +40,14 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @GetMapping("/logged")
+    @Operation(summary = "Get a User", description = "Get the information from de logged user")
+    public ResponseEntity<?> getLoggedUser() {
+
+        UserDTO user = userService.getLoggedUser();
+        return ResponseEntity.ok(user);
+    }
+
     @PostMapping
     @Operation(summary = "Create User", description = "Create a User and save on the database")
     public ResponseEntity<?> createUser(@RequestBody CreateUserDTO registerUserDTO) {
