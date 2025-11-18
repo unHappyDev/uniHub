@@ -42,7 +42,7 @@ export default function ClassroomsPage() {
       <div className="flex justify-end gap-3">
         <button
           onClick={() => toast.dismiss(t)}
-          className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-md text-sm"
+          className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-md text-sm cursor-pointer"
         >
           Cancelar
         </button>
@@ -58,7 +58,7 @@ export default function ClassroomsPage() {
               toast.error("Erro ao excluir turma.");
             }
           }}
-          className="bg-red-600 hover:bg-red-500 px-3 py-1 rounded-md text-sm"
+          className="bg-red-600 hover:bg-red-500 px-3 py-1 rounded-md text-sm cursor-pointer"
         >
           Excluir
         </button>

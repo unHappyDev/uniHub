@@ -15,9 +15,20 @@ export default function ClassroomTable({
   onEdit,
   onDelete,
 }: Props) {
+  const formatSchedule = (c: Classroom) => {
+    if (!c.schedules || c.schedules.length === 0) return "—";
+
+    return c.schedules
+      .map(
+        (s) =>
+          `${s.dayOfWeek}: ${s.startAt.substring(0, 5)} - ${s.endAt.substring(0, 5)}`,
+      )
+      .join(", ");
+  };
+
   return (
     <div className="mt-6">
-      {/* Desktop */}
+      {/* DESKTOP */}
       <div className="hidden md:block overflow-x-auto bg-glass border border-orange-400/40 rounded-2xl p-6 mb-10 shadow-glow transition-all hover:shadow-orange-500/30">
         <table className="min-w-full rounded-xl text-white">
           <thead>
@@ -29,17 +40,19 @@ export default function ClassroomTable({
               <th className="px-4 py-3 text-left whitespace-nowrap">
                 Semestre
               </th>
-              <th className="px-4 py-3 text-left whitespace-nowrap">Início</th>
-              <th className="px-4 py-3 text-left whitespace-nowrap">Término</th>
+              <th className="px-4 py-3 text-left whitespace-nowrap">
+                Horários
+              </th>
               <th className="px-4 py-3 text-left whitespace-nowrap">Alunos</th>
               <th className="px-4 py-3 text-center whitespace-nowrap">Ações</th>
             </tr>
           </thead>
+
           <tbody>
             {classrooms.length === 0 ? (
               <tr>
                 <td
-                  colSpan={7}
+                  colSpan={6}
                   className="text-center py-6 text-gray-400 bg-neutral-900"
                 >
                   Nenhuma turma cadastrada
@@ -54,23 +67,13 @@ export default function ClassroomTable({
                   <td className="px-4 py-3">{c.professor}</td>
                   <td className="px-4 py-3">{c.subject}</td>
                   <td className="px-4 py-3">{c.semester}</td>
-                  <td className="px-4 py-3">
-                    {new Date(c.startAt).toLocaleDateString("pt-BR")}{" "}
-                    {new Date(c.startAt).toLocaleTimeString("pt-BR", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </td>
-                  <td className="px-4 py-3">
-                    {new Date(c.endAt).toLocaleDateString("pt-BR")}{" "}
-                    {new Date(c.endAt).toLocaleTimeString("pt-BR", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </td>
+
+                  <td className="px-4 py-3">{formatSchedule(c)}</td>
+
                   <td className="px-4 py-3 text-center">
                     {c.students?.length || 0}
                   </td>
+
                   <td className="px-4 py-3 text-center">
                     <div className="flex justify-center gap-3">
                       <button
@@ -79,6 +82,7 @@ export default function ClassroomTable({
                       >
                         <Pencil size={16} /> Editar
                       </button>
+
                       <button
                         onClick={() => onDelete(c.classroomId)}
                         className="text-red-400 hover:text-red-500 transition flex items-center gap-1 cursor-pointer"
@@ -94,7 +98,7 @@ export default function ClassroomTable({
         </table>
       </div>
 
-      {/* Mobile */}
+      {/* MOBILE */}
       <div className="md:hidden flex flex-col gap-6">
         {classrooms.length === 0 ? (
           <div className="text-center text-gray-400 bg-glass border border-orange-400/40 rounded-2xl p-6 mb-10 shadow-glow transition-all hover:shadow-orange-500/30">
@@ -110,24 +114,24 @@ export default function ClassroomTable({
                 <span className="font-semibold text-orange-500">
                   Professor:
                 </span>{" "}
-                {c.professor || "—"}
+                {c.professor}
               </p>
+
               <p>
                 <span className="font-semibold text-orange-500">Matéria:</span>{" "}
-                {c.subject || "—"}
+                {c.subject}
               </p>
+
               <p>
                 <span className="font-semibold text-orange-500">Semestre:</span>{" "}
                 {c.semester}
               </p>
+
               <p>
-                <span className="font-semibold text-orange-500">Início:</span>{" "}
-                {new Date(c.startAt).toLocaleString("pt-BR")}
+                <span className="font-semibold text-orange-500">Horários:</span>{" "}
+                {formatSchedule(c)}
               </p>
-              <p>
-                <span className="font-semibold text-orange-500">Término:</span>{" "}
-                {new Date(c.endAt).toLocaleString("pt-BR")}
-              </p>
+
               <p>
                 <span className="font-semibold text-orange-500">Alunos:</span>{" "}
                 {c.students?.length || 0}
@@ -140,6 +144,7 @@ export default function ClassroomTable({
                 >
                   <Pencil size={16} /> Editar
                 </button>
+
                 <button
                   onClick={() => onDelete(c.classroomId)}
                   className="text-red-400 hover:text-red-500 transition flex items-center gap-1 cursor-pointer"
