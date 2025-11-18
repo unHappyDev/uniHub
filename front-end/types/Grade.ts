@@ -1,9 +1,7 @@
 export interface Grade {
   id: string;
   student: string;
-  studentId: string;
   subject: string;
-  activity: string;
   grade: number;
 }
 
