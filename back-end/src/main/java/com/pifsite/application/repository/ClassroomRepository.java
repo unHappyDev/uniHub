@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface ClassroomRepository extends JpaRepository<Classroom, UUID> {
-    
+
     @Query("SELECT DISTINCT c FROM Classroom c " +
        "JOIN FETCH c.students s " +
        "JOIN FETCH c.professor p " +

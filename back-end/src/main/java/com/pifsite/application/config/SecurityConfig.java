@@ -47,6 +47,7 @@ public class SecurityConfig {
                         .requestMatchers("/professor").hasRole(UserRoles.ADMIN.toString())
                         .requestMatchers("/student")
                         .hasAnyRole(UserRoles.ADMIN.toString(), UserRoles.PROFESSOR.toString())
+                        .requestMatchers("/dashboard").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/swagger-ui.html").permitAll()

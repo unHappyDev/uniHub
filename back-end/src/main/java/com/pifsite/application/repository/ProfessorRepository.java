@@ -8,4 +8,6 @@ import java.util.UUID;
 
 public interface ProfessorRepository extends JpaRepository<Professor, UUID> {
 
+    long count();
+
 }

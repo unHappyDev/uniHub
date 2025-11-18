@@ -18,6 +18,8 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
             "FROM Student s")
     List<StudentDTO> getAllStudents();
 
+    long count();
+
     long countByCourse(Course course);
 
     @Query("SELECT COUNT(s) FROM Student s WHERE s.course.courseId = :courseId")

@@ -20,4 +20,6 @@ public interface CourseRepository extends JpaRepository<Course, UUID> {
 
     @Query("SELECT DISTINCT c FROM Course c LEFT JOIN c.subjects")
     Set<Course> getAllCoursesWithSubjects();
+
+    long count();
 }
