@@ -37,6 +37,17 @@ export const authApi = {
   },
 
   logout: () => apiNext.delete("/logout"),
+
   register: (userData: any) => apiNext.post("/register", userData),
+
   verifySession: () => apiNext.get("/verify-session"),
+
+  forgotPassword: (email: string) =>
+    apiNext.post("/forgot-password", { email }),
+
+  resendActivationByEmail: (email: string) =>
+    apiNext.post("/resend-activation", { email }),
+
+  resetPassword: (token: string, password: string) =>
+    apiNext.post("/reset-password", { token, password }),
 };
