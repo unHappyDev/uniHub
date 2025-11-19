@@ -45,5 +45,4 @@ public class Attendance {
     private OffsetDateTime attendanceDate;
 
     private boolean presence;
-
 }
