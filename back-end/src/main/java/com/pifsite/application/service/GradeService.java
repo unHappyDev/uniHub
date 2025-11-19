@@ -9,6 +9,7 @@ import com.pifsite.application.repository.GradeRepository;
 import com.pifsite.application.dto.CreateGradeDTO;
 import com.pifsite.application.entities.Classroom;
 import com.pifsite.application.entities.Student;
+import com.pifsite.application.enums.ActivityType;
 import com.pifsite.application.entities.Grade;
 import com.pifsite.application.dto.GradeDTO;
 
@@ -46,7 +47,7 @@ public class GradeService {
 
         Grade newGrade = new Grade();
 
-        newGrade.setActivity(gradeDTO.activity());
+        newGrade.setActivity(ActivityType.fromString(gradeDTO.activity()));
         newGrade.setGrade(gradeDTO.grade());
         newGrade.setStudent(newStudent);
         newGrade.setClassroom(newClassroom);
@@ -61,7 +62,7 @@ public class GradeService {
 
         if (gradeDTO.activity() != null && !gradeDTO.activity().isBlank()) {
 
-            grade.setActivity(gradeDTO.activity());
+            grade.setActivity(ActivityType.fromString(gradeDTO.activity()));
         }
         if (gradeDTO.grade() != null) {
 
