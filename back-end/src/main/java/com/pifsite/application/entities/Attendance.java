@@ -37,6 +37,10 @@ public class Attendance {
     @JoinColumn(name = "classroom")
     private Classroom classroom;
 
+    @ManyToOne
+    @JoinColumn(name = "schedule_id")
+    private ClassroomSchedule schedule;
+
     @Column(name = "attendance_date")
     private OffsetDateTime attendanceDate;
 

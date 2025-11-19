@@ -8,6 +8,8 @@
 -- CreateEnum
 CREATE TYPE "public"."WeekDay" AS ENUM ('SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO', 'DOMINGO');
 
+CREATE TYPE "public"."ActivityType" AS ENUM ('PROVA', 'TRABALHO', 'RECUPERACAO', 'EXTRA');
+
 -- AlterEnum
 ALTER TYPE "public"."Role" ADD VALUE 'STUDENT';
 
@@ -48,6 +50,17 @@ CREATE TABLE "public"."classroom_schedule" (
 
     CONSTRAINT "classroom_schedule_pkey" PRIMARY KEY ("schedule_id")
 );
+
+--AlterTable attendances
+ALTER TABLE attendances
+    ADD COLUMN schedule_id UUID NOT NULL;
+
+ALTER TABLE attendances
+    ADD CONSTRAINT fk_attendance_schedule
+        FOREIGN KEY (schedule_id)
+        REFERENCES classroom_schedule (schedule_id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE;
 
 -- RenameForeignKey
 ALTER TABLE "public"."session" RENAME CONSTRAINT "Session_user_id_fkey" TO "session_user_id_fkey";

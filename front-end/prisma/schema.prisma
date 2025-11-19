@@ -26,6 +26,13 @@ enum WeekDay {
   DOMINGO
 }
 
+enum ActivityType {
+  PROVA
+  TRABALHO
+  RECUPERACAO
+  EXTRA
+}
+
 model User {
   id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   username           String               @unique @db.VarChar(30)
@@ -184,12 +191,13 @@ model Classroom {
 
 model ClassroomSchedule {
   schedule_id String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  day_of_week   WeekDay
+  day_of_week WeekDay
   start_at    DateTime @db.Time
   end_at      DateTime @db.Time
 
-  classroom   Classroom @relation(fields: [classroom_ref], references: [classroom_id])
-  classroom_ref String    @db.Uuid
+  classroom     Classroom    @relation(fields: [classroom_ref], references: [classroom_id])
+  classroom_ref String       @db.Uuid
+  attendances   Attendance[]
 
   @@map("classroom_schedule")
 }
@@ -198,11 +206,13 @@ model Attendance {
   attendance_id   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   student         String   @db.Uuid
   classroom       String   @db.Uuid
+  schedule        String   @db.Uuid
   attendance_date DateTime @db.Timestamptz(6)
   presence        Boolean
 
-  studentRef   Student   @relation(fields: [student], references: [student_id])
-  classroomRef Classroom @relation(fields: [classroom], references: [classroom_id])
+  studentRef   Student           @relation(fields: [student], references: [student_id])
+  scheduleRef  ClassroomSchedule @relation(fields: [schedule], references: [schedule_id])
+  classroomRef Classroom         @relation(fields: [classroom], references: [classroom_id])
 
   @@map("attendances")
 }
