@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -12,7 +11,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -75,13 +73,13 @@ export default function ResetPasswordForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nova Senha</FormLabel>
+              <FormLabel className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">Nova Senha</FormLabel>
               <FormControl>
                 <div className="relative">
-                  <Input
+                  <input
                     type={showPassword ? "text" : "password"}
                     {...field}
-                    className="pr-10"
+                    className="w-full sm:flex-1 bg-[#1a1a1dc3] border border-orange-400/20 focus:border-orange-400/10 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-4 py-3 rounded-xl outline-none shadow-inner"
                   />
                   <button
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer"
@@ -106,13 +104,13 @@ export default function ResetPasswordForm() {
           name="confirm"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Confirmar Senha</FormLabel>
+              <FormLabel className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">Confirmar Senha</FormLabel>
               <FormControl>
                 <div className="relative">
-                  <Input
+                  <input
                     type={showPassword ? "text" : "password"}
                     {...field}
-                    className="pr-10"
+                    className="w-full sm:flex-1 bg-[#1a1a1dc3] border border-orange-400/20 focus:border-orange-400/10 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-4 py-3 rounded-xl outline-none shadow-inner"
                   />
                   <button
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer"
@@ -137,9 +135,9 @@ export default function ResetPasswordForm() {
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
-        <Button type="submit" className="w-full" disabled={loading}>
+        <button type="submit" className="w-full bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-semibold px-6 py-2 rounded-xl transition-all uppercase cursor-pointer" disabled={loading}>
           {loading ? "Redefinindo…" : "Redefinir senha"}
-        </Button>
+        </button>
       </form>
     </Form>
   );

@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -15,7 +14,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -42,11 +40,11 @@ export default function LoginForm() {
     setError(null);
 
     try {
-      // Chamada à API
+
       const res = await authApi.login(values);
-      // res = { token, role }
+
       console.log("res login:", res);
-      // Salva no localStorage
+
       localStorage.setItem("token", res.token);
 
       localStorage.setItem("role", res.role);
@@ -80,9 +78,15 @@ export default function LoginForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
+                Email
+              </FormLabel>
               <FormControl>
-                <Input placeholder="email@example.com" {...field} />
+                <input
+                  placeholder="email@example.com"
+                  className="w-full sm:flex-1 bg-[#1a1a1dc3] border border-orange-400/20 focus:border-orange-400/10 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-4 py-3 rounded-xl outline-none shadow-inner"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -94,13 +98,15 @@ export default function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Senha</FormLabel>
+              <FormLabel className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
+                Senha
+              </FormLabel>
               <FormControl>
                 <div className="relative">
-                  <Input
+                  <input
                     type={showPassword ? "text" : "password"}
                     {...field}
-                    className="pr-10"
+                    className="w-full sm:flex-1 bg-[#1a1a1dc3] border border-orange-400/20 focus:border-orange-400/10 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-4 py-3 rounded-xl outline-none shadow-inner"
                   />
                   <button
                     type="button"
@@ -126,14 +132,23 @@ export default function LoginForm() {
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
+        <div className="flex items-center gap-4 justify-center">
+          <button
+            type="button"
+            onClick={() => router.push("/")}
+            className="bg-gray-500 hover:bg-gray-600 text-white font-semibold px-6 py-2 rounded-xl transition-all uppercase cursor-pointer"
+          >
+            Cancelar
+          </button>
 
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={form.formState.isSubmitting}
-        >
-          {form.formState.isSubmitting ? "Entrando..." : "Entrar"}
-        </Button>
+          <button
+            type="submit"
+            className="bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-semibold px-6 py-2 rounded-xl transition-all uppercase cursor-pointer"
+            disabled={form.formState.isSubmitting}
+          >
+            {form.formState.isSubmitting ? "Entrando..." : "Entrar"}
+          </button>
+        </div>
       </form>
     </Form>
   );
