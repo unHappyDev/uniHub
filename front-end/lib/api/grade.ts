@@ -7,16 +7,13 @@ export const getGrades = async (): Promise<Grade[]> => {
 };
 
 export const createGrade = async (data: CreateGradeDTO) => {
-  const response = await apiSpring.post("/grade", data);
-  return response.data;
+  return apiSpring.post("/grade", data);
 };
 
 export const updateGrade = async (id: string, data: CreateGradeDTO) => {
-  const response = await apiSpring.put(`/grade/${id}`, data);
-  return response.data;
+  return apiSpring.put(`/grade/${id}`, data);
 };
 
 export const deleteGrade = async (id: string) => {
-  const response = await apiSpring.delete(`/grade/${id}`);
-  return response.data;
+  return apiSpring.delete(`/grade/${id}`);
 };

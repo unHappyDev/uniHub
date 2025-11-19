@@ -12,7 +12,7 @@ interface Props {
 export default function GradeTable({ grades, onEdit, onDelete }: Props) {
   return (
     <table className="w-full border rounded">
-      <thead className="bg-gray">
+      <thead>
         <tr>
           <th className="p-2 text-left">Aluno</th>
           <th className="p-2 text-left">Matéria</th>
@@ -22,26 +22,17 @@ export default function GradeTable({ grades, onEdit, onDelete }: Props) {
       </thead>
 
       <tbody>
-        {grades.map((grade) => (
-          <tr key={grade.id} className="border-b">
-            <td className="p-2">{grade.student}</td>
-            <td className="p-2">{grade.subject}</td>
-            <td className="p-2">{grade.grade}</td>
+        {grades.map((g) => (
+          <tr key={g.id} className="border-b">
+            <td className="p-2">{g.student}</td>
+            <td className="p-2">{g.subject}</td>
+            <td className="p-2">{g.grade}</td>
 
             <td className="p-2 flex gap-2">
-
-              <Button size="sm" onClick={() => onEdit(grade)}>
-                Editar
-              </Button>
-
-              <Button
-                size="sm"
-                variant="destructive"
-                onClick={() => onDelete(grade.id)}
-              >
+              <Button size="sm" onClick={() => onEdit(g)}>Editar</Button>
+              <Button size="sm" variant="destructive" onClick={() => onDelete(g.id)}>
                 Excluir
               </Button>
-
             </td>
           </tr>
         ))}

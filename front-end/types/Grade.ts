@@ -1,5 +1,7 @@
 export interface Grade {
   id: string;
+  classroomId: string;
+  studentId: string;
   student: string;
   subject: string;
   grade: number;

@@ -19,11 +19,7 @@ export default function GradePage() {
       const data = await getGrades();
       setGrades(data);
     } catch (error: any) {
-      if (error.response?.status === 404) {
-        setGrades([]);
-      } else {
-        console.error("Erro ao buscar notas:", error);
-      }
+      if (error.response?.status === 404) setGrades([]);
     }
   }
 
@@ -43,8 +39,9 @@ export default function GradePage() {
   }
 
   async function handleEdit(data: CreateGradeDTO) {
+    if (!editing) return;
+
     try {
-      if (!editing) return;
       await updateGrade(editing.id, data);
       toast.success("Nota atualizada");
       setEditing(null);
@@ -73,7 +70,10 @@ export default function GradePage() {
 
       <div className="flex justify-end mb-6">
         <button
-          className="bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-medium px-6 py-2.5 rounded-xl shadow-md transition-all uppercase"
+          className="bg-gradient-to-r from-orange-500/50 to-yellow-400/30
+                     hover:from-orange-500/60 hover:to-yellow-400/40
+                     text-white font-medium px-6 py-2.5 rounded-xl
+                     shadow-md transition-all uppercase"
           onClick={() => {
             setEditing(null);
             setModalOpen(true);
@@ -85,8 +85,8 @@ export default function GradePage() {
 
       <GradeTable
         grades={grades}
-        onEdit={(grade) => {
-          setEditing(grade);
+        onEdit={(g) => {
+          setEditing(g);
           setModalOpen(true);
         }}
         onDelete={handleDelete}
@@ -101,10 +101,10 @@ export default function GradePage() {
           initialData={
             editing
               ? {
-                  studentId: "",
+                  studentId: editing.studentId,
                   classroomId: "",
-                  activity: editing.subject,
-                  grade: editing.grade,
+                  activity: "",
+                  grade: editing.grade
                 }
               : undefined
           }
