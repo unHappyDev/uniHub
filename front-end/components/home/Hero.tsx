@@ -28,10 +28,10 @@ export function Hero() {
 
             <p className="text-base sm:text-lg leading-relaxed text-gray-300">
               Nosso sistema acadêmico completo conecta alunos, professores e
-              administradores em uma plataforma integrada e moderna. Se você já
-              é nosso parceiro, aproveite ao máximo todas as funcionalidades. Se
-              ainda não é, entre em contato e descubra como podemos transformar
-              a gestão e o aprendizado na sua instituição.
+              administradores em uma plataforma integrada e moderna. Com uma
+              interface intuitiva e funcionalidades avançadas, proporcionamos
+              uma gestão acadêmica mais eficiente e uma experiência de
+              aprendizado enriquecedora para todos os envolvidos.
             </p>
 
             <div className="flex flex-wrap gap-4">
@@ -40,12 +40,7 @@ export function Hero() {
                   Acessar Portal
                 </Button>
               </a>
-              <Button
-                variant="outline"
-                className="py-4 px-6 border-white cursor-pointer text-white hover:bg-white hover:text-black font-bold text-sm rounded-md transition duration-300 ease-in-out"
-              >
-                Entrar em contato
-              </Button>
+              
             </div>
           </div>
         </motion.div>
