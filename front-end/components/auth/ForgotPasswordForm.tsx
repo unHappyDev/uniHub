@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -61,9 +60,9 @@ export default function ForgotPasswordForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">Email</FormLabel>
               <FormControl>
-                <Input placeholder="you@example.com" {...field} />
+                <input placeholder="email@example.com" className="w-full sm:flex-1 bg-[#1a1a1dc3] border border-orange-400/20 focus:border-orange-400/10 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-4 py-3 rounded-xl outline-none shadow-inner" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -75,9 +74,9 @@ export default function ForgotPasswordForm() {
           </Alert>
         )}
 
-        <Button type="submit" className="w-full" disabled={loading}>
+        <button type="submit" className="w-full bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-medium px-6 py-2 rounded-xl transition-all uppercase cursor-pointer" disabled={loading}>
           {loading ? "Enviando" : "Enviar link de redefinição"}
-        </Button>
+        </button>
       </form>
     </Form>
   );

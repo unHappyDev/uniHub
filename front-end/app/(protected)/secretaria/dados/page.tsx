@@ -184,9 +184,9 @@ export default function Dados() {
                 <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
                   Nome
                 </label>
-                <Input
+                <input
                   {...register("name")}
-                  className="bg-[#1a1a1dc3] border border-orange-400/20 text-white shadow-inner rounded-xl h-10"
+                  className="w-full sm:flex-1 bg-[#1a1a1dc3] border border-orange-400/20 focus:border-orange-400/10 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-4 py-2.5 rounded-xl outline-none shadow-inner"
                 />
                 {errors.name && (
                   <p className="text-red-400 text-xs mt-1">
@@ -199,9 +199,9 @@ export default function Dados() {
                 <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
                   Email
                 </label>
-                <Input
+                <input
                   {...register("email")}
-                  className="bg-[#1a1a1dc3] border border-orange-400/20 text-white shadow-inner rounded-xl h-10"
+                  className="w-full sm:flex-1 bg-[#1a1a1dc3] border border-orange-400/20 focus:border-orange-400/10 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-4 py-2.5 rounded-xl outline-none shadow-inner"
                 />
                 {errors.email && (
                   <p className="text-red-400 text-xs mt-1">
@@ -215,22 +215,22 @@ export default function Dados() {
                   Nova Senha
                 </label>
                 <div className="relative">
-                  <Input
+                  <input
                     type={showPassword ? "text" : "password"}
                     {...register("password")}
-                    className="bg-[#1a1a1dc3] border border-orange-400/20 text-white shadow-inner rounded-xl h-10 pr-10"
+                    className="w-full sm:flex-1 bg-[#1a1a1dc3] border border-orange-400/20 focus:border-orange-400/10 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-4 py-2.5 rounded-xl outline-none shadow-inner"
                     placeholder="Digite a nova senha"
                   />
 
                   <button
                     type="button"
-                    className="absolute right-3 top-[8px] text-gray-300 hover:text-white"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer"
                     onClick={() => setShowPassword((prev) => !prev)}
                   >
                     {showPassword ? (
-                      <EyeOff size={20} className="cursor-pointer" />
+                      <EyeOff className="w-4 h-4 cursor-pointer" />
                     ) : (
-                      <Eye size={20} className="cursor-pointer" />
+                      <Eye className="w-4 h-4 cursor-pointer" />
                     )}
                   </button>
                 </div>
@@ -241,22 +241,22 @@ export default function Dados() {
                   Confirmar Senha
                 </label>
                 <div className="relative">
-                  <Input
+                  <input
                     type={showConfirm ? "text" : "password"}
                     {...register("confirmPassword")}
-                    className="bg-[#1a1a1dc3] border border-orange-400/20 text-white shadow-inner rounded-xl h-10 pr-10"
+                    className="w-full sm:flex-1 bg-[#1a1a1dc3] border border-orange-400/20 focus:border-orange-400/10 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-4 py-2.5 rounded-xl outline-none shadow-inner"
                     placeholder="Repita a nova senha"
                   />
 
                   <button
                     type="button"
-                    className="absolute right-3 top-[8px] text-gray-300 hover:text-white"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer"
                     onClick={() => setShowConfirm((prev) => !prev)}
                   >
                     {showConfirm ? (
-                      <EyeOff size={20} className="cursor-pointer" />
+                      <EyeOff className="w-4 h-4 cursor-pointer" />
                     ) : (
-                      <Eye size={20} className="cursor-pointer" />
+                      <Eye className="w-4 h-4 cursor-pointer" />
                     )}
                   </button>
                 </div>
