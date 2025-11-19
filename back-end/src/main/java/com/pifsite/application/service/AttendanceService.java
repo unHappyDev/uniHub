@@ -7,10 +7,12 @@ import com.pifsite.application.exceptions.ResourceNotFoundException;
 import com.pifsite.application.exceptions.EntityInUseException;
 import com.pifsite.application.repository.AttendanceRepository;
 import com.pifsite.application.repository.ClassroomRepository;
+import com.pifsite.application.repository.ClassroomScheduleRepository;
 import com.pifsite.application.repository.StudentRepository;
 import com.pifsite.application.dto.CreateAttendanceDTO;
 import com.pifsite.application.entities.Attendance;
 import com.pifsite.application.entities.Classroom;
+import com.pifsite.application.entities.ClassroomSchedule;
 import com.pifsite.application.dto.AttendanceDTO;
 import com.pifsite.application.entities.Student;
 
@@ -23,6 +25,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AttendanceService {
 
+    private final ClassroomScheduleRepository scheduleRepository;
     private final AttendanceRepository attendanceRepository;
     private final ClassroomRepository classroomRepository;
     private final StudentRepository studentRepository;
@@ -48,10 +51,16 @@ public class AttendanceService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Classroom with ID " + AttendanceDTO.classroomId() + " not found"));
 
+        ClassroomSchedule schedule = this.scheduleRepository.findById(AttendanceDTO.scheduleId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Classroom with ID " + AttendanceDTO.classroomId() + " not found"));
+
+
         Attendance newAttendance = new Attendance();
 
         newAttendance.setAttendanceDate(AttendanceDTO.attendanceDate());
         newAttendance.setPresence(AttendanceDTO.presence());
+        newAttendance.setSchedule(schedule);
         newAttendance.setStudent(student);
         newAttendance.setClassroom(classroom);
 

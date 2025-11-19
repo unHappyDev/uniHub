@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public interface GradeRepository extends JpaRepository<Grade, UUID> {
 
-    @Query("SELECT new com.pifsite.application.dto.GradeDTO(g.gradeId, u.username, sub.subjectName, g.grade) " +
+    @Query("SELECT new com.pifsite.application.dto.GradeDTO(g.gradeId, u.id, u.username, sub.subjectName, g.grade) " +
             "FROM Grade g " +
             "JOIN g.student s JOIN s.user u " +
             "JOIN g.classroom c JOIN c.subject sub")
