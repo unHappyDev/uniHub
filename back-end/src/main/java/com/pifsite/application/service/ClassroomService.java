@@ -46,7 +46,7 @@ public class ClassroomService {
 
         return classrooms.stream().map(c -> {
             Set<ClassroomStudentDTO> studentDTOs = c.getStudents().stream()
-                    .map(s -> new ClassroomStudentDTO(s.getUser().getUsername(), s.getCourse().getCourseName()))
+                    .map(s -> new ClassroomStudentDTO(s.getUser().getId(), s.getUser().getUsername(), s.getCourse().getCourseName()))
                     .collect(Collectors.toSet());
 
             Set<ClassroomScheduleDTO> scheduleDTOs = c.getSchedules().stream()
