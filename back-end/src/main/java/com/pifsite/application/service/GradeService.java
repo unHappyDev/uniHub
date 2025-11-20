@@ -37,6 +37,13 @@ public class GradeService {
         return grades;
     }
 
+    public List<GradeDTO> getClassroomGrades(UUID id) {
+
+        List<GradeDTO> grades = this.gradeRepository.getByClassroomId(id);
+
+        return grades;
+    }
+
     public void crateGrade(CreateGradeDTO gradeDTO) {
 
         Student newStudent = this.studentRepository.findById(gradeDTO.studentId()).orElseThrow(
