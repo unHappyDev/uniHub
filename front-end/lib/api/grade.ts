@@ -6,6 +6,12 @@ export const getGrades = async (): Promise<Grade[]> => {
   return response.data;
 };
 
+// Filtra as notas de uma turma específica
+export const getGradesByClassroom = async (classroomId: string): Promise<Grade[]> => {
+  const all = await getGrades();
+  return all.filter(g => g.classroomId === classroomId);
+};
+
 export const createGrade = async (data: CreateGradeDTO) => {
   return apiSpring.post("/grade", data);
 };

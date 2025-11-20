@@ -1,19 +1,19 @@
 import { CreateTeacherDTO, Teacher } from "@/types/Teacher";
 import apiSpring from "./clientSpring";
 
-export async function getTeachers(): Promise<Teacher[]> {
+export const getTeachers = async (): Promise<Teacher[]> => {
   const response = await apiSpring.get("/professor");
   return response.data;
-}
+};
 
-export async function createTeacher(teacher: CreateTeacherDTO): Promise<void> {
+export const createTeacher = async (teacher: CreateTeacherDTO): Promise<void> => {
   await apiSpring.post("/professor", teacher);
-}
+};
 
-export async function updateTeacher(id: string, teacher: CreateTeacherDTO): Promise<void> {
+export const updateTeacher = async (id: string, teacher: CreateTeacherDTO): Promise<void> => {
   await apiSpring.put(`/professor/${id}`, teacher);
-}
+};
 
-export async function deleteTeacher(id: string): Promise<void> {
+export const deleteTeacher = async (id: string): Promise<void> => {
   await apiSpring.delete(`/professor/${id}`);
-}
+};
