@@ -4,13 +4,12 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Modal } from "@/components/ui/modal";
-
 import { getStudents } from "@/lib/api/student";
 import { getGradesByClassroom, createGrade, updateGrade } from "@/lib/api/grade";
-
 import GradeForm from "@/components/cadastro/GradeForm";
 import GradeTable from "@/components/cadastro/GradeTable";
 import { Grade, CreateGradeDTO } from "@/types/Grade";
+import { getClassroomById } from "@/lib/api/classroom";
 
 interface Student {
   id: string;
@@ -23,48 +22,92 @@ export default function ClassroomGradesPage() {
 
   const [students, setStudents] = useState<Student[]>([]);
   const [grades, setGrades] = useState<Grade[]>([]);
-  const [editing, setEditing] = useState<Partial<Grade> | null>(null);
+  const [editing, setEditing] = useState<(CreateGradeDTO & { id?: string }) | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
   async function load() {
     try {
-      // buscar todos os alunos e filtrar apenas os que pertencem à turma
-      const allStudents = await getStudents();
-      const studentsInClass = allStudents.filter((s: any) =>
-        s.classroomIds?.includes(classroomId)
-      );
+      const classroom = await getClassroomById(classroomId);
+      if (!classroom) {
+        toast.error("Turma não encontrada");
+        return;
+      }
 
-      const gr = await getGradesByClassroom(classroomId);
+      const studentsInClass = (classroom.students ?? []).map((s: any) => ({
+        id: s.id,
+        nome: s.name ?? s.nome ?? "Sem nome",
+      }));
 
-      setStudents(studentsInClass || []);
-      setGrades(gr || []);
+      const gradesFromServer = await getGradesByClassroom(classroomId);
+
+      const mergedGrades = gradesFromServer.map((g: any) => ({
+        ...g,
+        student: studentsInClass.find((s) => s.id === g.studentId)?.nome || "Aluno desconhecido",
+      }));
+
+      setStudents(studentsInClass);
+      setGrades(mergedGrades);
     } catch (err) {
-      console.error(err);
+      console.error("Erro no load:", err);
       toast.error("Erro ao carregar dados da turma");
     }
   }
 
   useEffect(() => {
-    if (!classroomId) return;
-    load();
+    if (classroomId) load();
   }, [classroomId]);
 
   async function handleSave(data: CreateGradeDTO) {
     try {
       if (editing?.id) {
-        await updateGrade(editing.id, data);
+        const updateResp = await updateGrade(editing.id, data);
+
+        const updatedFromServer = updateResp?.data ?? { ...data, id: editing.id };
+
         toast.success("Nota atualizada!");
+
+        setGrades((prev) =>
+          prev.map((g) =>
+            g.id === editing.id
+              ? {
+                  ...g,
+                  classroomId: updatedFromServer.classroomId ?? g.classroomId,
+                  studentId: updatedFromServer.studentId ?? g.studentId,
+                  activity: (updatedFromServer.activity as any) ?? g.activity,
+                  grade: updatedFromServer.grade ?? g.grade,
+                  student:
+                    students.find(
+                      (s) => s.id === (updatedFromServer.studentId ?? g.studentId)
+                    )?.nome ?? g.student,
+                }
+              : g
+          )
+        );
       } else {
-        await createGrade(data);
+        const createResp = await createGrade(data);
+
+        const returnedId = createResp?.data?.id ?? String(Date.now());
+
+        const newGrade: Grade = {
+          id: returnedId,
+          classroomId: data.classroomId,
+          studentId: data.studentId,
+          activity: data.activity as any,
+          grade: data.grade,
+          student: students.find((s) => s.id === data.studentId)?.nome ?? "",
+        };
+
         toast.success("Nota criada!");
+        setGrades((prev) => [...prev, newGrade]);
       }
 
       setModalOpen(false);
       setEditing(null);
-      await load();
-    } catch (err) {
-      console.error(err);
-      toast.error("Erro ao salvar nota");
+    } catch (err: any) {
+      console.error("handleSave error:", err);
+      const serverMessage =
+        err?.response?.data?.message || err?.message || "Erro ao salvar nota";
+      toast.error(serverMessage);
     }
   }
 
@@ -77,11 +120,21 @@ export default function ClassroomGradesPage() {
         grades={grades}
         classroomId={classroomId}
         onEdit={(g: Grade) => {
-          setEditing(g);
+          setEditing({
+            id: g.id,
+            studentId: g.studentId,
+            subject: g.subject || "",
+            classroomId,
+            activity: g.activity,
+            grade: g.grade,
+          });
           setModalOpen(true);
         }}
-        onAdd={(obj: Partial<Grade>) => {
-          setEditing(obj);
+        onAdd={(data: CreateGradeDTO) => {
+          setEditing({
+            ...data,
+            classroomId,
+          });
           setModalOpen(true);
         }}
       />
@@ -89,19 +142,8 @@ export default function ClassroomGradesPage() {
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
         <div className="p-4">
           <h3 className="text-xl font-semibold mb-4">Editar / Adicionar Nota</h3>
-          <GradeForm
-            initialData={
-              editing
-                ? {
-                    studentId: editing.studentId || "",
-                    classroomId,
-                    activity: editing.activity || "",
-                    grade: editing.grade ?? 0,
-                  }
-                : undefined
-            }
-            onSubmit={handleSave}
-          />
+
+          <GradeForm initialData={editing ?? undefined} onSubmit={handleSave} />
         </div>
       </Modal>
     </div>

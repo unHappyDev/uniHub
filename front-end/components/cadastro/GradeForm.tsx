@@ -4,10 +4,8 @@ import { useState, useEffect } from "react";
 import { CreateGradeDTO } from "@/types/Grade";
 import { getStudents } from "@/lib/api/student";
 import { getClassrooms } from "@/lib/api/classroom";
-
 import { Classroom } from "@/types/Classroom";
 import { Student } from "@/types/Student";
-
 import { User, BookOpen, ClipboardList, FileText } from "lucide-react";
 
 interface Props {
@@ -16,65 +14,50 @@ interface Props {
 }
 
 export default function GradeForm({ initialData, onSubmit }: Props) {
-  const [form, setForm] = useState<CreateGradeDTO>(
-    initialData ?? {
-      studentId: "",
-      classroomId: "",
-      activity: "",
-      grade: 0,
-    }
-  );
+  const [form, setForm] = useState<CreateGradeDTO>({
+    studentId: "",
+    classroomId: "",
+    subject: "",
+    activity: "",
+    grade: 0,
+  });
 
   const [students, setStudents] = useState<Student[]>([]);
   const [classrooms, setClassrooms] = useState<Classroom[]>([]);
 
   useEffect(() => {
-    getStudents().then(setStudents);
+    getStudents().then((st) =>
+      setStudents(
+        st.map((s: any) => ({
+          id: s.id,
+          nome: s.username || s.nome,
+        }))
+      )
+    );
     getClassrooms().then(setClassrooms);
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const st = await getStudents();
+    if (initialData) setForm(initialData);
+  }, [initialData]);
 
-      const mappedStudents = st.map((student: any) => ({
-        id: student.id,
-        nome: student.username,
-        email: student.email,
-        curso: student.courseName ?? "",
-        courseId: student.courseId ?? "",
-      }));
-
-      setStudents(mappedStudents);
-    };
-
-    fetchData();
-  }, []);
-
-  const handleSubmit = (e: React.FormEvent) => {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     onSubmit(form);
-  };
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 text-white">
-
       <div className="space-y-2">
-        <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
+        <label className="block text-sm font-medium uppercase text-orange-300/80">
           Aluno
         </label>
-
         <div className="relative">
-          <User
-            size={18}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50"
-          />
-
+          <User className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50" />
           <select
-            className="w-full bg-[#1a1a1dc3] border border-orange-400/40 
-                       text-white px-11 py-3 rounded-xl outline-none cursor-pointer"
             value={form.studentId}
             onChange={(e) => setForm({ ...form, studentId: e.target.value })}
+            className="w-full bg-[#1a1a1dc3] border border-orange-400/40 px-11 py-3 rounded-xl"
           >
             <option value="">Selecione o aluno</option>
             {students.map((s) => (
@@ -87,24 +70,17 @@ export default function GradeForm({ initialData, onSubmit }: Props) {
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
+        <label className="block text-sm font-medium uppercase text-orange-300/80">
           Turma
         </label>
-
         <div className="relative">
-          <BookOpen
-            size={18}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50"
-          />
-
+          <BookOpen className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50" />
           <select
-            className="w-full bg-[#1a1a1dc3] border border-orange-400/40 
-                       text-white px-11 py-3 rounded-xl outline-none cursor-pointer"
             value={form.classroomId}
             onChange={(e) => setForm({ ...form, classroomId: e.target.value })}
+            className="w-full bg-[#1a1a1dc3] border border-orange-400/40 px-11 py-3 rounded-xl"
           >
             <option value="">Selecione a turma</option>
-
             {classrooms.map((c) => (
               <option key={c.classroomId} value={c.classroomId}>
                 {c.subject} — {c.semester}
@@ -115,21 +91,15 @@ export default function GradeForm({ initialData, onSubmit }: Props) {
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
+        <label className="block text-sm font-medium uppercase text-orange-300/80">
           Tipo da Atividade
         </label>
-
         <div className="relative">
-          <ClipboardList
-            size={18}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50"
-          />
-
+          <ClipboardList className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50" />
           <select
-            className="w-full bg-[#1a1a1dc3] border border-orange-400/40 
-                       text-white px-11 py-3 rounded-xl outline-none cursor-pointer"
             value={form.activity}
             onChange={(e) => setForm({ ...form, activity: e.target.value })}
+            className="w-full bg-[#1a1a1dc3] border border-orange-400/40 px-11 py-3 rounded-xl"
           >
             <option value="">Selecione a atividade</option>
             <option value="prova">Prova</option>
@@ -141,35 +111,24 @@ export default function GradeForm({ initialData, onSubmit }: Props) {
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
+        <label className="block text-sm font-medium uppercase text-orange-300/80">
           Nota
         </label>
-
         <div className="relative">
-          <FileText
-            size={18}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50"
-          />
-
+          <FileText className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50" />
           <input
             type="number"
             step="0.1"
-            placeholder="Nota"
-            value={form.grade || ""}
-            onChange={(e) => setForm({ ...form, grade: Number(e.target.value) })}
-            className="w-full bg-[#1a1a1dc3] border border-orange-400/40
-                       text-white px-11 py-3 rounded-xl outline-none cursor-pointer"
+            value={form.grade}
+            onChange={(e) =>
+              setForm({ ...form, grade: Number(e.target.value) })
+            }
+            className="w-full bg-[#1a1a1dc3] border border-orange-400/40 px-11 py-3 rounded-xl"
           />
         </div>
       </div>
 
-      <button
-        className="w-full bg-gradient-to-r 
-                   from-orange-500/50 to-yellow-400/30 
-                   hover:from-orange-500/60 hover:to-yellow-400/40 
-                   text-white font-semibold px-6 py-3 rounded-xl 
-                   transition-all uppercase cursor-pointer"
-      >
+      <button className="w-full bg-orange-500/50 hover:bg-orange-500/70 px-6 py-3 rounded-xl uppercase font-semibold">
         Salvar
       </button>
     </form>

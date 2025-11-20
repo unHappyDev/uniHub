@@ -6,6 +6,7 @@ export interface ClassroomSchedule {
 }
 
 export interface ClassroomStudent {
+  id: string;
   name: string;
   courseName: string;
 }

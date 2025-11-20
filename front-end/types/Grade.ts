@@ -13,6 +13,7 @@ export interface Grade {
 
 export interface CreateGradeDTO {
   studentId: string;
+  subject: string;
   classroomId: string;
   activity: Activity | string;
   grade: number;

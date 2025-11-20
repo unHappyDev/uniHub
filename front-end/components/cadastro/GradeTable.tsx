@@ -1,22 +1,21 @@
 "use client";
 
-import { Grade } from "@/types/Grade";
+import { Grade, CreateGradeDTO } from "@/types/Grade";
 import { Button } from "@/components/ui/button";
 
 const ACTIVITIES = ["prova", "trabalho", "recuperacao", "extra"] as const;
-type Activity = (typeof ACTIVITIES)[number];
 
-interface Student {
+interface SimpleStudent {
   id: string;
   nome: string;
 }
 
 interface Props {
-  students: Student[];
+  students: SimpleStudent[];
   grades: Grade[];
   classroomId: string;
   onEdit: (grade: Grade) => void;
-  onAdd: (grade: Grade) => void;
+  onAdd: (data: CreateGradeDTO) => void;
 }
 
 export default function GradeTable({
@@ -27,71 +26,73 @@ export default function GradeTable({
   onAdd,
 }: Props) {
   return (
-    <table className="w-full border rounded">
+    <table className="w-full border rounded text-white">
       <thead>
-        <tr>
+        <tr className="bg-gray-800">
           <th className="p-2 text-left">Aluno</th>
 
           {ACTIVITIES.map((a) => (
-            <th key={a} className="p-2 text-left uppercase">
+            <th key={`header-${a}`} className="p-2 text-left uppercase">
               {a}
             </th>
           ))}
 
-          <th className="p-2">Ações</th>
+          <th className="p-2 text-left">Ações</th>
         </tr>
       </thead>
 
       <tbody>
-        {students.map((s) => {
+        {students.map((student, index) => {
           const studentGrades = grades.filter(
-            (g) => String(g.studentId) === String(s.id)
+            (g) => g.studentId === student.id
           );
 
           return (
-            <tr key={s.id} className="border-b">
-              <td className="p-2">{s.nome}</td>
+            <tr
+              key={`${student.id}-${index}`}
+              className="border-b border-gray-700"
+            >
+              <td className="p-2">{student.nome}</td>
 
               {ACTIVITIES.map((activity) => {
-                const g = studentGrades.find((x) => x.activity === activity);
+                const grade = studentGrades.find(
+                  (g) => g.activity === activity
+                );
+
                 return (
-                  <td key={activity} className="p-2 text-center">
-                    {g ? g.grade : "-"}
+                  <td
+                    key={`${student.id}-${activity}`}
+                    className="p-2 text-center"
+                  >
+                    {grade ? grade.grade : "-"}
                   </td>
                 );
               })}
 
-              <td className="p-2 flex gap-2 flex-wrap">
-                {ACTIVITIES.map((activity) => {
-                  const g = studentGrades.find((x) => x.activity === activity);
-
-                  if (g) {
-                    return (
-                      <Button key={activity} size="sm" onClick={() => onEdit(g)}>
-                        Editar {activity}
-                      </Button>
-                    );
-                  }
-
-                  return (
-                    <Button
-                      key={activity}
-                      size="sm"
-                      variant="secondary"
-                      onClick={() =>
+              <td className="p-2">
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => {
+                      if (studentGrades.length > 0) {
+                        onEdit(studentGrades[0]);
+                      } else {
                         onAdd({
-                          id: "", // será gerado pelo backend
-                          studentId: s.id,
+                          studentId: student.id,
+                          subject: "",
                           classroomId,
-                          activity,
+                          activity: ACTIVITIES[0],
                           grade: 0,
-                        } as Grade)
+                        });
                       }
-                    >
-                      Adicionar {activity}
-                    </Button>
-                  );
-                })}
+                    }}
+                  >
+                    {studentGrades.length > 0
+                      ? "Editar Notas"
+                      : "Adicionar Nota"}
+                  </Button>
+                </div>
               </td>
             </tr>
           );
