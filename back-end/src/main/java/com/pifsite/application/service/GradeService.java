@@ -30,9 +30,9 @@ public class GradeService {
 
         List<GradeDTO> grades = this.gradeRepository.getAll();
 
-        if (grades.isEmpty()) {
-            throw new ResourceNotFoundException("No Grades found");
-        }
+        // if (grades.isEmpty()) {
+        //     throw new ResourceNotFoundException("No Grades found");
+        // }
 
         return grades;
     }
