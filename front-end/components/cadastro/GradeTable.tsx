@@ -20,11 +20,10 @@ interface Props {
   students: SimpleStudent[];
   grades: Grade[];
   classroomId: string;
-  onEdit: (grade: Grade) => void;
-  onAdd: (student: SimpleStudent, activity: Activity) => void;
+  onEdit: (student: SimpleStudent) => void;
 }
 
-export default function GradeTable({ students, grades, onEdit, onAdd }: Props) {
+export default function GradeTable({ students, grades, onEdit }: Props) {
   const sortedStudents = [...students].sort((a, b) =>
     a.nome.localeCompare(b.nome, "pt", { sensitivity: "base" }),
   );
@@ -70,33 +69,13 @@ export default function GradeTable({ students, grades, onEdit, onAdd }: Props) {
                     );
                   })}
                   <td className="px-4 py-3 text-center">
-                    <div className="flex flex-wrap justify-center gap-2">
-                      {ACTIVITIES.map((activity) => {
-                        const grade = studentGrades.find(
-                          (g) => g.activity === activity,
-                        );
-                        return grade ? (
-                          <Button
-                            key={`${student.id}-${activity}-edit`}
-                            size="sm"
-                            variant="secondary"
-                            className="text-green-400 hover:text-green-500 cursor-pointer transition-all"
-                            onClick={() => onEdit(grade)}
-                          >
-                            Editar {activityLabels[activity]}
-                          </Button>
-                        ) : (
-                          <Button
-                            key={`${student.id}-${activity}-add`}
-                            size="sm"
-                            className="bg-orange-500/70 hover:bg-orange-600/70 text-white cursor-pointer transition-all"
-                            onClick={() => onAdd(student, activity)}
-                          >
-                            Adicionar {activityLabels[activity]}
-                          </Button>
-                        );
-                      })}
-                    </div>
+                    <Button
+                      size="sm"
+                      className="bg-orange-500/70 hover:bg-orange-600/70 text-white cursor-pointer transition-all"
+                      onClick={() => onEdit(student)}
+                    >
+                      Editar Nota
+                    </Button>
                   </td>
                 </tr>
               );
@@ -132,27 +111,20 @@ export default function GradeTable({ students, grades, onEdit, onAdd }: Props) {
                       <span className="capitalize">
                         {activityLabels[activity]}
                       </span>
-                      {grade ? (
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          className="text-green-400 hover:text-green-500 cursor-pointer transition-all"
-                          onClick={() => onEdit(grade)}
-                        >
-                          {`${grade.grade.toFixed(1)} - Editar`}
-                        </Button>
-                      ) : (
-                        <Button
-                          size="sm"
-                          className="bg-orange-500/70 hover:bg-orange-600/70 text-white cursor-pointer transition-all"
-                          onClick={() => onAdd(student, activity)}
-                        >
-                          Adicionar
-                        </Button>
-                      )}
+                      <span className="text-white">
+                        {grade ? grade.grade.toFixed(1) : "-"}
+                      </span>
                     </div>
                   );
                 })}
+
+                <Button
+                  size="sm"
+                  className="mt-2 bg-orange-500/70 hover:bg-orange-600/70 text-white cursor-pointer transition-all"
+                  onClick={() => onEdit(student)}
+                >
+                  Editar Nota
+                </Button>
               </div>
             </div>
           );

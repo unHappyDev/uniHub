@@ -1,15 +1,24 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { Activity, CreateGradeDTO } from "@/types/Grade";
+import { Activity, CreateGradeDTO, Grade } from "@/types/Grade";
 import { Classroom } from "@/types/Classroom";
 import { User, ClipboardList, FileText, BookOpen } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Props {
   initialData?: CreateGradeDTO;
   onSubmit: (data: CreateGradeDTO) => void;
   classroom: Classroom;
   students: { id: string; nome: string }[];
+  grades?: Grade[];
 }
 
 const activityLabels: Record<Activity, string> = {
@@ -24,32 +33,33 @@ export default function GradeForm({
   onSubmit,
   classroom,
   students,
+  grades = [],
 }: Props) {
-  const [form, setForm] = useState<CreateGradeDTO>({
+  const [form, setForm] = useState<CreateGradeDTO>(() => ({
     studentId: initialData?.studentId || "",
     classroomId: classroom.classroomId,
     activity: initialData?.activity ?? "prova",
     grade: initialData?.grade ?? 0,
     subject: classroom.subject,
-  });
+  }));
 
   const [gradeInput, setGradeInput] = useState<string>(
     initialData?.grade !== undefined ? String(initialData.grade) : "",
   );
 
   useEffect(() => {
-    setForm({
-      studentId: initialData?.studentId || "",
-      classroomId: classroom.classroomId,
-      activity: initialData?.activity ?? "prova",
-      grade: initialData?.grade ?? 0,
-      subject: classroom.subject,
-    });
+    if (!form.studentId) return;
 
-    setGradeInput(
-      initialData?.grade !== undefined ? String(initialData.grade) : "",
+    const existingGrade = grades.find(
+      (g) => g.studentId === form.studentId && g.activity === form.activity,
     );
-  }, [initialData, classroom]);
+
+    setGradeInput(existingGrade ? String(existingGrade.grade) : "0");
+    setForm((prev) => ({
+      ...prev,
+      grade: existingGrade ? existingGrade.grade : 0,
+    }));
+  }, [form.activity, form.studentId, grades]);
 
   const selectedStudent = students.find((s) => s.id === form.studentId);
 
@@ -59,20 +69,11 @@ export default function GradeForm({
       toast.warning("Selecione um aluno antes de salvar.");
       return;
     }
-
-    onSubmit({
-      ...form,
-      grade: Number(form.grade.toFixed(1)),
-    });
+    onSubmit({ ...form, grade: Number(form.grade.toFixed(1)) });
   };
 
-  const handleActivityChange = (value: string) => {
-    const activityEntry = Object.entries(activityLabels).find(
-      ([key, label]) => label === value,
-    );
-    if (activityEntry) {
-      setForm({ ...form, activity: activityEntry[0] as Activity });
-    }
+  const handleActivityChange = (value: Activity) => {
+    setForm({ ...form, activity: value });
   };
 
   return (
@@ -103,29 +104,25 @@ export default function GradeForm({
         <label className="text-sm font-medium uppercase text-orange-300/80">
           Tipo da Atividade
         </label>
-        {initialData?.activity ? (
-          <div className="relative bg-[#1a1a1dc3] border border-orange-400/40 px-11 py-3 rounded-xl">
-            <ClipboardList className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50" />
-            <span className="uppercase">
-              {activityLabels[initialData.activity]}
-            </span>
-          </div>
-        ) : (
-          <div className="relative">
-            <ClipboardList className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50" />
-            <select
-              value={activityLabels[form.activity]}
-              onChange={(e) => handleActivityChange(e.target.value)}
-              className="w-full bg-[#1a1a1dc3] border border-orange-400/40 px-11 py-3 rounded-xl"
-            >
+        <div className="relative">
+          <ClipboardList className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50" />
+          <Select value={form.activity} onValueChange={handleActivityChange}>
+            <SelectTrigger className="w-full bg-[#1a1a1dc3] border border-orange-400/40 px-12 py-5 rounded-xl cursor-pointer">
+              <SelectValue placeholder="Selecione a atividade" />
+            </SelectTrigger>
+            <SelectContent>
               {Object.entries(activityLabels).map(([key, label]) => (
-                <option key={key} value={label}>
+                <SelectItem
+                  className="cursor-pointer"
+                  key={key}
+                  value={key as Activity}
+                >
                   {label}
-                </option>
+                </SelectItem>
               ))}
-            </select>
-          </div>
-        )}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="space-y-2">
@@ -143,25 +140,20 @@ export default function GradeForm({
             value={gradeInput}
             onChange={(e) => {
               const value = e.target.value;
-
               if (!value) {
                 setGradeInput("");
                 setForm({ ...form, grade: 0 });
                 return;
               }
-
               const numberValue = Number(value);
-
               if (numberValue < 0) {
                 toast.error("A nota não pode ser negativa.");
                 return;
               }
-
               if (numberValue > 10) {
                 toast.error("A nota máxima permitida é 10.");
                 return;
               }
-
               const parts = value.split(".");
               if (parts[1] && parts[1].length > 1) {
                 toast.error("A nota deve ter no máximo uma casa decimal.");
@@ -171,9 +163,7 @@ export default function GradeForm({
               setGradeInput(value);
               setForm({ ...form, grade: numberValue });
             }}
-            className="w-full bg-[#1a1a1dc3] border border-orange-400/40 
-                       text-white px-11 py-3 rounded-xl outline-none cursor-pointer
-                       no-spinner"
+            className="w-full bg-[#1a1a1dc3] border border-orange-400/40 text-white px-11 py-3 rounded-xl outline-none cursor-pointer no-spinner"
           />
         </div>
       </div>

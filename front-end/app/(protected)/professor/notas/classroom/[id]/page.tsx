@@ -26,9 +26,7 @@ export default function ClassroomGradesPage() {
   const [classroom, setClassroom] = useState<any>(null);
   const [students, setStudents] = useState<Student[]>([]);
   const [grades, setGrades] = useState<Grade[]>([]);
-  const [editing, setEditing] = useState<
-    (CreateGradeDTO & { id?: string; student?: string }) | null
-  >(null);
+  const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [filterStudent, setFilterStudent] = useState("");
 
@@ -79,27 +77,21 @@ export default function ClassroomGradesPage() {
       const studentObj = students.find((s) => s.id === data.studentId);
       if (!studentObj) throw new Error("Aluno não encontrado!");
 
-      if (editing?.id && grades.some((g) => g.id === editing.id)) {
-        // Atualização
-        await updateGrade(editing.id, data);
-        const updated: Grade = {
-          id: editing.id,
-          ...data,
-          student: studentObj.nome,
-        };
-        setGrades((prev) =>
-          prev.map((g) => (g.id === editing.id ? updated : g)),
-        );
+      const existingGrade = grades.find(
+        (g) => g.studentId === data.studentId && g.activity === data.activity,
+      );
+
+      if (existingGrade) {
+        await updateGrade(existingGrade.id!, data);
         toast.success("Nota atualizada!");
       } else {
         await createGrade(data);
         toast.success("Nota adicionada!");
-
-        await load();
       }
 
+      await load();
       setModalOpen(false);
-      setEditing(null);
+      setEditingStudent(null);
     } catch (err: any) {
       console.error("Erro no handleSave:", err);
       toast.error(
@@ -128,27 +120,8 @@ export default function ClassroomGradesPage() {
         students={filteredStudents}
         grades={grades}
         classroomId={classroomId}
-        onEdit={(g: Grade) => {
-          setEditing({
-            id: g.id,
-            studentId: g.studentId,
-            student: g.student,
-            classroomId,
-            subject: classroom.subject,
-            activity: g.activity,
-            grade: g.grade,
-          });
-          setModalOpen(true);
-        }}
-        onAdd={(student, activity) => {
-          setEditing({
-            studentId: student.id,
-            student: student.nome,
-            classroomId,
-            subject: classroom.subject,
-            activity,
-            grade: 0,
-          });
+        onEdit={(student: Student) => {
+          setEditingStudent(student);
           setModalOpen(true);
         }}
       />
@@ -156,16 +129,23 @@ export default function ClassroomGradesPage() {
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
         <div className="p-4">
           <h3 className="text-xl font-semibold mb-4 text-center uppercase">
-            {editing?.id ? "Editar Nota" : "Adicionar Nota"}
+            {editingStudent ? "Editar Nota" : "Adicionar Nota"}
           </h3>
 
-          {classroom && (
+          {classroom && editingStudent && (
             <GradeForm
-              key={editing ? editing.id : Date.now()}
-              initialData={editing ?? undefined}
+              key={editingStudent.id}
+              initialData={{
+                studentId: editingStudent.id,
+                classroomId: classroom.classroomId,
+                subject: classroom.subject,
+                activity: "prova",
+                grade: 0,
+              }}
               onSubmit={handleSave}
               classroom={classroom}
               students={students}
+              grades={grades}
             />
           )}
         </div>
