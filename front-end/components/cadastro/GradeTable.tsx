@@ -28,6 +28,24 @@ export default function GradeTable({ students, grades, onEdit }: Props) {
     a.nome.localeCompare(b.nome, "pt", { sensitivity: "base" }),
   );
 
+  const calculateAverage = (studentGrades: Grade[]): string | null => {
+    const validGrades = studentGrades
+      .map((g) => g.grade)
+      .filter((g) => g !== null && g !== undefined);
+
+    if (validGrades.length === 0) return null;
+
+    const total = validGrades.reduce((acc, grade) => acc + grade, 0);
+    return (total / validGrades.length).toFixed(1);
+  };
+
+  const getAverageColor = (average: string | null) => {
+    if (average === null) return "text-gray-400";
+    return parseFloat(average) >= 7
+      ? "text-green-500 font-semibold"
+      : "text-red-500 font-semibold";
+  };
+
   return (
     <div className="mt-6">
       {/* Desktop */}
@@ -44,6 +62,7 @@ export default function GradeTable({ students, grades, onEdit }: Props) {
                   {activityLabels[a]}
                 </th>
               ))}
+              <th className="px-4 py-3 text-center">Média</th>
               <th className="px-4 py-3 text-center">Ações</th>
             </tr>
           </thead>
@@ -52,6 +71,7 @@ export default function GradeTable({ students, grades, onEdit }: Props) {
               const studentGrades = grades.filter(
                 (g) => g.studentId === student.id,
               );
+              const average = calculateAverage(studentGrades);
               return (
                 <tr key={student.id} className="border-t border-orange-500/30 ">
                   <td className="px-4 py-3">{student.nome}</td>
@@ -68,6 +88,9 @@ export default function GradeTable({ students, grades, onEdit }: Props) {
                       </td>
                     );
                   })}
+                  <td className={`px-4 py-3 text-center ${getAverageColor(average)}`}>
+                    {average !== null ? average : "-"}
+                  </td>
                   <td className="px-4 py-3 text-center">
                     <Button
                       size="sm"
@@ -90,6 +113,7 @@ export default function GradeTable({ students, grades, onEdit }: Props) {
           const studentGrades = grades.filter(
             (g) => g.studentId === student.id,
           );
+          const average = calculateAverage(studentGrades);
           return (
             <div
               key={student.id}
@@ -117,6 +141,15 @@ export default function GradeTable({ students, grades, onEdit }: Props) {
                     </div>
                   );
                 })}
+
+                <div
+                  className={`flex justify-between items-center bg-[#1a1a1ab0] p-2 rounded-md mt-2 ${getAverageColor(
+                    average,
+                  )}`}
+                >
+                  <span>Média</span>
+                  <span>{average !== null ? average : "-"}</span>
+                </div>
 
                 <Button
                   size="sm"
