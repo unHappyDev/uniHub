@@ -4,7 +4,11 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Modal } from "@/components/ui/modal";
-import { getGradesByClassroom, createGrade, updateGrade } from "@/lib/api/grade";
+import {
+  getGradesByClassroom,
+  createGrade,
+  updateGrade,
+} from "@/lib/api/grade";
 import { getClassroomById } from "@/lib/api/classroom";
 import GradeForm from "@/components/cadastro/GradeForm";
 import GradeTable from "@/components/cadastro/GradeTable";
@@ -22,9 +26,10 @@ export default function ClassroomGradesPage() {
   const [classroom, setClassroom] = useState<any>(null);
   const [students, setStudents] = useState<Student[]>([]);
   const [grades, setGrades] = useState<Grade[]>([]);
-  const [editing, setEditing] = useState<CreateGradeDTO & { id?: string; student?: string } | null>(null);
+  const [editing, setEditing] = useState<
+    (CreateGradeDTO & { id?: string; student?: string }) | null
+  >(null);
   const [modalOpen, setModalOpen] = useState(false);
-
   const [filterStudent, setFilterStudent] = useState("");
 
   async function load() {
@@ -43,7 +48,6 @@ export default function ClassroomGradesPage() {
       setStudents(studentsInClass);
 
       const gradesFromServer = await getGradesByClassroom(classroomId);
-
       const mergedGrades = gradesFromServer.map((g: any) => {
         const studentObj = studentsInClass.find((s) => s.id === g.studentId);
         return {
@@ -51,14 +55,13 @@ export default function ClassroomGradesPage() {
           classroomId,
           studentId: g.studentId,
           activity: g.activity.toLowerCase(),
-          student: studentObj?.nome || "Aluno desconhecido"
+          student: studentObj?.nome || "Aluno desconhecido",
         };
       });
 
       setGrades(mergedGrades);
-
     } catch (err) {
-      console.error(" Erro no load:", err);
+      console.error("Erro no load:", err);
       toast.error("Erro ao carregar dados da turma");
     }
   }
@@ -68,7 +71,7 @@ export default function ClassroomGradesPage() {
   }, [classroomId]);
 
   const filteredStudents = students.filter((s) =>
-    s.nome.toLowerCase().includes(filterStudent.toLowerCase())
+    s.nome.toLowerCase().includes(filterStudent.toLowerCase()),
   );
 
   async function handleSave(data: CreateGradeDTO) {
@@ -76,39 +79,32 @@ export default function ClassroomGradesPage() {
       const studentObj = students.find((s) => s.id === data.studentId);
       if (!studentObj) throw new Error("Aluno não encontrado!");
 
-      if (editing?.id) {
+      if (editing?.id && grades.some((g) => g.id === editing.id)) {
+        // Atualização
         await updateGrade(editing.id, data);
-
-        const updated = {
+        const updated: Grade = {
           id: editing.id,
           ...data,
-          student: studentObj.nome
+          student: studentObj.nome,
         };
-
         setGrades((prev) =>
-          prev.map((g) => (g.id === editing.id ? updated : g))
+          prev.map((g) => (g.id === editing.id ? updated : g)),
         );
-
         toast.success("Nota atualizada!");
       } else {
-        const createResp = await createGrade(data);
-        const returnedId = createResp?.data?.id ?? String(Date.now());
-
-        const newGrade: Grade = {
-          id: returnedId,
-          ...data,
-          student: studentObj.nome
-        };
-
-        setGrades((prev) => [...prev, newGrade]);
+        await createGrade(data);
         toast.success("Nota adicionada!");
+
+        await load();
       }
 
       setModalOpen(false);
       setEditing(null);
     } catch (err: any) {
-      console.error(" Erro no handleSave:", err);
-      toast.error(err?.response?.data?.message || err?.message || "Erro ao salvar a nota");
+      console.error("Erro no handleSave:", err);
+      toast.error(
+        err?.response?.data?.message || err?.message || "Erro ao salvar a nota",
+      );
     }
   }
 
@@ -129,8 +125,8 @@ export default function ClassroomGradesPage() {
       </div>
 
       <GradeTable
-        students={filteredStudents} 
-        grades={grades}         
+        students={filteredStudents}
+        grades={grades}
         classroomId={classroomId}
         onEdit={(g: Grade) => {
           setEditing({
@@ -165,7 +161,7 @@ export default function ClassroomGradesPage() {
 
           {classroom && (
             <GradeForm
-              key={editing?.id ?? "new"}
+              key={editing ? editing.id : Date.now()}
               initialData={editing ?? undefined}
               onSubmit={handleSave}
               classroom={classroom}
