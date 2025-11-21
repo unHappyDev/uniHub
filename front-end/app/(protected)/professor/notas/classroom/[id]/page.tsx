@@ -1,15 +1,13 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Modal } from "@/components/ui/modal";
-import { getStudents } from "@/lib/api/student";
 import { getGradesByClassroom, createGrade, updateGrade } from "@/lib/api/grade";
+import { getClassroomById } from "@/lib/api/classroom";
 import GradeForm from "@/components/cadastro/GradeForm";
 import GradeTable from "@/components/cadastro/GradeTable";
 import { Grade, CreateGradeDTO } from "@/types/Grade";
-import { getClassroomById } from "@/lib/api/classroom";
 
 interface Student {
   id: string;
@@ -20,35 +18,51 @@ export default function ClassroomGradesPage() {
   const params = useParams();
   const classroomId = params?.id as string;
 
+  const [classroom, setClassroom] = useState<any>(null);
   const [students, setStudents] = useState<Student[]>([]);
   const [grades, setGrades] = useState<Grade[]>([]);
-  const [editing, setEditing] = useState<(CreateGradeDTO & { id?: string }) | null>(null);
+  const [editing, setEditing] = useState<CreateGradeDTO & { id?: string; student?: string } | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
   async function load() {
+    console.log("🔄 Carregando dados...");
+
     try {
-      const classroom = await getClassroomById(classroomId);
-      if (!classroom) {
+      const classroomResp = await getClassroomById(classroomId);
+      console.log("📌 Classroom recebido:", classroomResp);
+
+      if (!classroomResp) {
         toast.error("Turma não encontrada");
         return;
       }
+      setClassroom(classroomResp);
 
-      const studentsInClass = (classroom.students ?? []).map((s: any) => ({
+      const studentsInClass = (classroomResp.students ?? []).map((s: any) => ({
         id: s.id,
         nome: s.name ?? s.nome ?? "Sem nome",
       }));
 
-      const gradesFromServer = await getGradesByClassroom(classroomId);
-
-      const mergedGrades = gradesFromServer.map((g: any) => ({
-        ...g,
-        student: studentsInClass.find((s) => s.id === g.studentId)?.nome || "Aluno desconhecido",
-      }));
-
+      console.log("👥 Alunos da turma:", studentsInClass);
       setStudents(studentsInClass);
+
+      const gradesFromServer = await getGradesByClassroom(classroomId);
+      console.log("📚 Notas recebidas do servidor:", gradesFromServer);
+
+      const mergedGrades = gradesFromServer.map((g: any) => {
+        const studentObj = studentsInClass.find((s) => s.id === g.studentId);
+        return {
+          ...g,
+          studentId: g.studentId,
+          student: studentObj?.nome || "Aluno desconhecido"
+        };
+      });
+
+      console.log("📌 Notas após merge:", mergedGrades);
+
       setGrades(mergedGrades);
+
     } catch (err) {
-      console.error("Erro no load:", err);
+      console.error("❌ Erro no load:", err);
       toast.error("Erro ao carregar dados da turma");
     }
   }
@@ -58,56 +72,53 @@ export default function ClassroomGradesPage() {
   }, [classroomId]);
 
   async function handleSave(data: CreateGradeDTO) {
+    console.log("💾 Salvando dados:", data);
+
     try {
+      const studentObj = students.find((s) => s.id === data.studentId);
+      if (!studentObj) throw new Error("Aluno não encontrado!");
+
       if (editing?.id) {
+        console.log("✏️ Atualizando nota ID:", editing.id);
+
         const updateResp = await updateGrade(editing.id, data);
+        console.log("🔁 Retorno update:", updateResp);
 
-        const updatedFromServer = updateResp?.data ?? { ...data, id: editing.id };
-
-        toast.success("Nota atualizada!");
+        const updated = {
+          id: editing.id,
+          ...data,
+          student: studentObj.nome
+        };
 
         setGrades((prev) =>
-          prev.map((g) =>
-            g.id === editing.id
-              ? {
-                  ...g,
-                  classroomId: updatedFromServer.classroomId ?? g.classroomId,
-                  studentId: updatedFromServer.studentId ?? g.studentId,
-                  activity: (updatedFromServer.activity as any) ?? g.activity,
-                  grade: updatedFromServer.grade ?? g.grade,
-                  student:
-                    students.find(
-                      (s) => s.id === (updatedFromServer.studentId ?? g.studentId)
-                    )?.nome ?? g.student,
-                }
-              : g
-          )
+          prev.map((g) => (g.id === editing.id ? updated : g))
         );
+
+        toast.success("Nota atualizada!");
       } else {
+        console.log("🆕 Criando nota...");
+
         const createResp = await createGrade(data);
+        console.log("📨 Retorno criação:", createResp);
 
         const returnedId = createResp?.data?.id ?? String(Date.now());
 
         const newGrade: Grade = {
           id: returnedId,
-          classroomId: data.classroomId,
-          studentId: data.studentId,
-          activity: data.activity as any,
-          grade: data.grade,
-          student: students.find((s) => s.id === data.studentId)?.nome ?? "",
+          ...data,
+          student: studentObj.nome
         };
 
-        toast.success("Nota criada!");
         setGrades((prev) => [...prev, newGrade]);
+
+        toast.success("Nota adicionada!");
       }
 
       setModalOpen(false);
       setEditing(null);
     } catch (err: any) {
-      console.error("handleSave error:", err);
-      const serverMessage =
-        err?.response?.data?.message || err?.message || "Erro ao salvar nota";
-      toast.error(serverMessage);
+      console.error("❌ Erro no handleSave:", err);
+      toast.error(err?.response?.data?.message || err?.message || "Erro ao salvar a nota");
     }
   }
 
@@ -115,35 +126,58 @@ export default function ClassroomGradesPage() {
     <div className="p-8 text-white">
       <h1 className="text-2xl font-bold mb-6">Notas da Turma</h1>
 
-      <GradeTable
-        students={students}
-        grades={grades}
-        classroomId={classroomId}
-        onEdit={(g: Grade) => {
-          setEditing({
-            id: g.id,
-            studentId: g.studentId,
-            subject: g.subject || "",
-            classroomId,
-            activity: g.activity,
-            grade: g.grade,
-          });
-          setModalOpen(true);
-        }}
-        onAdd={(data: CreateGradeDTO) => {
-          setEditing({
-            ...data,
-            classroomId,
-          });
-          setModalOpen(true);
-        }}
-      />
+      {classroom && (
+        <GradeTable
+          students={students}
+          grades={grades}
+          classroomId={classroomId}
+          onEdit={(g: Grade) => {
+            console.log("📝 Editando:", g);
+
+            setEditing({
+              id: g.id,
+              studentId: g.studentId,
+              student: g.student,
+              classroomId,
+              subject: classroom.subject,
+              activity: g.activity,
+              grade: g.grade,
+            });
+
+            setModalOpen(true);
+          }}
+          onAdd={(student) => {
+            console.log("➕ Adicionando nota para aluno:", student);
+
+            setEditing({
+              studentId: student.id,
+              student: student.nome,
+              classroomId,
+              subject: classroom.subject,
+              activity: "prova",
+              grade: 0,
+            });
+
+            setModalOpen(true);
+          }}
+        />
+      )}
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
         <div className="p-4">
-          <h3 className="text-xl font-semibold mb-4">Editar / Adicionar Nota</h3>
+          <h3 className="text-xl font-semibold mb-4">
+            {editing?.id ? "Editar Nota" : "Adicionar Nota"}
+          </h3>
 
-          <GradeForm initialData={editing ?? undefined} onSubmit={handleSave} />
+          {classroom && (
+            <GradeForm
+              key={editing?.id ?? "new"}
+              initialData={editing ?? undefined}
+              onSubmit={handleSave}
+              classroom={classroom}
+              students={students}
+            />
+          )}
         </div>
       </Modal>
     </div>

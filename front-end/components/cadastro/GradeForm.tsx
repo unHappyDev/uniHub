@@ -1,107 +1,94 @@
 "use client";
-
 import { useState, useEffect } from "react";
-import { CreateGradeDTO } from "@/types/Grade";
-import { getStudents } from "@/lib/api/student";
-import { getClassrooms } from "@/lib/api/classroom";
+import { Activity, CreateGradeDTO } from "@/types/Grade";
 import { Classroom } from "@/types/Classroom";
-import { Student } from "@/types/Student";
-import { User, BookOpen, ClipboardList, FileText } from "lucide-react";
+import { User, ClipboardList, FileText, BookOpen } from "lucide-react";
 
 interface Props {
-  initialData?: CreateGradeDTO;
+  initialData?: CreateGradeDTO & { student?: string };
   onSubmit: (data: CreateGradeDTO) => void;
+  classroom: Classroom;
+  students: { id: string; nome: string }[];
 }
 
-export default function GradeForm({ initialData, onSubmit }: Props) {
+export default function GradeForm({ initialData, onSubmit, classroom }: Props) {
+  console.log("📌 GradeForm MONTANDO...");
+  console.log("➡️ initialData recebido:", initialData);
+  console.log("➡️ classroom recebido:", classroom);
+
   const [form, setForm] = useState<CreateGradeDTO>({
-    studentId: "",
-    classroomId: "",
-    subject: "",
-    activity: "",
-    grade: 0,
+    studentId: initialData?.studentId || "",
+    classroomId: classroom.classroomId,
+    subject: classroom.subject,
+    activity: initialData?.activity ?? "prova",
+    grade: initialData?.grade ?? 0,
   });
 
-  const [students, setStudents] = useState<Student[]>([]);
-  const [classrooms, setClassrooms] = useState<Classroom[]>([]);
+  console.log("🧩 Form state inicial:", form);
 
   useEffect(() => {
-    getStudents().then((st) =>
-      setStudents(
-        st.map((s: any) => ({
-          id: s.id,
-          nome: s.username || s.nome,
-        }))
-      )
-    );
-    getClassrooms().then(setClassrooms);
-  }, []);
-
-  useEffect(() => {
-    if (initialData) setForm(initialData);
+    console.log("🔄 useEffect disparou (initialData mudou!)");
+    if (initialData) {
+      console.log("📥 Atualizando form via initialData:", initialData);
+      setForm({
+        studentId: initialData.studentId || "",
+        classroomId: classroom.classroomId,
+        subject: classroom.subject,
+        activity: initialData.activity ?? "prova",
+        grade: initialData.grade ?? 0,
+      });
+    }
   }, [initialData]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    console.log("📤 Tentando enviar formulário...");
+    console.log("📌 Form final antes do submit:", form);
+
+    if (!form.studentId) {
+      console.warn("⚠️ ERRO: studentId está vazio!");
+      alert("Aluno não selecionado");
+      return;
+    }
+
+    console.log("✅ Enviando para onSubmit:", form);
     onSubmit(form);
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 text-white">
       <div className="space-y-2">
-        <label className="block text-sm font-medium uppercase text-orange-300/80">
+        <label className="text-sm font-medium uppercase text-orange-300/80">
           Aluno
         </label>
-        <div className="relative">
+        <div className="relative bg-[#1a1a1dc3] border border-orange-400/40 px-11 py-3 rounded-xl">
           <User className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50" />
-          <select
-            value={form.studentId}
-            onChange={(e) => setForm({ ...form, studentId: e.target.value })}
-            className="w-full bg-[#1a1a1dc3] border border-orange-400/40 px-11 py-3 rounded-xl"
-          >
-            <option value="">Selecione o aluno</option>
-            {students.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.nome}
-              </option>
-            ))}
-          </select>
+          <span>{initialData?.student || "Aluno não encontrado"}</span>
         </div>
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium uppercase text-orange-300/80">
+        <label className="text-sm font-medium uppercase text-orange-300/80">
           Turma
         </label>
-        <div className="relative">
+        <div className="relative bg-[#1a1a1dc3] border border-orange-400/40 px-11 py-3 rounded-xl">
           <BookOpen className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50" />
-          <select
-            value={form.classroomId}
-            onChange={(e) => setForm({ ...form, classroomId: e.target.value })}
-            className="w-full bg-[#1a1a1dc3] border border-orange-400/40 px-11 py-3 rounded-xl"
-          >
-            <option value="">Selecione a turma</option>
-            {classrooms.map((c) => (
-              <option key={c.classroomId} value={c.classroomId}>
-                {c.subject} — {c.semester}
-              </option>
-            ))}
-          </select>
+          <span>{classroom.subject} — {classroom.semester}</span>
         </div>
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium uppercase text-orange-300/80">
+        <label className="text-sm font-medium uppercase text-orange-300/80">
           Tipo da Atividade
         </label>
         <div className="relative">
           <ClipboardList className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50" />
           <select
             value={form.activity}
-            onChange={(e) => setForm({ ...form, activity: e.target.value })}
+            onChange={(e) => setForm({ ...form, activity: e.target.value as Activity })}
             className="w-full bg-[#1a1a1dc3] border border-orange-400/40 px-11 py-3 rounded-xl"
           >
-            <option value="">Selecione a atividade</option>
+            <option value="" disabled>Selecione</option>
             <option value="prova">Prova</option>
             <option value="trabalho">Trabalho</option>
             <option value="recuperacao">Recuperação</option>
@@ -111,7 +98,7 @@ export default function GradeForm({ initialData, onSubmit }: Props) {
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium uppercase text-orange-300/80">
+        <label className="text-sm font-medium uppercase text-orange-300/80">
           Nota
         </label>
         <div className="relative">
@@ -120,9 +107,7 @@ export default function GradeForm({ initialData, onSubmit }: Props) {
             type="number"
             step="0.1"
             value={form.grade}
-            onChange={(e) =>
-              setForm({ ...form, grade: Number(e.target.value) })
-            }
+            onChange={(e) => setForm({ ...form, grade: Number(e.target.value) })}
             className="w-full bg-[#1a1a1dc3] border border-orange-400/40 px-11 py-3 rounded-xl"
           />
         </div>

@@ -15,6 +15,6 @@ export interface CreateGradeDTO {
   studentId: string;
   subject: string;
   classroomId: string;
-  activity: Activity | string;
+  activity: Activity; // <-- REMOVIDO o string
   grade: number;
 }
