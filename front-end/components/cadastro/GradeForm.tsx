@@ -41,6 +41,7 @@ export default function GradeForm({
     activity: initialData?.activity ?? "prova",
     grade: initialData?.grade ?? 0,
     subject: classroom.subject,
+    bimester: initialData?.bimester ?? 1,
   }));
 
   const [gradeInput, setGradeInput] = useState<string>(
@@ -51,7 +52,10 @@ export default function GradeForm({
     if (!form.studentId) return;
 
     const existingGrade = grades.find(
-      (g) => g.studentId === form.studentId && g.activity === form.activity,
+      (g) =>
+        g.studentId === form.studentId &&
+        g.activity === form.activity &&
+        g.bimester === form.bimester,
     );
 
     setGradeInput(existingGrade ? String(existingGrade.grade) : "0");
@@ -59,7 +63,7 @@ export default function GradeForm({
       ...prev,
       grade: existingGrade ? existingGrade.grade : 0,
     }));
-  }, [form.activity, form.studentId, grades]);
+  }, [form.activity, form.studentId, form.bimester, grades]);
 
   const selectedStudent = students.find((s) => s.id === form.studentId);
 
@@ -74,6 +78,30 @@ export default function GradeForm({
 
   const handleActivityChange = (value: Activity) => {
     setForm({ ...form, activity: value });
+  };
+
+  const getMaxGrade = (activity: Activity) => {
+    if (activity === "prova" || activity === "recuperacao") return 8;
+    if (activity === "trabalho") return 2;
+    return 10; // extra
+  };
+
+  const [warning, setWarning] = useState<string>("");
+
+  const handleGradeChange = (value: string) => {
+    let numberValue = Number(value);
+    const max = getMaxGrade(form.activity);
+
+    if (numberValue > max) {
+      numberValue = max;
+      setWarning(`O máximo para ${activityLabels[form.activity]} é ${max}`);
+    } else {
+      setWarning("");
+    }
+    if (numberValue < 0) numberValue = 0;
+
+    setGradeInput(String(numberValue));
+    setForm({ ...form, grade: numberValue });
   };
 
   return (
@@ -112,11 +140,7 @@ export default function GradeForm({
             </SelectTrigger>
             <SelectContent>
               {Object.entries(activityLabels).map(([key, label]) => (
-                <SelectItem
-                  className="cursor-pointer"
-                  key={key}
-                  value={key as Activity}
-                >
+                <SelectItem key={key} value={key as Activity}>
                   {label}
                 </SelectItem>
               ))}
@@ -125,7 +149,7 @@ export default function GradeForm({
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1">
         <label className="text-sm font-medium uppercase text-orange-300/80">
           Nota
         </label>
@@ -135,37 +159,30 @@ export default function GradeForm({
             type="number"
             step="0.1"
             min={0}
-            max={10}
+            max={getMaxGrade(form.activity)}
             placeholder="Digite a nota"
             value={gradeInput}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (!value) {
-                setGradeInput("");
-                setForm({ ...form, grade: 0 });
-                return;
-              }
-              const numberValue = Number(value);
-              if (numberValue < 0) {
-                toast.error("A nota não pode ser negativa.");
-                return;
-              }
-              if (numberValue > 10) {
-                toast.error("A nota máxima permitida é 10.");
-                return;
-              }
-              const parts = value.split(".");
-              if (parts[1] && parts[1].length > 1) {
-                toast.error("A nota deve ter no máximo uma casa decimal.");
-                return;
-              }
-
-              setGradeInput(value);
-              setForm({ ...form, grade: numberValue });
-            }}
+            onChange={(e) => handleGradeChange(e.target.value)}
             className="w-full bg-[#1a1a1dc3] border border-orange-400/40 text-white px-11 py-3 rounded-xl outline-none cursor-pointer no-spinner"
           />
         </div>
+        {warning && <p className="text-red-400 text-sm mt-1">{warning}</p>}
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium uppercase text-orange-300/80">
+          Bimestre
+        </label>
+        <select
+          value={form.bimester}
+          onChange={(e) =>
+            setForm({ ...form, bimester: parseInt(e.target.value) })
+          }
+          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 text-white px-4 py-3 rounded-xl"
+        >
+          <option value={1}>1º Bimestre</option>
+          <option value={2}>2º Bimestre</option>
+        </select>
       </div>
 
       <button className="w-full bg-orange-500/70 hover:bg-orange-600/70 px-6 py-3 rounded-xl uppercase font-semibold cursor-pointer transition-all">

@@ -54,6 +54,7 @@ export default function ClassroomGradesPage() {
           studentId: g.studentId,
           activity: g.activity.toLowerCase(),
           student: studentObj?.nome || "Aluno desconhecido",
+          bimester: g.bimester ?? 1,
         };
       });
 
@@ -78,7 +79,10 @@ export default function ClassroomGradesPage() {
       if (!studentObj) throw new Error("Aluno não encontrado!");
 
       const existingGrade = grades.find(
-        (g) => g.studentId === data.studentId && g.activity === data.activity,
+        (g) =>
+          g.studentId === data.studentId &&
+          g.activity === data.activity &&
+          g.bimester === data.bimester,
       );
 
       if (existingGrade) {
@@ -141,6 +145,7 @@ export default function ClassroomGradesPage() {
                 subject: classroom.subject,
                 activity: "prova",
                 grade: 0,
+                bimester: 1,
               }}
               onSubmit={handleSave}
               classroom={classroom}

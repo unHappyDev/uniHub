@@ -8,6 +8,7 @@ export interface Grade {
   subject?: string;
   activity: Activity;
   grade: number;
+  bimester: number; // <- adicionado
 }
 
 export interface CreateGradeDTO {
@@ -16,4 +17,5 @@ export interface CreateGradeDTO {
   classroomId: string;
   activity: Activity;
   grade: number;
+  bimester: number; // <- adicionado
 }

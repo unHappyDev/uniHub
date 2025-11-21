@@ -2,8 +2,6 @@
 import { Activity, Grade } from "@/types/Grade";
 import { Button } from "@/components/ui/button";
 
-const ACTIVITIES: Activity[] = ["prova", "trabalho", "recuperacao", "extra"];
-
 const activityLabels: Record<Activity, string> = {
   prova: "Prova",
   trabalho: "Trabalho",
@@ -28,41 +26,99 @@ export default function GradeTable({ students, grades, onEdit }: Props) {
     a.nome.localeCompare(b.nome, "pt", { sensitivity: "base" }),
   );
 
-  const calculateAverage = (studentGrades: Grade[]): string | null => {
-    const validGrades = studentGrades
-      .map((g) => g.grade)
-      .filter((g) => g !== null && g !== undefined);
+  const calculateBimesterAverages = (
+    studentGrades: Grade[],
+  ): { [bimester: number]: number; total: number | null } => {
+    if (!studentGrades.length) return { total: null };
 
-    if (validGrades.length === 0) return null;
+    const bimesterAverages: { [bimester: number]: number } = {};
+    const allGradesForTotal: number[] = [];
 
-    const total = validGrades.reduce((acc, grade) => acc + grade, 0);
-    return (total / validGrades.length).toFixed(1);
+    [1, 2].forEach((bim) => {
+      const gradesBim = studentGrades.filter((g) => g.bimester === bim);
+      if (!gradesBim.length) return;
+
+      const prova = Math.min(
+        gradesBim.find((g) => g.activity === "prova")?.grade ?? 0,
+        8,
+      );
+      const recuperacao = Math.min(
+        gradesBim.find((g) => g.activity === "recuperacao")?.grade ?? 0,
+        8,
+      );
+      const maiorPR = Math.max(prova, recuperacao);
+
+      const trabalhos = gradesBim
+        .filter((g) => g.activity === "trabalho")
+        .map((g) => Math.min(g.grade, 2));
+
+      const notasConsideradas = [maiorPR, ...trabalhos].filter(
+        (g) => g != null,
+      );
+
+      const mediaBim = notasConsideradas.length
+        ? notasConsideradas.reduce((a, b) => a + b, 0) /
+          notasConsideradas.length
+        : 0;
+
+      bimesterAverages[bim] = parseFloat(mediaBim.toFixed(1));
+      allGradesForTotal.push(...notasConsideradas);
+    });
+
+    const extraGrade = Math.min(
+      studentGrades.find((g) => g.activity === "extra")?.grade ?? 0,
+      10,
+    );
+    if (extraGrade) allGradesForTotal.push(extraGrade);
+
+    const totalAverage = allGradesForTotal.length
+      ? parseFloat(
+          (
+            allGradesForTotal.reduce((a, b) => a + b, 0) /
+            allGradesForTotal.length
+          ).toFixed(1),
+        )
+      : null;
+
+    return { ...bimesterAverages, total: totalAverage };
   };
 
-  const getAverageColor = (average: string | null) => {
-    if (average === null) return "text-gray-400";
-    return parseFloat(average) >= 7
+  // cor da média total baseada na soma B1 + B2 > 3.5
+  const getTotalColor = (b1: number | null, b2: number | null) => {
+    if (b1 === null || b2 === null) return "text-gray-400";
+    return b1 + b2 > 3.5
       ? "text-green-500 font-semibold"
       : "text-red-500 font-semibold";
   };
+
+  const columns: { activity: Activity; bimester?: number }[] = [
+    { activity: "prova", bimester: 1 },
+    { activity: "recuperacao", bimester: 1 },
+    { activity: "trabalho", bimester: 1 },
+    { activity: "prova", bimester: 2 },
+    { activity: "recuperacao", bimester: 2 },
+    { activity: "trabalho", bimester: 2 },
+    { activity: "extra" },
+  ];
 
   return (
     <div className="mt-6">
       {/* Desktop */}
       <div className="hidden md:block overflow-x-auto bg-glass border border-orange-400/40 rounded-2xl p-6 mb-10 shadow-glow transition-all hover:shadow-orange-500/30">
-        <table className="min-w-full rounded-xl text-white">
+        <table className="min-w-full text-white rounded-xl">
           <thead>
             <tr className="text-orange-400 uppercase text-sm">
               <th className="px-4 py-3 text-left">Aluno</th>
-              {ACTIVITIES.map((a) => (
-                <th
-                  key={`header-${a}`}
-                  className="px-4 py-3 text-center uppercase"
-                >
-                  {activityLabels[a]}
+              {columns.map((col, idx) => (
+                <th key={idx} className="px-4 py-3 text-center">
+                  {col.activity === "extra"
+                    ? "Extra"
+                    : `${activityLabels[col.activity]} B${col.bimester}`}
                 </th>
               ))}
-              <th className="px-4 py-3 text-center">Média</th>
+              <th className="px-4 py-3 text-center">Média B1</th>
+              <th className="px-4 py-3 text-center">Média B2</th>
+              <th className="px-4 py-3 text-center">Média Total</th>
               <th className="px-4 py-3 text-center">Ações</th>
             </tr>
           </thead>
@@ -71,30 +127,38 @@ export default function GradeTable({ students, grades, onEdit }: Props) {
               const studentGrades = grades.filter(
                 (g) => g.studentId === student.id,
               );
-              const average = calculateAverage(studentGrades);
+              const averages = calculateBimesterAverages(studentGrades);
+
               return (
-                <tr key={student.id} className="border-t border-orange-500/30 ">
+                <tr key={student.id} className="border-t border-orange-500/30">
                   <td className="px-4 py-3">{student.nome}</td>
-                  {ACTIVITIES.map((activity) => {
+                  {columns.map((col, idx) => {
                     const grade = studentGrades.find(
-                      (g) => g.activity === activity,
+                      (g) =>
+                        g.activity === col.activity &&
+                        (col.bimester ? g.bimester === col.bimester : true),
                     );
                     return (
-                      <td
-                        key={`${student.id}-${activity}`}
-                        className="px-4 py-3 text-center"
-                      >
+                      <td key={idx} className="px-4 py-3 text-center">
                         {grade ? grade.grade.toFixed(1) : "-"}
                       </td>
                     );
                   })}
-                  <td className={`px-4 py-3 text-center ${getAverageColor(average)}`}>
-                    {average !== null ? average : "-"}
+                  <td className="px-4 py-3 text-center">
+                    {averages[1]?.toFixed(1) ?? "-"}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    {averages[2]?.toFixed(1) ?? "-"}
+                  </td>
+                  <td
+                    className={`px-4 py-3 text-center ${getTotalColor(averages[1] ?? null, averages[2] ?? null)}`}
+                  >
+                    {averages.total?.toFixed(1) ?? "-"}
                   </td>
                   <td className="px-4 py-3 text-center">
                     <Button
                       size="sm"
-                      className="bg-orange-500/70 hover:bg-orange-600/70 text-white cursor-pointer transition-all"
+                      className="bg-orange-500/70 hover:bg-orange-600/70 text-white"
                       onClick={() => onEdit(student)}
                     >
                       Editar Nota
@@ -113,7 +177,8 @@ export default function GradeTable({ students, grades, onEdit }: Props) {
           const studentGrades = grades.filter(
             (g) => g.studentId === student.id,
           );
-          const average = calculateAverage(studentGrades);
+          const averages = calculateBimesterAverages(studentGrades);
+
           return (
             <div
               key={student.id}
@@ -123,32 +188,40 @@ export default function GradeTable({ students, grades, onEdit }: Props) {
                 {student.nome}
               </p>
               <div className="flex flex-col gap-2">
-                {ACTIVITIES.map((activity) => {
+                {columns.map((col, idx) => {
                   const grade = studentGrades.find(
-                    (g) => g.activity === activity,
+                    (g) =>
+                      g.activity === col.activity &&
+                      (col.bimester ? g.bimester === col.bimester : true),
                   );
                   return (
                     <div
-                      key={`${student.id}-${activity}`}
+                      key={idx}
                       className="flex justify-between items-center bg-[#121212b0] p-2 rounded-md"
                     >
-                      <span className="capitalize">
-                        {activityLabels[activity]}
+                      <span className="capitalize font-medium">
+                        {col.activity === "extra"
+                          ? "Extra"
+                          : `${activityLabels[col.activity]} B${col.bimester}`}
                       </span>
-                      <span className="text-white">
-                        {grade ? grade.grade.toFixed(1) : "-"}
-                      </span>
+                      <span>{grade ? grade.grade.toFixed(1) : "-"}</span>
                     </div>
                   );
                 })}
 
+                <div className="flex justify-between items-center bg-[#1a1a1ab0] p-2 rounded-md mt-2">
+                  <span>Média B1</span>
+                  <span>{averages[1]?.toFixed(1) ?? "-"}</span>
+                </div>
+                <div className="flex justify-between items-center bg-[#1a1a1ab0] p-2 rounded-md mt-1">
+                  <span>Média B2</span>
+                  <span>{averages[2]?.toFixed(1) ?? "-"}</span>
+                </div>
                 <div
-                  className={`flex justify-between items-center bg-[#1a1a1ab0] p-2 rounded-md mt-2 ${getAverageColor(
-                    average,
-                  )}`}
+                  className={`flex justify-between items-center bg-[#1a1a1ab0] p-2 rounded-md mt-1 ${getTotalColor(averages[1] ?? null, averages[2] ?? null)}`}
                 >
-                  <span>Média</span>
-                  <span>{average !== null ? average : "-"}</span>
+                  <span>Média Total</span>
+                  <span>{averages.total?.toFixed(1) ?? "-"}</span>
                 </div>
 
                 <Button
