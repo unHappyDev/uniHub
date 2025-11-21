@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
@@ -24,13 +25,11 @@ export default function ClassroomGradesPage() {
   const [editing, setEditing] = useState<CreateGradeDTO & { id?: string; student?: string } | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  async function load() {
-    console.log("🔄 Carregando dados...");
+  const [filterStudent, setFilterStudent] = useState("");
 
+  async function load() {
     try {
       const classroomResp = await getClassroomById(classroomId);
-      console.log("📌 Classroom recebido:", classroomResp);
-
       if (!classroomResp) {
         toast.error("Turma não encontrada");
         return;
@@ -41,28 +40,25 @@ export default function ClassroomGradesPage() {
         id: s.id,
         nome: s.name ?? s.nome ?? "Sem nome",
       }));
-
-      console.log("👥 Alunos da turma:", studentsInClass);
       setStudents(studentsInClass);
 
       const gradesFromServer = await getGradesByClassroom(classroomId);
-      console.log("📚 Notas recebidas do servidor:", gradesFromServer);
 
       const mergedGrades = gradesFromServer.map((g: any) => {
         const studentObj = studentsInClass.find((s) => s.id === g.studentId);
         return {
           ...g,
+          classroomId,
           studentId: g.studentId,
+          activity: g.activity.toLowerCase(),
           student: studentObj?.nome || "Aluno desconhecido"
         };
       });
 
-      console.log("📌 Notas após merge:", mergedGrades);
-
       setGrades(mergedGrades);
 
     } catch (err) {
-      console.error("❌ Erro no load:", err);
+      console.error(" Erro no load:", err);
       toast.error("Erro ao carregar dados da turma");
     }
   }
@@ -71,18 +67,17 @@ export default function ClassroomGradesPage() {
     if (classroomId) load();
   }, [classroomId]);
 
-  async function handleSave(data: CreateGradeDTO) {
-    console.log("💾 Salvando dados:", data);
+  const filteredStudents = students.filter((s) =>
+    s.nome.toLowerCase().includes(filterStudent.toLowerCase())
+  );
 
+  async function handleSave(data: CreateGradeDTO) {
     try {
       const studentObj = students.find((s) => s.id === data.studentId);
       if (!studentObj) throw new Error("Aluno não encontrado!");
 
       if (editing?.id) {
-        console.log("✏️ Atualizando nota ID:", editing.id);
-
-        const updateResp = await updateGrade(editing.id, data);
-        console.log("🔁 Retorno update:", updateResp);
+        await updateGrade(editing.id, data);
 
         const updated = {
           id: editing.id,
@@ -96,11 +91,7 @@ export default function ClassroomGradesPage() {
 
         toast.success("Nota atualizada!");
       } else {
-        console.log("🆕 Criando nota...");
-
         const createResp = await createGrade(data);
-        console.log("📨 Retorno criação:", createResp);
-
         const returnedId = createResp?.data?.id ?? String(Date.now());
 
         const newGrade: Grade = {
@@ -110,62 +101,65 @@ export default function ClassroomGradesPage() {
         };
 
         setGrades((prev) => [...prev, newGrade]);
-
         toast.success("Nota adicionada!");
       }
 
       setModalOpen(false);
       setEditing(null);
     } catch (err: any) {
-      console.error("❌ Erro no handleSave:", err);
+      console.error(" Erro no handleSave:", err);
       toast.error(err?.response?.data?.message || err?.message || "Erro ao salvar a nota");
     }
   }
 
   return (
-    <div className="p-8 text-white">
-      <h1 className="text-2xl font-bold mb-6">Notas da Turma</h1>
+    <div className="p-8 text-white flex flex-col min-h-screen">
+      <h1 className="text-2xl font-bold mb-6 text-center uppercase">
+        Notas da Turma {classroom?.subject ?? ""}
+      </h1>
 
-      {classroom && (
-        <GradeTable
-          students={students}
-          grades={grades}
-          classroomId={classroomId}
-          onEdit={(g: Grade) => {
-            console.log("📝 Editando:", g);
-
-            setEditing({
-              id: g.id,
-              studentId: g.studentId,
-              student: g.student,
-              classroomId,
-              subject: classroom.subject,
-              activity: g.activity,
-              grade: g.grade,
-            });
-
-            setModalOpen(true);
-          }}
-          onAdd={(student) => {
-            console.log("➕ Adicionando nota para aluno:", student);
-
-            setEditing({
-              studentId: student.id,
-              student: student.nome,
-              classroomId,
-              subject: classroom.subject,
-              activity: "prova",
-              grade: 0,
-            });
-
-            setModalOpen(true);
-          }}
+      <div className="bg-glass border border-orange-400/40 rounded-2xl p-6 mb-10 shadow-glow transition-all hover:shadow-orange-500/30">
+        <input
+          type="text"
+          placeholder="Filtrar por aluno..."
+          value={filterStudent}
+          onChange={(e) => setFilterStudent(e.target.value)}
+          className="w-full bg-[#1a1a1dc3] border border-orange-400/20 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-4 py-2.5 rounded-xl outline-none shadow-inner"
         />
-      )}
+      </div>
+
+      <GradeTable
+        students={filteredStudents} 
+        grades={grades}         
+        classroomId={classroomId}
+        onEdit={(g: Grade) => {
+          setEditing({
+            id: g.id,
+            studentId: g.studentId,
+            student: g.student,
+            classroomId,
+            subject: classroom.subject,
+            activity: g.activity,
+            grade: g.grade,
+          });
+          setModalOpen(true);
+        }}
+        onAdd={(student, activity) => {
+          setEditing({
+            studentId: student.id,
+            student: student.nome,
+            classroomId,
+            subject: classroom.subject,
+            activity,
+            grade: 0,
+          });
+          setModalOpen(true);
+        }}
+      />
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
         <div className="p-4">
-          <h3 className="text-xl font-semibold mb-4">
+          <h3 className="text-xl font-semibold mb-4 text-center uppercase">
             {editing?.id ? "Editar Nota" : "Adicionar Nota"}
           </h3>
 

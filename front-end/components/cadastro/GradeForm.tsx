@@ -12,10 +12,6 @@ interface Props {
 }
 
 export default function GradeForm({ initialData, onSubmit, classroom }: Props) {
-  console.log("📌 GradeForm MONTANDO...");
-  console.log("➡️ initialData recebido:", initialData);
-  console.log("➡️ classroom recebido:", classroom);
-
   const [form, setForm] = useState<CreateGradeDTO>({
     studentId: initialData?.studentId || "",
     classroomId: classroom.classroomId,
@@ -24,12 +20,8 @@ export default function GradeForm({ initialData, onSubmit, classroom }: Props) {
     grade: initialData?.grade ?? 0,
   });
 
-  console.log("🧩 Form state inicial:", form);
-
   useEffect(() => {
-    console.log("🔄 useEffect disparou (initialData mudou!)");
     if (initialData) {
-      console.log("📥 Atualizando form via initialData:", initialData);
       setForm({
         studentId: initialData.studentId || "",
         classroomId: classroom.classroomId,
@@ -42,18 +34,26 @@ export default function GradeForm({ initialData, onSubmit, classroom }: Props) {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    console.log("📤 Tentando enviar formulário...");
-    console.log("📌 Form final antes do submit:", form);
-
     if (!form.studentId) {
-      console.warn("⚠️ ERRO: studentId está vazio!");
       alert("Aluno não selecionado");
       return;
     }
-
-    console.log("✅ Enviando para onSubmit:", form);
     onSubmit(form);
   }
+
+  const handleActivityChange = (value: string) => {
+    const activityMap: Record<string, Activity> = {
+      prova: "prova",
+      trabalho: "trabalho",
+      recuperacao: "recuperacao",
+      extra: "extra",
+    };
+
+    const activity = activityMap[value.toLowerCase()];
+    if (activity) {
+      setForm({ ...form, activity });
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 text-white">
@@ -73,7 +73,9 @@ export default function GradeForm({ initialData, onSubmit, classroom }: Props) {
         </label>
         <div className="relative bg-[#1a1a1dc3] border border-orange-400/40 px-11 py-3 rounded-xl">
           <BookOpen className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50" />
-          <span>{classroom.subject} — {classroom.semester}</span>
+          <span>
+            {classroom.subject} — {classroom.semester}
+          </span>
         </div>
       </div>
 
@@ -81,20 +83,26 @@ export default function GradeForm({ initialData, onSubmit, classroom }: Props) {
         <label className="text-sm font-medium uppercase text-orange-300/80">
           Tipo da Atividade
         </label>
-        <div className="relative">
-          <ClipboardList className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50" />
-          <select
-            value={form.activity}
-            onChange={(e) => setForm({ ...form, activity: e.target.value as Activity })}
-            className="w-full bg-[#1a1a1dc3] border border-orange-400/40 px-11 py-3 rounded-xl"
-          >
-            <option value="" disabled>Selecione</option>
-            <option value="prova">Prova</option>
-            <option value="trabalho">Trabalho</option>
-            <option value="recuperacao">Recuperação</option>
-            <option value="extra">Extra</option>
-          </select>
-        </div>
+        {initialData?.activity ? (
+          <div className="relative bg-[#1a1a1dc3] border border-orange-400/40 px-11 py-3 rounded-xl">
+            <ClipboardList className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50" />
+            <span className="uppercase">{initialData.activity}</span>
+          </div>
+        ) : (
+          <div className="relative">
+            <ClipboardList className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400/50" />
+            <select
+              value={form.activity}
+              onChange={(e) => handleActivityChange(e.target.value)}
+              className="w-full bg-[#1a1a1dc3] border border-orange-400/40 px-11 py-3 rounded-xl"
+            >
+              <option value="prova">Prova</option>
+              <option value="trabalho">Trabalho</option>
+              <option value="recuperacao">Recuperação</option>
+              <option value="extra">Extra</option>
+            </select>
+          </div>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -107,7 +115,9 @@ export default function GradeForm({ initialData, onSubmit, classroom }: Props) {
             type="number"
             step="0.1"
             value={form.grade}
-            onChange={(e) => setForm({ ...form, grade: Number(e.target.value) })}
+            onChange={(e) =>
+              setForm({ ...form, grade: Number(e.target.value) })
+            }
             className="w-full bg-[#1a1a1dc3] border border-orange-400/40 px-11 py-3 rounded-xl"
           />
         </div>
