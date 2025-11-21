@@ -46,4 +46,5 @@ public class Grade {
     private ActivityType activity;
 
     private BigDecimal grade;
+    private int bimester;
 }

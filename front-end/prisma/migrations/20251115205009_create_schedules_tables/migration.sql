@@ -40,6 +40,9 @@ ALTER TABLE "public"."session"
 ALTER TABLE "public"."users" ALTER COLUMN "created_at" SET DEFAULT (now() at time zone 'utc'),
 ALTER COLUMN "updated_at" SET DEFAULT (now() at time zone 'utc');
 
+ALTER TABLE grades
+ADD COLUMN bimester INTEGER NOT NULL DEFAULT 1;
+
 -- CreateTable
 CREATE TABLE "public"."classroom_schedule" (
     "schedule_id" UUID NOT NULL DEFAULT gen_random_uuid(),
