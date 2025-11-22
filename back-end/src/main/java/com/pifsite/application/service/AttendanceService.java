@@ -10,6 +10,7 @@ import com.pifsite.application.repository.ClassroomRepository;
 import com.pifsite.application.repository.ClassroomScheduleRepository;
 import com.pifsite.application.repository.StudentRepository;
 import com.pifsite.application.dto.CreateAttendanceDTO;
+import com.pifsite.application.dto.StudentsAttendanceDTO;
 import com.pifsite.application.entities.Attendance;
 import com.pifsite.application.entities.Classroom;
 import com.pifsite.application.entities.ClassroomSchedule;
@@ -33,6 +34,17 @@ public class AttendanceService {
     public List<AttendanceDTO> getAll() {
 
         List<AttendanceDTO> Attendances = this.attendanceRepository.getAll();
+
+        if (Attendances.isEmpty()) {
+            throw new ResourceNotFoundException("there is no Attendances in the database");
+        }
+
+        return Attendances;
+    }
+    
+    public List<StudentsAttendanceDTO> getStudentsAttendancesNumber() {
+
+        List<StudentsAttendanceDTO> Attendances = this.attendanceRepository.getStudentsAttendancesNumber();
 
         if (Attendances.isEmpty()) {
             throw new ResourceNotFoundException("there is no Attendances in the database");
