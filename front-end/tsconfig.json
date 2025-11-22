@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    // Adicione "node" aqui junto com "vitest/globals"
+    "types": ["vitest/globals", "node"],
+    "baseUrl": ".",
+    "target": "es2018",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"],
+      "@tests/*": ["./tests/*"],
+      "@lib/*": ["./lib/*"],
+      "@infra/*": ["./infra/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}

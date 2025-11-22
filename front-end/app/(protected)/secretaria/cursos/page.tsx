@@ -1,0 +1,188 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { Course, CreateCourseDTO } from "@/types/Course";
+import {
+  getCourses,
+  createCourse,
+  updateCourse,
+  deleteCourse,
+} from "@/lib/api/course";
+import CourseForm from "@/components/cadastro/CourseForm";
+import CourseTable from "@/components/cadastro/CourseTable";
+import { Modal } from "@/components/ui/modal";
+import CourseSubjectsManager from "@/components/cadastro/CourseSubjecttManager";
+
+export default function CursosPage() {
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCourse, setEditingCourse] = useState<Course | null>(null);
+  const [filterName, setFilterName] = useState("");
+  const [managingCourse, setManagingCourse] = useState<Course | null>(null);
+
+  const fetchCourses = async () => {
+    try {
+      const data = await getCourses();
+      setCourses(data || []);
+    } catch (error: any) {
+      const status = error?.response?.status;
+
+      if (status === 404) {
+        setCourses([]);
+      } else {
+        console.error("Erro ao buscar cursos:", error?.message || error);
+        toast.error("Erro ao buscar cursos.");
+      }
+    }
+  };
+
+  const handleAdd = async (course: CreateCourseDTO) => {
+    try {
+      await createCourse(course);
+      await fetchCourses();
+      toast.success("Curso cadastrado com sucesso!");
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Erro ao cadastrar curso:", error);
+      toast.error("Erro ao cadastrar o curso.");
+    }
+  };
+
+  const handleUpdate = async (course: Course) => {
+    if (!course.id) return;
+    try {
+      await updateCourse(course.id, { courseName: course.courseName });
+      await fetchCourses();
+      toast.success("Curso atualizado com sucesso!");
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Erro ao atualizar curso:", error);
+      toast.error("Erro ao atualizar o curso.");
+    }
+  };
+
+  const handleDelete = (id: string) => {
+    const t = toast.custom((t) => (
+      <div className="bg-[#1a1a1d] border border-orange-500/30 text-white p-5 rounded-2xl shadow-lg max-w-sm">
+        <p className="text-lg font-semibold mb-2">Excluir curso?</p>
+        <p className="text-sm text-gray-300 mb-4">
+          Essa ação não pode ser desfeita.
+        </p>
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={() => toast.dismiss(t)}
+            className="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-all"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={async () => {
+              toast.dismiss(t);
+              try {
+                await deleteCourse(id);
+                await fetchCourses();
+                toast.success("Curso excluído com sucesso!");
+              } catch (error: any) {
+                if (error?.response?.status === 409) {
+                  toast.error(
+                    "Não é possível excluir este curso, pois há alunos vinculados."
+                  );
+                } else {
+                  toast.error("Erro ao excluir o curso.");
+                  console.error(error);
+                }
+              }
+            }}
+            className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition-all"
+          >
+            Excluir
+          </button>
+        </div>
+      </div>
+    ));
+  };
+
+  const handleEdit = (course: Course) => {
+    setEditingCourse(course);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setEditingCourse(null);
+    setIsModalOpen(false);
+  };
+
+  const filteredCourses = courses.filter((c) =>
+    c.courseName.toLowerCase().includes(filterName.toLowerCase())
+  );
+
+  const handleManageSubjects = (course: Course) => {
+    setManagingCourse(course);
+  };
+
+  const closeSubjectsModal = () => {
+    setManagingCourse(null);
+    fetchCourses();
+  };
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  return (
+    <div className="p-8 text-white flex flex-col min-h-screen">
+      <div className="max-w-5xl mx-auto w-full">
+        <h1 className="text-2xl font-semibold text-orange-300/90 uppercase tracking-wide text-center mb-10">
+          Cadastro de Cursos
+        </h1>
+
+        <div className="bg-glass border border-orange-400/40 rounded-2xl p-6 mb-10 shadow-glow">
+          <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
+            <input
+              type="text"
+              placeholder="Filtrar por nome..."
+              value={filterName}
+              onChange={(e) => setFilterName(e.target.value)}
+              className="w-full sm:flex-1 bg-[#1a1a1dc3] border border-orange-400/20 focus:border-orange-400/10 focus:ring-2 focus:ring-orange-500/40 text-white placeholder-gray-400 px-4 py-2.5 rounded-xl outline-none shadow-inner"
+            />
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="w-full sm:w-auto bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-medium px-6 py-2.5 rounded-xl shadow-md uppercase transition-all cursor-pointer"
+            >
+              + Cadastrar
+            </button>
+          </div>
+        </div>
+
+        <CourseTable
+          courses={filteredCourses}
+          onDelete={handleDelete}
+          onEdit={handleEdit}
+          onManageSubjects={handleManageSubjects}
+        />
+
+        <Modal isOpen={isModalOpen} onClose={closeModal}>
+          <h2 className="text-xl font-semibold mb-4 text-center text-orange-300/80 uppercase">
+            {editingCourse ? "Editar Curso" : "Novo Curso"}
+          </h2>
+          <CourseForm
+            onAdd={handleAdd}
+            onEdit={handleUpdate}
+            editingCourse={editingCourse}
+          />
+        </Modal>
+
+        {managingCourse && (
+          <Modal isOpen={!!managingCourse} onClose={closeSubjectsModal}>
+            <CourseSubjectsManager
+              course={managingCourse}
+              onClose={closeSubjectsModal}
+              onUpdated={fetchCourses}
+            />
+          </Modal>
+        )}
+      </div>
+    </div>
+  );
+}

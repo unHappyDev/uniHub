@@ -1,0 +1,75 @@
+services:
+  database:
+    container_name: unihub-database
+    image: postgres:17.2-alpine3.20
+    restart: always
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mailcatcher:
+    container_name: unihub-mailcatcher
+    image: sj26/mailcatcher
+    restart: unless-stopped
+    ports:
+      - "${EMAIL_SMTP_PORT:-1025}:1025"
+      - "${EMAIL_HTTP_PORT:-1080}:1080"
+
+  backend:
+    container_name: unihub-backend
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      database:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      # Mapeamento para o Spring Boot
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASS: ${POSTGRES_PASSWORD}
+      PEPPER: ${PEPPER}
+      # O front-end (Prisma) parece gerenciar o schema, então 'validate' é mais seguro aqui
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate 
+    ports:
+      - "8080:8080"
+
+  frontend:
+    container_name: unihub-frontend
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - backend 
+      - database
+    env_file: .env
+    environment:
+      # URL interna para o container se comunicar com o banco
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}?schema=public
+      # URL interna para o container (SSR) se comunicar com o back-end
+      API_INTERNAL_URL: http://backend:8080
+      # URL pública (Browser) - deve ser localhost se rodando localmente
+      NEXT_PUBLIC_API_URL: http://localhost:8080
+    ports:
+      - "3000:3000"
+    # Executa as migrações do Prisma antes de iniciar o servidor
+    command: sh -c "npx prisma migrate deploy && npm start"
+
+volumes:
+  postgres-data:

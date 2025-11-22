@@ -1,0 +1,243 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  BLOCKED
+  USER
+  ADMIN
+  MODERATOR
+  PROFESSOR
+  STUDENT
+}
+
+enum WeekDay {
+  SEGUNDA
+  TERCA
+  QUARTA
+  QUINTA
+  SEXTA
+  SABADO
+  DOMINGO
+}
+
+enum ActivityType {
+  PROVA
+  TRABALHO
+  RECUPERACAO
+  EXTRA
+}
+
+model User {
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username           String               @unique @db.VarChar(30)
+  email              String               @unique @db.VarChar(254)
+  password           String               @db.VarChar(60)
+  role               Role                 @default(USER)
+  is_active          Boolean              @default(false)
+  created_at         DateTime             @default(dbgenerated("(now() at time zone 'utc')")) @db.Timestamptz
+  updated_at         DateTime             @default(dbgenerated("(now() at time zone 'utc')")) @updatedAt @db.Timestamptz
+  ActivationToken    ActivationToken[]
+  Session            Session[]
+  ResetPasswordToken ResetPasswordToken[]
+  Event              Event[]
+  students           Student[]
+  professors         Professor[]
+  Post               Post[]
+
+  @@index([email])
+  @@index([username])
+  @@index([created_at])
+  @@map("users")
+}
+
+model ActivationToken {
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  expires_at DateTime @db.Timestamptz
+  created_at DateTime @default(dbgenerated("(now() at time zone 'utc')")) @db.Timestamptz
+  updated_at DateTime @updatedAt @db.Timestamptz
+
+  @@index([user_id])
+}
+
+model Session {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  token      String   @db.VarChar(96)
+  user_id    String   @db.Uuid
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  expires_at DateTime @db.Timestamptz
+  created_at DateTime @default(dbgenerated("(now() at time zone 'utc')")) @db.Timestamptz
+  updated_at DateTime @updatedAt @db.Timestamptz
+
+  @@index([user_id])
+  @@index([token])
+  @@index([expires_at])
+  @@map("session")
+}
+
+model ResetPasswordToken {
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  expires_at DateTime @db.Timestamptz
+  created_at DateTime @default(dbgenerated("(now() at time zone 'utc')")) @db.Timestamptz
+  updated_at DateTime @updatedAt @db.Timestamptz
+
+  @@index([user_id])
+}
+
+model Event {
+  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  type               String
+  originator_user_id String?  @db.Uuid
+  user               User?    @relation(fields: [originator_user_id], references: [id], onDelete: SetNull)
+  originator_ip      String?  @db.Inet
+  metadata           Json?
+  created_at         DateTime @default(dbgenerated("(now() at time zone 'utc')")) @db.Timestamptz
+
+  @@index([originator_user_id])
+}
+
+model Post {
+  post_id    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title      String
+  body       String
+  created_at DateTime @default(dbgenerated("(now() at time zone 'utc')")) @db.Timestamptz
+  owner      String   @db.Uuid
+  user       User     @relation(fields: [owner], references: [id], onDelete: Cascade)
+
+  @@index([owner])
+  @@map("posts")
+}
+
+model Subject {
+  subject_id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  subject_name   String
+  workload_hours Int
+
+  courseSubjects CourseSubject[]
+  classrooms     Classroom[]
+
+  @@map("subjects")
+}
+
+model Course {
+  course_id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  course_name String
+
+  students Student[]
+
+  courseSubjects CourseSubject[]
+
+  @@map("courses")
+}
+
+model CourseSubject {
+  fk_course_id  String @db.Uuid
+  fk_subject_id String @db.Uuid
+
+  course  Course  @relation(fields: [fk_course_id], references: [course_id], onDelete: Cascade)
+  subject Subject @relation(fields: [fk_subject_id], references: [subject_id], onDelete: Cascade)
+
+  @@id([fk_course_id, fk_subject_id])
+  @@map("courses_subjects")
+}
+
+model Student {
+  student_id String @id @db.Uuid
+  course     String @db.Uuid
+  user       User   @relation(fields: [student_id], references: [id])
+  courseRef  Course @relation(fields: [course], references: [course_id])
+
+  classrooms  ClassroomStudent[]
+  attendances Attendance[]
+  grades      Grade[]
+
+  @@map("students")
+}
+
+model Professor {
+  professor_id String @id @db.Uuid
+  user         User   @relation(fields: [professor_id], references: [id])
+
+  classrooms Classroom[]
+
+  @@map("professors")
+}
+
+model Classroom {
+  classroom_id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  professor    String  @db.Uuid
+  subject      String  @db.Uuid
+  semester     String?
+
+  professorRef Professor @relation(fields: [professor], references: [professor_id])
+  subjectRef   Subject   @relation(fields: [subject], references: [subject_id])
+
+  schedules   ClassroomSchedule[]
+  students    ClassroomStudent[]
+  attendances Attendance[]
+  grades      Grade[]
+
+  @@map("classrooms")
+}
+
+model ClassroomSchedule {
+  schedule_id String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  day_of_week WeekDay
+  start_at    DateTime @db.Time
+  end_at      DateTime @db.Time
+
+  classroom     Classroom    @relation(fields: [classroom_ref], references: [classroom_id])
+  classroom_ref String       @db.Uuid
+  attendances   Attendance[]
+
+  @@map("classroom_schedule")
+}
+
+model Attendance {
+  attendance_id   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  student         String   @db.Uuid
+  classroom       String   @db.Uuid
+  schedule        String   @db.Uuid
+  attendance_date DateTime @db.Timestamptz(6)
+  presence        Boolean
+
+  studentRef   Student           @relation(fields: [student], references: [student_id])
+  scheduleRef  ClassroomSchedule @relation(fields: [schedule], references: [schedule_id])
+  classroomRef Classroom         @relation(fields: [classroom], references: [classroom_id])
+
+  @@map("attendances")
+}
+
+model ClassroomStudent {
+  fk_classroom_id String @db.Uuid
+  fk_student_id   String @db.Uuid
+
+  classroom Classroom @relation(fields: [fk_classroom_id], references: [classroom_id])
+  student   Student   @relation(fields: [fk_student_id], references: [student_id])
+
+  @@id([fk_classroom_id, fk_student_id])
+  @@map("classrooms_students")
+}
+
+model Grade {
+  grade_id  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  student   String   @db.Uuid
+  classroom String   @db.Uuid
+  activity  String?
+  grade     Decimal? @db.Decimal(5, 2)
+  bimester  Int
+
+  studentRef   Student   @relation(fields: [student], references: [student_id])
+  classroomRef Classroom @relation(fields: [classroom], references: [classroom_id])
+
+  @@map("grades")
+}
