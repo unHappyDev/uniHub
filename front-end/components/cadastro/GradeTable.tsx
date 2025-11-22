@@ -84,11 +84,14 @@ export default function GradeTable({ students, grades, onEdit }: Props) {
   };
 
   const getTotalColor = (b1: number | null, b2: number | null) => {
-    if (b1 === null || b2 === null) return "text-gray-400";
-    return b1 + b2 > 3.5
-      ? "text-green-500 font-semibold"
-      : "text-red-500 font-semibold";
-  };
+  if (b1 === null || b2 === null) return "text-gray-400";
+
+  const media = (b1 + b2) / 2;
+
+  return media >= 7
+    ? "text-green-500 font-semibold"
+    : "text-red-500 font-semibold";
+};
 
   const columns: { activity: Activity; bimester?: number }[] = [
     { activity: "prova", bimester: 1 },

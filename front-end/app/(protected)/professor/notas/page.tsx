@@ -5,7 +5,8 @@ import Link from "next/link";
 import { getClassroomsByProfessor } from "@/lib/api/classroom";
 import { Classroom } from "@/types/Classroom";
 import { Modal } from "@/components/ui/modal";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil } from "lucide-react";
+import { toast } from "sonner";
 
 export default function GradePage() {
   const [classrooms, setClassrooms] = useState<Classroom[]>([]);
@@ -16,14 +17,28 @@ export default function GradePage() {
   const [filterSemester, setFilterSemester] = useState("");
 
   useEffect(() => {
-    async function load() {
+  async function load() {
+    try {
       const data = await getClassroomsByProfessor();
-      setClassrooms(data);
-      setFilteredClassrooms(data);
-    }
-    load();
-  }, []);
 
+      const list = Array.isArray(data) ? data : [];
+
+      setClassrooms(list);
+      setFilteredClassrooms(list);
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+ 
+        setClassrooms([]);
+        setFilteredClassrooms([]);
+      } else {
+        console.error("Erro ao buscar turmas:", error);
+        toast.error("Erro ao carregar turmas.");
+      }
+    }
+  }
+
+  load();
+}, []);
   useEffect(() => {
     const filtered = classrooms.filter(
       (c) =>
