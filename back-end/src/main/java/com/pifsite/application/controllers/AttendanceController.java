@@ -40,6 +40,14 @@ public class AttendanceController {
         List<AttendanceDTO> attendances = attendanceService.getAll();
         return ResponseEntity.ok(attendances);
     }
+    
+    @GetMapping("/{id}")
+    @Operation(summary = "Get Attendance", description = "Get all Attendances from database")
+    public ResponseEntity<?> getAttendancesByClassroomId(@PathVariable UUID id) {
+
+        List<AttendanceDTO> attendances = attendanceService.getAttendancesByClassroomId(id);
+        return ResponseEntity.ok(attendances);
+    }
 
     @PostMapping
     @Operation(summary = "Create Attendance", description = "Create a Attendance and save on the database")

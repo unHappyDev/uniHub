@@ -40,6 +40,17 @@ public class AttendanceService {
 
         return Attendances;
     }
+    
+    public List<AttendanceDTO> getAttendancesByClassroomId(UUID id) {
+
+        List<AttendanceDTO> Attendances = this.attendanceRepository.getByClassroomId(id);
+
+        if (Attendances.isEmpty()) {
+            throw new ResourceNotFoundException("there is no Attendances in the database");
+        }
+
+        return Attendances;
+    }
 
     public void crateAttendance(CreateAttendanceDTO AttendanceDTO) {
 

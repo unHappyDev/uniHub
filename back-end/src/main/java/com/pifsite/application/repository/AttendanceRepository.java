@@ -2,6 +2,7 @@ package com.pifsite.application.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.pifsite.application.entities.Attendance;
 import com.pifsite.application.dto.AttendanceDTO;
@@ -15,6 +16,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
             "a.attendanceId, " +
             "s.user.id, " +
             "s.user.username, " +
+            "c.classroomId, " +
             "c.subject.subjectName, " +
             "new com.pifsite.application.dto.ClassroomScheduleDTO(" +
                 "cs.scheduleId, " +
@@ -29,4 +31,25 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
             "JOIN a.classroom c JOIN c.subject " +
             "JOIN a.schedule cs")
     List<AttendanceDTO> getAll();
+    
+    @Query("SELECT new com.pifsite.application.dto.AttendanceDTO(" +
+            "a.attendanceId, " +
+            "s.user.id, " +
+            "s.user.username, " +
+            "c.classroomId, " +
+            "c.subject.subjectName, " +
+            "new com.pifsite.application.dto.ClassroomScheduleDTO(" +
+                "cs.scheduleId, " +
+                "cs.dayOfWeek, " +
+                "cs.startAt, " +
+                "cs.endAt" +
+            ")," +
+            "a.attendanceDate, " +
+            "a.presence) " +
+            "FROM Attendance a " +
+            "JOIN a.student s JOIN s.user " +
+            "JOIN a.classroom c JOIN c.subject " +
+            "JOIN a.schedule cs " +
+            "WHERE c.id=:classroomId")
+    List<AttendanceDTO> getByClassroomId(@Param("classroomId") UUID classroomId);
 }
