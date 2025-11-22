@@ -31,59 +31,58 @@ export default function GradeTable({ students, grades, onEdit }: Props) {
   ): { [bimester: number]: number; total: number | null } => {
     if (!studentGrades.length) return { total: null };
 
-    const bimesterAverages: { [bimester: number]: number } = {};
-    const allGradesForTotal: number[] = [];
+    const bimesterSums: { [bimester: number]: number } = {};
+
+    const totalExtra = studentGrades
+      .filter((g) => g.activity === "extra")
+      .reduce((sum, g) => sum + g.grade, 0);
 
     [1, 2].forEach((bim) => {
       const gradesBim = studentGrades.filter((g) => g.bimester === bim);
-      if (!gradesBim.length) return;
 
-      const prova = Math.min(
-        gradesBim.find((g) => g.activity === "prova")?.grade ?? 0,
-        8,
-      );
-      const recuperacao = Math.min(
-        gradesBim.find((g) => g.activity === "recuperacao")?.grade ?? 0,
-        8,
-      );
+      const prova = gradesBim.find((g) => g.activity === "prova")?.grade ?? 0;
+      const recuperacao =
+        gradesBim.find((g) => g.activity === "recuperacao")?.grade ?? 0;
       const maiorPR = Math.max(prova, recuperacao);
 
       const trabalhos = gradesBim
         .filter((g) => g.activity === "trabalho")
-        .map((g) => Math.min(g.grade, 2));
+        .map((g) => g.grade);
 
-      const notasConsideradas = [maiorPR, ...trabalhos].filter(
-        (g) => g != null,
-      );
+      let mb = maiorPR + trabalhos.reduce((a, b) => a + b, 0);
 
-      const mediaBim = notasConsideradas.length
-        ? notasConsideradas.reduce((a, b) => a + b, 0) /
-          notasConsideradas.length
-        : 0;
+      mb += totalExtra / 2;
 
-      bimesterAverages[bim] = parseFloat(mediaBim.toFixed(1));
-      allGradesForTotal.push(...notasConsideradas);
+      bimesterSums[bim] = parseFloat(mb.toFixed(1));
     });
 
-    const extraGrade = Math.min(
-      studentGrades.find((g) => g.activity === "extra")?.grade ?? 0,
-      10,
-    );
-    if (extraGrade) allGradesForTotal.push(extraGrade);
+    const b1Complete = (() => {
+      const gradesB1 = studentGrades.filter((g) => g.bimester === 1);
+      const pr = gradesB1.find(
+        (g) => g.activity === "prova" || g.activity === "recuperacao",
+      );
+      const trab = gradesB1.find((g) => g.activity === "trabalho");
+      return !!pr && !!trab;
+    })();
 
-    const totalAverage = allGradesForTotal.length
-      ? parseFloat(
-          (
-            allGradesForTotal.reduce((a, b) => a + b, 0) /
-            allGradesForTotal.length
-          ).toFixed(1),
-        )
-      : null;
+    const b2Complete = (() => {
+      const gradesB2 = studentGrades.filter((g) => g.bimester === 2);
+      const pr = gradesB2.find(
+        (g) => g.activity === "prova" || g.activity === "recuperacao",
+      );
+      const trab = gradesB2.find((g) => g.activity === "trabalho");
+      return !!pr && !!trab;
+    })();
 
-    return { ...bimesterAverages, total: totalAverage };
+    let totalAverage: number | null = null;
+    if (b1Complete && b2Complete) {
+      totalAverage = (bimesterSums[1] + bimesterSums[2]) / 2;
+      totalAverage = parseFloat(totalAverage.toFixed(1));
+    }
+
+    return { ...bimesterSums, total: totalAverage };
   };
 
-  // cor da média total baseada na soma B1 + B2 > 3.5
   const getTotalColor = (b1: number | null, b2: number | null) => {
     if (b1 === null || b2 === null) return "text-gray-400";
     return b1 + b2 > 3.5
@@ -116,8 +115,8 @@ export default function GradeTable({ students, grades, onEdit }: Props) {
                     : `${activityLabels[col.activity]} B${col.bimester}`}
                 </th>
               ))}
-              <th className="px-4 py-3 text-center">Média B1</th>
-              <th className="px-4 py-3 text-center">Média B2</th>
+              <th className="px-4 py-3 text-center">MB1</th>
+              <th className="px-4 py-3 text-center">MB2</th>
               <th className="px-4 py-3 text-center">Média Total</th>
               <th className="px-4 py-3 text-center">Ações</th>
             </tr>
@@ -151,7 +150,10 @@ export default function GradeTable({ students, grades, onEdit }: Props) {
                     {averages[2]?.toFixed(1) ?? "-"}
                   </td>
                   <td
-                    className={`px-4 py-3 text-center ${getTotalColor(averages[1] ?? null, averages[2] ?? null)}`}
+                    className={`px-4 py-3 text-center ${getTotalColor(
+                      averages[1] ?? null,
+                      averages[2] ?? null,
+                    )}`}
                   >
                     {averages.total?.toFixed(1) ?? "-"}
                   </td>
@@ -210,15 +212,18 @@ export default function GradeTable({ students, grades, onEdit }: Props) {
                 })}
 
                 <div className="flex justify-between items-center bg-[#1a1a1ab0] p-2 rounded-md mt-2">
-                  <span>Média B1</span>
+                  <span>MB1</span>
                   <span>{averages[1]?.toFixed(1) ?? "-"}</span>
                 </div>
                 <div className="flex justify-between items-center bg-[#1a1a1ab0] p-2 rounded-md mt-1">
-                  <span>Média B2</span>
+                  <span>MB2</span>
                   <span>{averages[2]?.toFixed(1) ?? "-"}</span>
                 </div>
                 <div
-                  className={`flex justify-between items-center bg-[#1a1a1ab0] p-2 rounded-md mt-1 ${getTotalColor(averages[1] ?? null, averages[2] ?? null)}`}
+                  className={`flex justify-between items-center bg-[#1a1a1ab0] p-2 rounded-md mt-1 ${getTotalColor(
+                    averages[1] ?? null,
+                    averages[2] ?? null,
+                  )}`}
                 >
                   <span>Média Total</span>
                   <span>{averages.total?.toFixed(1) ?? "-"}</span>

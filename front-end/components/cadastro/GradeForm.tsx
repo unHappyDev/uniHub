@@ -48,6 +48,8 @@ export default function GradeForm({
     initialData?.grade !== undefined ? String(initialData.grade) : "",
   );
 
+  const [warning, setWarning] = useState<string>("");
+
   useEffect(() => {
     if (!form.studentId) return;
 
@@ -55,7 +57,7 @@ export default function GradeForm({
       (g) =>
         g.studentId === form.studentId &&
         g.activity === form.activity &&
-        g.bimester === form.bimester,
+        (form.activity === "extra" || g.bimester === form.bimester),
     );
 
     setGradeInput(existingGrade ? String(existingGrade.grade) : "0");
@@ -73,7 +75,13 @@ export default function GradeForm({
       toast.warning("Selecione um aluno antes de salvar.");
       return;
     }
-    onSubmit({ ...form, grade: Number(form.grade.toFixed(1)) });
+
+    onSubmit({
+      ...form,
+      grade: Number(form.grade.toFixed(1)),
+
+      bimester: form.activity === "extra" ? 0 : form.bimester,
+    });
   };
 
   const handleActivityChange = (value: Activity) => {
@@ -83,10 +91,9 @@ export default function GradeForm({
   const getMaxGrade = (activity: Activity) => {
     if (activity === "prova" || activity === "recuperacao") return 8;
     if (activity === "trabalho") return 2;
-    return 10; // extra
+    if (activity === "extra") return 2;
+    return 0;
   };
-
-  const [warning, setWarning] = useState<string>("");
 
   const handleGradeChange = (value: string) => {
     let numberValue = Number(value);
@@ -169,21 +176,23 @@ export default function GradeForm({
         {warning && <p className="text-red-400 text-sm mt-1">{warning}</p>}
       </div>
 
-      <div className="space-y-2">
-        <label className="text-sm font-medium uppercase text-orange-300/80">
-          Bimestre
-        </label>
-        <select
-          value={form.bimester}
-          onChange={(e) =>
-            setForm({ ...form, bimester: parseInt(e.target.value) })
-          }
-          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 text-white px-4 py-3 rounded-xl"
-        >
-          <option value={1}>1º Bimestre</option>
-          <option value={2}>2º Bimestre</option>
-        </select>
-      </div>
+      {form.activity !== "extra" && (
+        <div className="space-y-2">
+          <label className="text-sm font-medium uppercase text-orange-300/80">
+            Bimestre
+          </label>
+          <select
+            value={form.bimester}
+            onChange={(e) =>
+              setForm({ ...form, bimester: parseInt(e.target.value) })
+            }
+            className="w-full bg-[#1a1a1dc3] border border-orange-400/40 text-white px-4 py-3 rounded-xl"
+          >
+            <option value={1}>1º Bimestre</option>
+            <option value={2}>2º Bimestre</option>
+          </select>
+        </div>
+      )}
 
       <button className="w-full bg-orange-500/70 hover:bg-orange-600/70 px-6 py-3 rounded-xl uppercase font-semibold cursor-pointer transition-all">
         Salvar
