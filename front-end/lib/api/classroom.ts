@@ -4,21 +4,54 @@ import { Classroom, CreateClassroomDTO } from "@/types/Classroom";
 export const getClassrooms = async (): Promise<Classroom[]> => {
   const response = await apiSpring.get("/classroom");
 
-  return response.data.map((c: any) => ({
-    classroomId: c.classroomId,
-    semester: c.semester,
+  const mapped = response.data.map((c: any) => {
+    const mappedStudents =
+      c.students?.map((s: any) => {
+        const mappedStudent = {
+          id: s.studentId,
+          name: s.name,
+          courseName: s.courseName ?? "",
+        };
+        return mappedStudent;
+      }) || [];
 
-    professor: c.professor,
-    subject: c.subject,
+    const classroom = {
+      classroomId: c.classroomId,
+      semester: c.semester,
+      professor: c.professor,
+      subject: c.subject,
+      schedules: c.schedules ?? [],
+      students: mappedStudents,
+    };
+    return classroom;
+  });
 
-    schedules: c.schedules ?? [],
-    students:
-      c.students?.map((s: any) => ({
-        id: s.id,
-        name: s.name,
-        courseName: s.courseName ?? "",
-      })) ?? [],
-  }));
+  return mapped;
+};
+
+export const getClassroomById = async (
+  id: string,
+): Promise<Classroom | undefined> => {
+  const all = await getClassrooms();
+  const found = all.find((c) => c.classroomId === id);
+
+  return found;
+};
+
+export const getClassroomsByProfessor = async (
+  professorName?: string,
+): Promise<Classroom[]> => {
+  const all = await getClassrooms();
+  return !professorName
+    ? all
+    : all.filter((c) => c.professor === professorName);
+};
+
+export const getClassroomsByStudent = async (
+  studentName: string,
+): Promise<Classroom[]> => {
+  const all = await getClassrooms();
+  return all.filter((c) => c.students.some((s) => s.name === studentName));
 };
 
 export const createClassroom = async (

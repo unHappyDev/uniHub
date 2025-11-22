@@ -234,6 +234,7 @@ model Grade {
   classroom String   @db.Uuid
   activity  String?
   grade     Decimal? @db.Decimal(5, 2)
+  bimester  Int
 
   studentRef   Student   @relation(fields: [student], references: [student_id])
   classroomRef Classroom @relation(fields: [classroom], references: [classroom_id])

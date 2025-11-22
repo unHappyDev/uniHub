@@ -1,3 +1,5 @@
 package com.pifsite.application.dto;
 
-public record ClassroomStudentDTO(String name, String courseName) {}
+import java.util.UUID;
+
+public record ClassroomStudentDTO(UUID studentId, String name, String courseName) {}

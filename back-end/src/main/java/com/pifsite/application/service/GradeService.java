@@ -30,9 +30,16 @@ public class GradeService {
 
         List<GradeDTO> grades = this.gradeRepository.getAll();
 
-        if (grades.isEmpty()) {
-            throw new ResourceNotFoundException("No Grades found");
-        }
+        // if (grades.isEmpty()) {
+        //     throw new ResourceNotFoundException("No Grades found");
+        // }
+
+        return grades;
+    }
+
+    public List<GradeDTO> getClassroomGrades(UUID id) {
+
+        List<GradeDTO> grades = this.gradeRepository.getByClassroomId(id);
 
         return grades;
     }
@@ -49,6 +56,7 @@ public class GradeService {
 
         newGrade.setActivity(ActivityType.fromString(gradeDTO.activity()));
         newGrade.setGrade(gradeDTO.grade());
+        newGrade.setBimester(gradeDTO.bimester());
         newGrade.setStudent(newStudent);
         newGrade.setClassroom(newClassroom);
 
@@ -65,6 +73,11 @@ public class GradeService {
             grade.setActivity(ActivityType.fromString(gradeDTO.activity()));
         }
         if (gradeDTO.grade() != null) {
+
+            grade.setGrade(gradeDTO.grade());
+        }
+        
+        if (gradeDTO.bimester() > 0 && gradeDTO.bimester() < 2) {
 
             grade.setGrade(gradeDTO.grade());
         }

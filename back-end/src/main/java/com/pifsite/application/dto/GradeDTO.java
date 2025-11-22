@@ -1,6 +1,9 @@
 package com.pifsite.application.dto;
 
-import java.util.UUID;
+import com.pifsite.application.enums.ActivityType;
+
 import java.math.BigDecimal;
 
-public record GradeDTO(UUID id, UUID studentId, String student, String subject, BigDecimal grade) {}
+import java.util.UUID;
+
+public record GradeDTO(UUID id, UUID studentId, String studentName, UUID classroomId, String subject, ActivityType activity, BigDecimal grade, int bimester) {}

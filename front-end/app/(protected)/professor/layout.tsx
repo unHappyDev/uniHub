@@ -9,13 +9,14 @@ import {
 import { useAuthSession } from "@/hooks/useAuthSession";
 
 import { Separator } from "@radix-ui/react-separator";
-import { Book, HomeIcon, AlertTriangle, CalendarDays } from "lucide-react";
+import { Book, HomeIcon, AlertTriangle, Clock, ClipboardList } from "lucide-react";
 
 const navMain = [
-  { title: "início", url: "/professor", icon: HomeIcon },
-  { title: "notas", url: "/professor/notas", icon: Book },
-  { title: "horário", url: "/professor/horario", icon: CalendarDays},
-  { title: "avisos", url: "/professor/avisos", icon: AlertTriangle },
+  { title: "Início", url: "/professor", icon: HomeIcon },
+  { title: "Notas", url: "/professor/notas", icon: Book },
+  { title: "Presenças", url: "/professor/attendance", icon: ClipboardList },
+  { title: "Horário", url: "/professor/horario", icon: Clock},
+  { title: "Avisos", url: "/professor/avisos", icon: AlertTriangle },
 ];
 
 const navSecondary = [{ title: "Ajuda", url: "/ajuda" }];

@@ -41,6 +41,14 @@ public class GradeController {
         return ResponseEntity.ok(grades);
     }
 
+    @GetMapping("/{id}")
+    @Operation(summary = "Get Grade", description = "Get all Grades from database")
+    public ResponseEntity<?> getGradesByClassroom(@PathVariable UUID id) {
+
+        List<GradeDTO> grades = gradeService.getClassroomGrades(id);
+        return ResponseEntity.ok(grades);
+    }
+
     @PostMapping
     @Operation(summary = "Create Grade", description = "Create a Grade and save on the database")
     @PreAuthorize("hasAnyRole(T(com.pifsite.application.enums.UserRoles).ADMIN.toString(), T(com.pifsite.application.enums.UserRoles).PROFESSOR.toString())")

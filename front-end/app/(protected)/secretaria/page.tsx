@@ -262,22 +262,22 @@ export default function Body() {
                 title: "Matérias",
                 desc: "Gerenciamento de matérias",
               },
-              {
-                href: "/secretaria/notas",
-                icon: (
-                  <FileText className="w-6 h-6 sm:w-10 sm:h-10 mb-2 text-purple-400" />
-                ),
-                title: "Notas",
-                desc: "Gerenciamento de notas",
-              },
-              {
-                href: "/secretaria/presencas",
-                icon: (
-                  <ClipboardList className="w-6 h-6 sm:w-10 sm:h-10 mb-2 text-green-400" />
-                ),
-                title: "Presenças",
-                desc: "Gerenciamento de presenças",
-              },
+              // {
+              //   href: "/secretaria/notas",
+              //   icon: (
+              //     <FileText className="w-6 h-6 sm:w-10 sm:h-10 mb-2 text-purple-400" />
+              //   ),
+              //   title: "Notas",
+              //   desc: "Gerenciamento de notas",
+              // },
+              // {
+              //   href: "/secretaria/presencas",
+              //   icon: (
+              //     <ClipboardList className="w-6 h-6 sm:w-10 sm:h-10 mb-2 text-green-400" />
+              //   ),
+              //   title: "Presenças",
+              //   desc: "Gerenciamento de presenças",
+              // },
               {
                 href: "/secretaria/horarios",
                 icon: (
@@ -321,22 +321,22 @@ export default function Body() {
               title: "Matérias",
               desc: "Gerenciamento de matérias",
             },
-            {
-              href: "/notas",
-              icon: (
-                <FileText className="w-6 h-6 sm:w-10 sm:h-10 mb-2 text-purple-400" />
-              ),
-              title: "Notas",
-              desc: "Gerenciamento de notas",
-            },
-            {
-              href: "/presencas",
-              icon: (
-                <ClipboardList className="w-6 h-6 sm:w-10 sm:h-10 mb-2 text-green-400" />
-              ),
-              title: "Presenças",
-              desc: "Gerenciamento de presenças",
-            },
+            // {
+            //   href: "/notas",
+            //   icon: (
+            //     <FileText className="w-6 h-6 sm:w-10 sm:h-10 mb-2 text-purple-400" />
+            //   ),
+            //   title: "Notas",
+            //   desc: "Gerenciamento de notas",
+            // },
+            // {
+            //   href: "/presencas",
+            //   icon: (
+            //     <ClipboardList className="w-6 h-6 sm:w-10 sm:h-10 mb-2 text-green-400" />
+            //   ),
+            //   title: "Presenças",
+            //   desc: "Gerenciamento de presenças",
+            // },
             {
               href: "/horarios",
               icon: (

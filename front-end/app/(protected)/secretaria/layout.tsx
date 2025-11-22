@@ -19,10 +19,8 @@ const navMain = [
   { title: "Matérias", url: "/secretaria/materias", icon: BookOpen },
   { title: "Cursos", url: "/secretaria/cursos", icon: GraduationCap },
   { title: "Turmas", url: "/secretaria/turmas", icon: Users },
-  { title: "Notas", url: "/secretaria/notas", icon: FileText },
-  { title: "Avisos", url: "/secretaria/avisos", icon: AlertTriangle },
-  { title: "Presenças", url: "/secretaria/attendance", icon: ClipboardList },
   { title: "Horários", url: "/secretaria/horario", icon: Clock },
+  { title: "Avisos", url: "/secretaria/avisos", icon: AlertTriangle },
   
 ];
 
