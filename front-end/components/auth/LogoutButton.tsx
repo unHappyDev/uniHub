@@ -11,7 +11,7 @@ export default function LogoutButton() {
   return (
     <button
       onClick={logout}
-     className="w-30 h-10 bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 transition-all rounded-x text-white font-medium uppercase cursor-pointer"
+     className="w-30 h-10 bg-orange-500/70 hover:bg-orange-600/70 transition-all rounded-x text-white font-medium uppercase cursor-pointer"
 
     >
       Logout

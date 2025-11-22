@@ -2,15 +2,16 @@ export interface Attendance {
   id: string;
   studentId: string;
   username: string;
+  classroomId: string;
   subjectName: string;
-  attendanceDate: string;
-  presence: boolean;
-  schedule?: {
+  schedule: {
     scheduleId: string;
     dayOfWeek: string;
     startAt: string;
     endAt: string;
   } | null;
+  attendanceDate: string;
+  presence: boolean;
 }
 
 export interface CreateAttendanceDTO {
@@ -19,4 +20,12 @@ export interface CreateAttendanceDTO {
   scheduleId: string;
   attendanceDate: string;
   presence: boolean;
+}
+
+export interface StudentsAttendanceDTO {
+  studentId: string;
+  username: string;
+  classroomId: string;
+  subjectName: string;
+  numAbsences: number;
 }

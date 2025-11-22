@@ -196,7 +196,7 @@ export default function Body() {
               <div className="text-center text-gray-400 space-y-4">
                 <p>Nenhum aviso ativo no momento</p>
                 <Link href="/secretaria/avisos">
-                  <Button className="bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-medium px-4 py-2 rounded-xl shadow-md transition-all uppercase cursor-pointer text-xs sm:text-base">
+                  <Button className="bg-orange-500/70 hover:bg-orange-600/70 text-white font-medium px-4 py-2 rounded-xl shadow-md transition-all uppercase cursor-pointer text-xs sm:text-base">
                     Cadastrar
                   </Button>
                 </Link>

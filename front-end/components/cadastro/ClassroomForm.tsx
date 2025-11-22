@@ -6,6 +6,7 @@ import {
   CreateClassroomDTO,
   Classroom,
   ClassroomSchedule,
+  ClassroomStudent,
 } from "@/types/Classroom";
 import { getTeachers } from "@/lib/api/teacher";
 import { getSubjects } from "@/lib/api/subject";
@@ -22,7 +23,6 @@ import {
   deleteSchedule,
   SchedulePayload,
 } from "@/lib/api/schedule";
-
 import { Teacher } from "@/types/Teacher";
 import { Subject } from "@/types/Subject";
 import { Student } from "@/types/Student";
@@ -34,9 +34,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-
 import { Button } from "@/components/ui/button";
-
 import {
   Dialog,
   DialogContent,
@@ -45,7 +43,6 @@ import {
   DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
 import { Checkbox } from "@/components/ui/checkbox";
 
 interface Props {
@@ -120,19 +117,23 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
           getStudents(),
         ]);
 
-        const mappedTeachers = t.map((teacher: any) => ({
-          id: teacher.id,
-          nome: teacher.username,
-          email: teacher.email,
-        }));
+        const mappedTeachers = t.map(
+          (teacher: any): Teacher => ({
+            id: teacher.id,
+            nome: teacher.username,
+            email: teacher.email,
+          }),
+        );
 
-        const mappedStudents = st.map((student: any) => ({
-          id: student.id,
-          nome: student.username,
-          email: student.email,
-          curso: student.courseName ?? "",
-          courseId: student.courseId ?? "",
-        }));
+        const mappedStudents = st.map(
+          (student: any): Student => ({
+            id: student.id,
+            nome: student.username,
+            email: student.email,
+            curso: student.courseName ?? "",
+            courseId: student.courseId ?? "",
+          }),
+        );
 
         setTeachers(mappedTeachers);
         setSubjects(s);
@@ -155,13 +156,14 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
           const matchedTeacher = mappedTeachers.find(
             (t) => normalize(t.nome) === normalize(classroom.professor),
           );
+
           const matchedSubject = s.find(
             (sub: Subject) =>
               normalize(sub.subjectName) === normalize(classroom.subject),
           );
 
           const matchedStudents = classroom.students
-            .map((st) => {
+            .map((st: ClassroomStudent) => {
               const found = mappedStudents.find(
                 (stu: Student) => normalize(stu.nome) === normalize(st.name),
               );
@@ -318,14 +320,16 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
   return (
     <form onSubmit={handleSubmit} className="space-y-7 text-white">
       <div>
-        <label className="block text-sm mb-1 uppercase">Professor</label>
+        <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
+          Professor
+        </label>
         <Select
           value={formData.professorId}
           onValueChange={(value) =>
             setFormData((prev) => ({ ...prev, professorId: value }))
           }
         >
-          <SelectTrigger className="w-full bg-[#1a1a1dc3] border border-orange-400/40 text-white cursor-pointer">
+          <SelectTrigger className="w-full bg-[#1a1a1dc3] border border-orange-400/40 py-5 text-white cursor-pointer">
             <SelectValue placeholder="Selecione um professor" />
           </SelectTrigger>
           <SelectContent className="bg-[#151a1b] text-white">
@@ -339,14 +343,16 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
       </div>
 
       <div>
-        <label className="block text-sm mb-1 uppercase">Matéria</label>
+        <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
+          Matéria
+        </label>
         <Select
           value={formData.subjectId}
           onValueChange={(value) =>
             setFormData((prev) => ({ ...prev, subjectId: value }))
           }
         >
-          <SelectTrigger className="w-full bg-[#1a1a1dc3] border border-orange-400/40 text-white cursor-pointer">
+          <SelectTrigger className="w-full bg-[#1a1a1dc3] border border-orange-400/40 py-5 text-white cursor-pointer">
             <SelectValue placeholder="Selecione uma matéria" />
           </SelectTrigger>
           <SelectContent className="bg-[#151a1b] text-white">
@@ -364,7 +370,9 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
       </div>
 
       <div>
-        <label className="block text-sm mb-1 uppercase">Semestre</label>
+        <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
+          Semestre
+        </label>
         <input
           type="text"
           value={formData.semester}
@@ -373,12 +381,14 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
           }
           placeholder="Ex: 2025.1"
           required
-          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 text-white px-5 py-3 rounded-xl cursor-pointer"
+          className="w-full bg-[#1a1a1dc3] border border-orange-400/40 text-white px-5 py-2 outline-none rounded-xl cursor-pointer"
         />
       </div>
 
       <div>
-        <label className="block text-sm mb-2 uppercase">Horários</label>
+        <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
+          Horários
+        </label>
         {formData.schedules.map((s, i) => (
           <div
             key={i}
@@ -435,17 +445,19 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         <Button
           type="button"
           onClick={addSchedule}
-          className="mt-2 bg-orange-500/40 hover:bg-orange-500/60 text-white rounded px-4 py-2 cursor-pointer"
+          className="mt-2 bg-orange-500/70 hover:bg-orange-600/70 text-white rounded px-4 py-2 cursor-pointer"
         >
           + Adicionar horário
         </Button>
       </div>
 
       <div>
-        <label className="block text-sm mb-1 uppercase">Alunos</label>
+        <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
+          Alunos
+        </label>
         <Dialog open={studentsDialogOpen} onOpenChange={setStudentsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full bg-[#1a1a1dc3] border border-orange-400/40 text-white px-5 py-3 rounded-xl cursor-pointer">
+            <Button className="w-full bg-[#1a1a1dc3] hover:bg-[#222] border border-orange-400/40 text-white px-5 py-5 rounded-xl cursor-pointer">
               {formData.studentsIds.length > 0
                 ? `${formData.studentsIds.length} aluno(s) selecionado(s)`
                 : "Selecionar alunos"}
@@ -496,7 +508,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         </Button>
         <Button
           type="submit"
-          className="bg-orange-500/50 hover:bg-orange-500/60 text-white px-4 py-3 rounded-xl cursor-pointer"
+          className="bg-orange-500/70 hover:bg-orange-600/70 text-white px-4 py-3 rounded-xl cursor-pointer"
         >
           {classroom ? "Salvar Alterações" : "Cadastrar Turma"}
         </Button>

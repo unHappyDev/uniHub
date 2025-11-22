@@ -116,7 +116,7 @@ export default function PostForm({
 
       <button
         type="submit"
-        className="w-full bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-semibold px-6 py-3 rounded-xl transition-all uppercase cursor-pointer"
+        className="w-full bg-orange-500/70 hover:bg-orange-600/70 text-white font-semibold px-6 py-3 rounded-xl transition-all uppercase cursor-pointer"
       >
         {editingPost ? "Salvar Alterações" : "Criar Post"}
       </button>
