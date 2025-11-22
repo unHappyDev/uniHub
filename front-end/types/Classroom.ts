@@ -1,8 +1,9 @@
 export interface ClassroomSchedule {
-  scheduleId?: string | null;
-  dayOfWeek: string;
-  startAt: string;
-  endAt: string;
+  id: string;   
+  weekDay: string;
+  startTime: string;
+  endTime: string;
+  subjectName: string;
 }
 
 export interface ClassroomStudent {
