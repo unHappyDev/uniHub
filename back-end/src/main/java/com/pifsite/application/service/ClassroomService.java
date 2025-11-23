@@ -59,6 +59,7 @@ public class ClassroomService {
 
             return new ClassroomDTO(
                     c.getClassroomId(),
+                    c.getProfessor().getUser().getId(),
                     c.getProfessor().getUser().getUsername(),
                     c.getSubject().getSubjectName(),
                     c.getSemester(),
