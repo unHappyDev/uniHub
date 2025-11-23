@@ -187,9 +187,9 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
 
         errorToastRef.current = false;
       } catch (err) {
-        console.error("Erro ao carregar dados:", err);
+        
         if (!errorToastRef.current) {
-          toast.error("Erro ao carregar dados.");
+          toast.error("Nenhuma matéria encontrada.");
           errorToastRef.current = true;
         }
       }
