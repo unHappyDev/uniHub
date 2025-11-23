@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 
 import com.pifsite.application.service.AttendanceService;
 import com.pifsite.application.dto.CreateAttendanceDTO;
+import com.pifsite.application.dto.StudentsAttendanceDTO;
 import com.pifsite.application.dto.AttendanceDTO;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,6 +39,22 @@ public class AttendanceController {
     public ResponseEntity<?> getAllAttendances() {
 
         List<AttendanceDTO> attendances = attendanceService.getAll();
+        return ResponseEntity.ok(attendances);
+    }
+    
+    @GetMapping("/number")
+    @Operation(summary = "Get Attendance", description = "Get all Attendances from database")
+    public ResponseEntity<?> getStudentsAttendances() {
+
+        List<StudentsAttendanceDTO> attendances = attendanceService.getStudentsAttendancesNumber();
+        return ResponseEntity.ok(attendances);
+    }
+    
+    @GetMapping("/{id}")
+    @Operation(summary = "Get Attendance", description = "Get all Attendances from database")
+    public ResponseEntity<?> getAttendancesByClassroomId(@PathVariable UUID id) {
+
+        List<AttendanceDTO> attendances = attendanceService.getAttendancesByClassroomId(id);
         return ResponseEntity.ok(attendances);
     }
 

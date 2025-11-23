@@ -14,7 +14,7 @@ import { Book, HomeIcon, AlertTriangle, Clock, ClipboardList } from "lucide-reac
 const navMain = [
   { title: "Início", url: "/professor", icon: HomeIcon },
   { title: "Notas", url: "/professor/notas", icon: Book },
-  { title: "Presenças", url: "/professor/attendance", icon: ClipboardList },
+  { title: "Presenças", url: "/professor/chamada", icon: ClipboardList },
   { title: "Horário", url: "/professor/horario", icon: Clock},
   { title: "Avisos", url: "/professor/avisos", icon: AlertTriangle },
 ];

@@ -163,7 +163,7 @@ export default function GradeTable({ students, grades, onEdit }: Props) {
                   <td className="px-4 py-3 text-center">
                     <Button
                       size="sm"
-                      className="bg-orange-500/70 hover:bg-orange-600/70 text-white"
+                      className="bg-orange-500/70 hover:bg-orange-600/70 text-white cursor-pointer transition-all"
                       onClick={() => onEdit(student)}
                     >
                       Editar Nota

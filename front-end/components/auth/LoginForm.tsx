@@ -143,7 +143,7 @@ export default function LoginForm() {
 
           <button
             type="submit"
-            className="bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-semibold px-6 py-2 rounded-xl transition-all uppercase cursor-pointer"
+            className="bg-orange-500/70 hover:bg-orange-600/70 text-white font-semibold px-6 py-2 rounded-xl transition-all uppercase cursor-pointer"
             disabled={form.formState.isSubmitting}
           >
             {form.formState.isSubmitting ? "Entrando..." : "Entrar"}

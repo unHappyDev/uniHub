@@ -108,7 +108,7 @@ export default function GradePage() {
                       <td className="px-4 py-3 text-center">
                         <div className="flex justify-center gap-3">
                           <Link
-                            href={`/professor/notas/classroom/${c.classroomId}`}
+                            href={`/professor/chamada/classroom/${c.classroomId}`}
                             className="text-blue-400 hover:text-blue-500 transition flex items-center gap-1 cursor-pointer"
                           >
                             <Pencil size={16} /> Ver
@@ -144,7 +144,7 @@ export default function GradePage() {
                   </p>
                   <div className="flex justify-end gap-2 mt-3">
                     <Link
-                      href={`/professor/notas/classroom/${c.classroomId}`}
+                      href={`/professor/chamada/classroom/${c.classroomId}`}
                       className="text-blue-400 hover:text-blue-500 transition flex items-center gap-1 cursor-pointer"
                     >
                       <Pencil size={16} /> Ver

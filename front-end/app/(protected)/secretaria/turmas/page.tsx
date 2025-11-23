@@ -20,7 +20,7 @@ export default function ClassroomsPage() {
       const data = await getClassrooms();
       setClassrooms(Array.isArray(data) ? data : []);
     } catch (error: any) {
-       if (error.response?.status === 404) {
+      if (error.response?.status === 404) {
         setClassrooms([]);
       } else {
         console.error("Erro ao buscar turmas:", error);
@@ -33,42 +33,48 @@ export default function ClassroomsPage() {
   }, []);
 
   const handleDelete = (id: string) => {
-  toast.custom((t) => (
-    <div className="bg-[#1a1a1d] border border-orange-400/40 text-white p-4 rounded-xl shadow-md">
-      <p className="font-semibold mb-2">Excluir turma?</p>
-      <p className="text-sm text-gray-300 mb-4">
-        Essa ação não pode ser desfeita.
-      </p>
-      <div className="flex justify-end gap-3">
-        <button
-          onClick={() => toast.dismiss(t)}
-          className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-md text-sm cursor-pointer"
-        >
-          Cancelar
-        </button>
-        <button
-          onClick={async () => {
-            try {
-              await deleteClassroom(id);
-              toast.dismiss(t);
-              toast.success("Turma excluída com sucesso!");
-              await loadData();
-            } catch (error) {
-              console.error("Erro ao excluir turma:", error);
-              toast.error("Erro ao excluir turma.");
-            }
-          }}
-          className="bg-red-600 hover:bg-red-500 px-3 py-1 rounded-md text-sm cursor-pointer"
-        >
-          Excluir
-        </button>
+    toast.custom((t) => (
+      <div className="bg-[#1a1a1d] border border-orange-400/40 text-white p-4 rounded-xl shadow-md">
+        <p className="font-semibold mb-2">Excluir turma?</p>
+        <p className="text-sm text-gray-300 mb-4">
+          Essa ação não pode ser desfeita.
+        </p>
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={() => toast.dismiss(t)}
+            className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-md text-sm cursor-pointer"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={async () => {
+              try {
+                await deleteClassroom(id);
+                toast.dismiss(t);
+                toast.success("Turma excluída com sucesso!");
+                await loadData();
+              } catch (error) {
+                console.error("Erro ao excluir turma:", error);
+                toast.error("Erro ao excluir turma.");
+              }
+            }}
+            className="bg-red-600 hover:bg-red-500 px-3 py-1 rounded-md text-sm cursor-pointer"
+          >
+            Excluir
+          </button>
+        </div>
       </div>
-    </div>
-  ));
-};
+    ));
+  };
 
   const handleEdit = (classroom: Classroom) => {
     setEditingClassroom(classroom);
+    setIsModalOpen(true);
+  };
+
+  const handleCreateNew = () => {
+    // Garantir que não há turma sendo editada
+    setEditingClassroom(null);
     setIsModalOpen(true);
   };
 
@@ -111,8 +117,8 @@ export default function ClassroomsPage() {
               className="w-full sm:flex-1 bg-[#1a1a1dc3] border border-orange-400/20 focus:border-orange-400/10 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-4 py-2.5 rounded-xl outline-none shadow-inner"
             />
             <button
-              onClick={() => setIsModalOpen(true)}
-              className="w-full sm:w-auto bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-medium px-6 py-2.5 rounded-xl shadow-md transition-all uppercase cursor-pointer"
+              onClick={handleCreateNew}
+              className="w-full sm:w-auto bg-orange-500/70 hover:bg-orange-600/70 text-white font-medium px-6 py-2.5 rounded-xl shadow-md transition-all uppercase cursor-pointer"
             >
               + Nova Turma
             </button>
@@ -125,8 +131,14 @@ export default function ClassroomsPage() {
           onDelete={handleDelete}
         />
 
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-          <h2 className="text-xl font-semibold mb-4 text-center text-white uppercase">
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setEditingClassroom(null); // Limpar turma ao fechar modal
+          }}
+        >
+          <h2 className="text-xl font-semibold mb-4 text-center text-orange-300/80 uppercase">
             {editingClassroom ? "Editar Turma" : "Nova Turma"}
           </h2>
           <ClassroomForm
@@ -134,7 +146,7 @@ export default function ClassroomsPage() {
             onSaved={handleSaved}
             onClose={() => {
               setIsModalOpen(false);
-              setEditingClassroom(null);
+              setEditingClassroom(null); // Garantir limpeza também aqui
             }}
           />
         </Modal>
