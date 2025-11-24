@@ -45,7 +45,7 @@ public class GradeController {
     @Operation(summary = "Get Grade", description = "Get all Grades from database")
     public ResponseEntity<?> getAllStudentGrades() {
 
-        List<GradeDTO> grades = gradeService.getAllGrades();
+        List<GradeDTO> grades = gradeService.getAllStudentsGrades();
         return ResponseEntity.ok(grades);
     }
 
