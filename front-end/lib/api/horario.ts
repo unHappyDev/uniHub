@@ -1,5 +1,5 @@
 import { Classroom } from "@/types/Classroom";
-import { getClassroomsByLoggedProfessor } from "./classroom";
+import { getClassroomsByLoggedProfessor, getClassroomsByLoggedStudent } from "./classroom";
 import apiSpring from "./clientSpring";
 
 export interface HorarioDTO {
@@ -94,22 +94,22 @@ export const getHorariosDoProfessor = async (professorId: string): Promise<Horar
 };
 
 
-export const getHorariosDoEstudante = async (studentId: string): Promise<HorarioDTO[]> => {
-
+export const getHorariosDoEstudante = async (): Promise<HorarioDTO[]> => {
   console.log("===============================================");
   console.log("🔎 INICIANDO BUSCA DE HORÁRIOS DO ESTUDANTE");
-  console.log("👨‍🎓 Student ID recebido:", studentId);
   console.log("===============================================");
 
-  // 1. Buscar todas as turmas do estudante
-  const response = await apiSpring.get(`/students/${studentId}/classrooms`);
-  const allClassrooms: Classroom[] = response.data;
+  // 1. Buscar todas as turmas do aluno logado
+  const allClassrooms: Classroom[] = await getClassroomsByLoggedStudent();
+  console.log("📌 TOTAL DE TURMAS ENCONTRADAS PARA O ALUNO:", allClassrooms.length);
 
-  console.log("📌 TOTAL DE TURMAS ENCONTRADAS:", allClassrooms.length);
+  if (allClassrooms.length > 0) {
+    console.log("📚 EXEMPLO DE TURMA BRUTA:", allClassrooms[0]);
+  }
 
   const horariosDoEstudante: HorarioDTO[] = [];
 
-  // 2. Coletar horários de cada turma
+  // 2. Percorrer cada turma para extrair horários
   for (const classroom of allClassrooms) {
     console.log(`\n🕒 PROCESSANDO TURMA: ${classroom.classroomId} - ${classroom.subject}`);
 
@@ -135,7 +135,7 @@ export const getHorariosDoEstudante = async (studentId: string): Promise<Horario
   }
 
   console.log("===============================================");
-  console.log("📊 TOTAL FINAL DE HORÁRIOS MAPEADOS:", horariosDoEstudante.length);
+  console.log("📊 TOTAL FINAL DE HORÁRIOS MAPEADOS PARA O ALUNO:", horariosDoEstudante.length);
   console.log("📌 LISTA FINAL ENVIADA PARA TABELA:");
   horariosDoEstudante.forEach((h) =>
     console.log({

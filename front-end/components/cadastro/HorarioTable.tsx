@@ -15,7 +15,6 @@ const dias = [
   "DOMINGO",
 ];
 
-// Intervalos fixos
 const FIXED_INTERVALS = [
   { start: "07:45", end: "08:35" },
   { start: "08:35", end: "09:25" },
@@ -39,7 +38,7 @@ export default function HorarioTable({ horarios, filtroPeriodo }: Props) {
     horarios.find(
       (h) =>
         h.startAt?.substring(0, 5) === start &&
-        h.dayOfWeek?.toUpperCase() === day.toUpperCase()
+        h.dayOfWeek?.toUpperCase() === day.toUpperCase(),
     );
 
   return (
@@ -91,17 +90,16 @@ export default function HorarioTable({ horarios, filtroPeriodo }: Props) {
         </table>
       </div>
 
-      {/* Mobile */}
       <div
         className="md:hidden overflow-x-auto bg-glass border border-orange-400/40 rounded-2xl p-4 shadow-glow transition-all hover:shadow-orange-500/30
-            scrollbar-thin scrollbar-thumb-orange-500/70 scrollbar-track-orange-900/10 scrollbar-thumb-rounded-lg"
+scrollbar-thin scrollbar-thumb-orange-500/70 scrollbar-track-orange-900/10 scrollbar-thumb-rounded-lg"
       >
         <table className="min-w-max text-white table-fixed">
           <thead>
             <tr className="text-orange-400 uppercase text-sm">
-              <th className="px-4 py-3 text-left w-32">Horário</th>
+              <th className="px-4 py-3 text-left w-44">Horário</th>
               {dias.map((dia) => (
-                <th key={dia} className="px-4 py-3 text-center w-32">
+                <th key={dia} className="px-4 py-3 text-center w-52">
                   {dia}
                 </th>
               ))}
@@ -110,7 +108,7 @@ export default function HorarioTable({ horarios, filtroPeriodo }: Props) {
           <tbody>
             {filteredIntervals.map(({ start, end }) => (
               <tr key={start} className="border-t border-orange-500/30">
-                <td className="px-4 py-2 font-semibold w-32 truncate">
+                <td className="px-4 py-4 font-semibold w-44 truncate h-24">
                   {start} → {end}
                 </td>
                 {dias.map((dia) => {
@@ -118,15 +116,15 @@ export default function HorarioTable({ horarios, filtroPeriodo }: Props) {
                   return (
                     <td
                       key={dia}
-                      className="px-4 py-2 text-center align-top w-32 truncate overflow-hidden"
+                      className="px-4 py-4 text-center align-top w-52 max-w-[186px] truncate overflow-hidden h-24"
                     >
                       {aula ? (
                         <>
-                          <div className="font-semibold truncate">
+                          <div className="font-semibold truncate uppercase">
                             {aula.subjectName || "—"}
                           </div>
-                          <div className="truncate">
-                            {aula.professorName || "—"}
+                          <div className="text-sm text-orange-300 truncate">
+                            {`Prof: ${aula.professorName || "—"}`}
                           </div>
                         </>
                       ) : (

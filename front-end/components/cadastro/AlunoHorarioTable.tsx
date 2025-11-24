@@ -15,38 +15,29 @@ const dias = [
   "DOMINGO",
 ];
 
-const FIXED_TIMES = [
-  "07:45",
-  "08:35",
-  "09:25",
-  "09:40",
-  "10:30",
-  "11:20",
-  "19:00",
-  "19:50",
-  "20:40",
-  "20:55",
-  "21:45",
-  "22:35",
+const FIXED_INTERVALS = [
+  { start: "07:45", end: "08:35" },
+  { start: "08:35", end: "09:25" },
+  { start: "09:40", end: "10:30" },
+  { start: "10:30", end: "11:20" },
+  { start: "19:00", end: "19:50" },
+  { start: "19:50", end: "20:40" },
+  { start: "20:55", end: "21:45" },
+  { start: "21:45", end: "22:35" },
 ];
 
-export default function AlunoHorarioTable({
-  horarios,
-  filtroPeriodo,
-}: Props) {
-  console.log("HORARIOS RECEBIDOS (ESTUDANTE):", horarios);
-
-  const filteredTimes = FIXED_TIMES.filter((hora) => {
-    const [h] = hora.split(":").map(Number);
+export default function AlunoHorarioTable({ horarios, filtroPeriodo }: Props) {
+  const filteredIntervals = FIXED_INTERVALS.filter(({ start }) => {
+    const [h] = start.split(":").map(Number);
     if (filtroPeriodo === "manhã") return h < 12;
     if (filtroPeriodo === "noite") return h >= 17;
     return true;
   });
 
-  const getAula = (hora: string, dia: string) =>
+  const getAula = (start: string, dia: string) =>
     horarios.find(
       (h) =>
-        h.startAt?.substring(0, 5) === hora &&
+        h.startAt?.substring(0, 5) === start &&
         h.dayOfWeek?.toUpperCase() === dia.toUpperCase(),
     );
 
@@ -57,7 +48,7 @@ export default function AlunoHorarioTable({
         <table className="min-w-full text-white rounded-xl table-fixed">
           <thead>
             <tr className="text-orange-400 uppercase text-sm">
-              <th className="px-4 py-3 text-left w-24">Horário</th>
+              <th className="px-4 py-3 text-left w-32">Horário</th>
               {dias.map((dia) => (
                 <th key={dia} className="px-4 py-3 text-center w-32">
                   {dia}
@@ -65,16 +56,14 @@ export default function AlunoHorarioTable({
               ))}
             </tr>
           </thead>
-
           <tbody>
-            {filteredTimes.map((hora) => (
-              <tr key={hora} className="border-t border-orange-500/30">
-                <td className="px-4 py-3 font-semibold h-20 w-24 truncate">
-                  {hora}
+            {filteredIntervals.map(({ start, end }) => (
+              <tr key={start} className="border-t border-orange-500/30">
+                <td className="px-4 py-3 font-semibold h-20 w-32 truncate">
+                  {start} → {end}
                 </td>
-
                 {dias.map((dia) => {
-                  const aula = getAula(hora, dia);
+                  const aula = getAula(start, dia);
                   return (
                     <td
                       key={dia}
@@ -105,30 +94,34 @@ export default function AlunoHorarioTable({
       </div>
 
       {/* MOBILE */}
-      <div className="md:hidden overflow-x-auto bg-glass border border-orange-400/40 rounded-2xl p-4 shadow-glow transition-all hover:shadow-orange-500/30 scrollbar-thin scrollbar-thumb-orange-500/70 scrollbar-track-orange-900/10 scrollbar-thumb-rounded-lg">
+      <div
+        className="md:hidden overflow-x-auto bg-glass border border-orange-400/40 rounded-2xl p-4 shadow-glow transition-all hover:shadow-orange-500/30
+scrollbar-thin scrollbar-thumb-orange-500/70 scrollbar-track-orange-900/10 scrollbar-thumb-rounded-lg"
+      >
         <table className="min-w-max text-white table-fixed">
           <thead>
             <tr className="text-orange-400 uppercase text-sm">
-              <th className="px-4 py-3 text-left w-24">Horário</th>
+              <th className="px-4 py-3 text-left w-44">Horário</th>
+              
               {dias.map((dia) => (
-                <th key={dia} className="px-4 py-3 text-center w-32">
+                <th key={dia} className="px-4 py-3 text-center w-52">
                   {dia}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {filteredTimes.map((hora) => (
-              <tr key={hora} className="border-t border-orange-500/30">
-                <td className="px-4 py-2 font-semibold w-24 truncate">
-                  {hora}
+            {filteredIntervals.map(({ start, end }) => (
+              <tr key={start} className="border-t border-orange-500/30">
+                <td className="px-4 py-4 font-semibold w-44 truncate h-24">
+                  {start} → {end}
                 </td>
                 {dias.map((dia) => {
-                  const aula = getAula(hora, dia);
+                  const aula = getAula(start, dia);
                   return (
                     <td
                       key={dia}
-                      className="px-4 py-2 text-center align-top w-32 max-w-[120px] truncate overflow-hidden"
+                      className="px-4 py-4 text-center align-top w-52 max-w-[180px] truncate overflow-hidden h-24"
                     >
                       {aula ? (
                         <>
@@ -136,9 +129,11 @@ export default function AlunoHorarioTable({
                             {aula.subjectName || "—"}
                           </div>
                           <div className="text-sm text-orange-300 truncate">
-                            {`Professor: ${aula.professorName || "—"}`}
+                            {`Prof: ${aula.professorName || "—"}`}
                           </div>
-                          <div className="text-sm text-orange-300 truncate">{`Semestre ${aula.semester || "—"}`}</div>
+                          <div className="text-sm text-orange-300 truncate">
+                            {`Semestre ${aula.semester || "—"}`}
+                          </div>
                         </>
                       ) : (
                         <span className="text-gray-400">—</span>
