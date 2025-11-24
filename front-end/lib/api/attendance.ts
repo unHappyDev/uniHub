@@ -48,7 +48,7 @@ export const getStudentsAbsences = async (): Promise<StudentsAttendanceDTO[]> =>
     console.log("Data retornada da API:", response.data);
     return response.data as StudentsAttendanceDTO[];
   } catch (error: any) {
-    console.error("Erro ao buscar faltas dos estudantes:", error);
+    
     return [];
   }
 };

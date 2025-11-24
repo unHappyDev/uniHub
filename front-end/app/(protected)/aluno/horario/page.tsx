@@ -14,20 +14,25 @@ export default function EstudanteSchedulePage() {
   const [horarios, setHorarios] = useState<HorarioDTO[]>([]);
   const [filtroPeriodo, setFiltroPeriodo] = useState<"manhã" | "noite">("manhã");
 
-  useEffect(() => {
-    async function carregar() {
-      try {
-        const dados = await getHorariosDoEstudante();
-        setHorarios(dados);
-        console.log("Horários do estudante logado:", dados);
-      } catch (err) {
-        console.error(err);
-        toast.error("Erro ao carregar horários do estudante.");
+ useEffect(() => {
+  async function carregar() {
+    try {
+      const dados = await getHorariosDoEstudante();
+      setHorarios(dados ?? []);
+      console.log("Horários do estudante logado:", dados);
+    } catch (err: any) {
+      
+      if (err?.response?.status === 404) {
+        setHorarios([]);
+        return; 
       }
-    }
 
-    carregar();
-  }, []);
+      toast.error("Erro ao carregar horários do estudante.");
+    }
+  }
+
+  carregar();
+}, []);
 
   return (
     <div className="p-8 text-white flex flex-col min-h-screen">
