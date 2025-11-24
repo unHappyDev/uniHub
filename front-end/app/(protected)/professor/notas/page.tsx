@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getClassroomsByProfessor } from "@/lib/api/classroom";
+import { getClassroomsByLoggedProfessor} from "@/lib/api/classroom";
 import { Classroom } from "@/types/Classroom";
 import { Modal } from "@/components/ui/modal";
 import { Pencil } from "lucide-react";
@@ -19,7 +19,7 @@ export default function GradePage() {
   useEffect(() => {
   async function load() {
     try {
-      const data = await getClassroomsByProfessor();
+      const data = await getClassroomsByLoggedProfessor();
 
       const list = Array.isArray(data) ? data : [];
 
