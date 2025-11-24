@@ -6,16 +6,19 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { useAuthSession } from "@/hooks/useAuthSession";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 
 import { Separator } from "@radix-ui/react-separator";
 import { Book, HomeIcon, AlertTriangle, Clock, ClipboardList } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const navMain = [
   { title: "Início", url: "/professor", icon: HomeIcon },
   { title: "Notas", url: "/professor/notas", icon: Book },
   { title: "Presenças", url: "/professor/chamada", icon: ClipboardList },
-  { title: "Horário", url: "/professor/horario", icon: Clock},
+  { title: "Horário", url: "/professor/horario", icon: Clock },
   { title: "Avisos", url: "/professor/avisos", icon: AlertTriangle },
 ];
 
@@ -26,20 +29,35 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-
-  const { user: sessionUser } = useAuthSession();
-
- 
-  const user = sessionUser || {
-    name: "",
-    email: "",
-    avatar: "",
-  };
   return (
-    <SidebarProvider>
-      <AppSidebar user={user} navMain={navMain} navSecondary={navSecondary}>
-        {children}
-      </AppSidebar>
+    <AuthProvider>
+      <AuthGuard>
+        <SidebarProvider>
+          <LayoutContent>{children}</LayoutContent>
+        </SidebarProvider>
+      </AuthGuard>
+    </AuthProvider>
+  );
+}
+
+function LayoutContent({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+
+  const safeUser = user
+    ? {
+        name: user.username,
+        email: user.email,
+        avatar: "/imagens/user.svg",
+      }
+    : {
+        name: "",
+        email: "",
+        avatar: "",
+      };
+
+  return (
+    <>
+      <AppSidebar user={safeUser} navMain={navMain} navSecondary={navSecondary}> {children} </AppSidebar>
 
       <SidebarInset>
         <header className="relative flex h-25 items-center px-4 bg-[#0d0d0f] border-b border-orange-500/20">
@@ -57,6 +75,25 @@ export default function DashboardLayout({
 
         <main>{children}</main>
       </SidebarInset>
-    </SidebarProvider>
+    </>
   );
+}
+
+function AuthGuard({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const { isAuthenticated, isLoading, user } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading) {
+      if (!isAuthenticated || user?.role !== "PROFESSOR") {
+        router.replace("/login");
+      }
+    }
+  }, [isAuthenticated, isLoading, user, router]);
+
+  if (isLoading || !isAuthenticated || user?.role !== "PROFESSOR") {
+    return null;
+  }
+
+  return <>{children}</>;
 }

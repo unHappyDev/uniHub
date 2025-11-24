@@ -60,19 +60,15 @@ const WEEK_DAYS = [
   { value: "SEXTA", label: "Sexta-feira" },
 ];
 
-const FIXED_TIMES = [
-  "07:45",
-  "08:35",
-  "09:25",
-  "09:40",
-  "10:30",
-  "11:20",
-  "19:00",
-  "19:50",
-  "20:40",
-  "20:55",
-  "21:45",
-  "22:35",
+const FIXED_INTERVALS = [
+  "07:45 → 08:35",
+  "08:35 → 09:25",
+  "09:40 → 10:30",
+  "10:30 → 11:20",
+  "19:00 → 19:50",
+  "19:50 → 20:40",
+  "20:55 → 21:45",
+  "21:45 → 22:35",
 ];
 
 export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
@@ -128,7 +124,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
     return time.substring(0, 5);
   };
 
-  useEffect(() => {
+   useEffect(() => {
     const fetchData = async () => {
       try {
         const [t, s, st] = await Promise.all([
@@ -564,34 +560,20 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
             </Select>
 
             <Select
-              value={formatTime(s.startAt)}
-              onValueChange={(value) =>
-                updateScheduleField(i, "startAt", value)
-              }
+              value={s.startAt ? `${s.startAt} → ${s.endAt}` : ""}
+              onValueChange={(value) => {
+                const [start, end] = value.split(" → ");
+                updateScheduleField(i, "startAt", start);
+                updateScheduleField(i, "endAt", end);
+              }}
             >
-              <SelectTrigger className="w-24 bg-black/30 border border-orange-500/40 text-white px-3 py-2 rounded cursor-pointer">
-                <SelectValue placeholder="Início" />
+              <SelectTrigger className="w-48 bg-black/30 border border-orange-500/40 text-white px-3 py-2 rounded cursor-pointer">
+                <SelectValue placeholder="Selecione o horário" />
               </SelectTrigger>
               <SelectContent className="bg-[#151a1b] text-white">
-                {FIXED_TIMES.map((t) => (
-                  <SelectItem key={t} value={t}>
-                    {t}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select
-              value={formatTime(s.endAt)}
-              onValueChange={(value) => updateScheduleField(i, "endAt", value)}
-            >
-              <SelectTrigger className="w-24 bg-black/30 border border-orange-500/40 text-white px-3 py-2 rounded cursor-pointer">
-                <SelectValue placeholder="Fim" />
-              </SelectTrigger>
-              <SelectContent className="bg-[#151a1b] text-white">
-                {FIXED_TIMES.map((t) => (
-                  <SelectItem key={t} value={t}>
-                    {t}
+                {FIXED_INTERVALS.map((interval) => (
+                  <SelectItem key={interval} value={interval}>
+                    {interval}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -600,7 +582,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
             <Button
               type="button"
               onClick={() => removeScheduleField(i)}
-              className="bg-red-500/60 hover:bg-red-500/80 text-white rounded px-3 py-1 text-sm"
+              className="bg-red-500/60 hover:bg-red-500/80 text-white rounded px-3 py-1 text-sm cursor-pointer"
             >
               Remover
             </Button>
@@ -610,7 +592,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         <Button
           type="button"
           onClick={addSchedule}
-          className="mt-2 bg-orange-500/70 hover:bg-orange-600/70 text-white rounded px-4 py-2"
+          className="mt-2 bg-orange-500/70 hover:bg-orange-600/70 text-white rounded px-4 py-2 cursor-pointer"
         >
           + Adicionar horário
         </Button>
@@ -623,7 +605,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
 
         <Dialog open={studentsDialogOpen} onOpenChange={setStudentsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full bg-[#1a1a1dc3] hover:bg-[#222] border border-orange-400/40 text-white px-5 py-5 rounded-xl">
+            <Button className="w-full bg-[#1a1a1dc3] hover:bg-[#222] border border-orange-400/40 text-white px-5 py-5 rounded-xl cursor-pointer">
               {formData.studentsIds.length > 0
                 ? `${formData.studentsIds.length} aluno(s) selecionado(s)`
                 : "Selecionar alunos"}
@@ -655,7 +637,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
               <Button
                 type="button"
                 onClick={() => setStudentsDialogOpen(false)}
-                className="bg-orange-500/50 hover:bg-orange-500/60 text-white px-4 py-2 rounded"
+                className="bg-orange-500/50 hover:bg-orange-500/60 text-white px-4 py-2 rounded cursor-pointer"
               >
                 Concluir
               </Button>
@@ -668,14 +650,14 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         <Button
           type="button"
           onClick={onClose}
-          className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-3 rounded-xl"
+          className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-3 rounded-xl cursor-pointer"
         >
           Cancelar
         </Button>
 
         <Button
           type="submit"
-          className="bg-orange-500/70 hover:bg-orange-600/70 text-white px-4 py-3 rounded-xl"
+          className="bg-orange-500/70 hover:bg-orange-600/70 text-white px-4 py-3 rounded-xl cursor-pointer"
         >
           {classroom ? "Salvar Alterações" : "Cadastrar Turma"}
         </Button>
