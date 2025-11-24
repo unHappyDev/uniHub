@@ -41,12 +41,20 @@ public class ClassroomController {
         Set<ClassroomDTO> Classrooms = classroomService.getAll();
         return ResponseEntity.ok(Classrooms);
     }
-    
+
     @GetMapping("/professor")
     @Operation(summary = "Get Classroom", description = "Get all Classrooms from database")
-    public ResponseEntity<?> getAllClassroomsByProfessor() {
+    public ResponseEntity<?> getAllClassroomsByProfessorId() {
 
         Set<ClassroomDTO> Classrooms = classroomService.getByProfessorId();
+        return ResponseEntity.ok(Classrooms);
+    }
+
+    @GetMapping("/student")
+    @Operation(summary = "Get Classroom", description = "Get all Classrooms from database")
+    public ResponseEntity<?> getAllClassroomsByStudentId() {
+
+        Set<ClassroomDTO> Classrooms = classroomService.getByStudentId();
         return ResponseEntity.ok(Classrooms);
     }
 
