@@ -30,6 +30,32 @@ export const getClassrooms = async (): Promise<Classroom[]> => {
     })),
   }));
 };
+
+export const getClassroomsByLoggedProfessor = async (): Promise<Classroom[]> => {
+  const response = await apiSpring.get("/classroom/professor");
+
+  console.log("Resposta da API de turmas:", response.data); // Log da resposta da API
+
+  return (response.data ?? []).map((c: any): Classroom => ({
+    classroomId: c.classroomId,
+    semester: c.semester,
+    professor: c.professor,
+    professorId: c.professorId,
+    subject: c.subject,
+    schedules: (c.schedules ?? []).map((s: any): ClassroomSchedule => ({
+      scheduleId: s.scheduleId ?? "N/A",
+      dayOfWeek: s.dayOfWeek,
+      startAt: s.startAt,
+      endAt: s.endAt,
+    })),
+    students: (c.students ?? []).map((s: any): ClassroomStudent => ({
+      id: s.studentId ?? s.id ?? s.id,
+      name: s.username ?? s.name ?? s.user?.username ?? "",
+      courseName: s.courseName ?? "",
+    })),
+  }));
+};
+
 export const getClassroomById = async (
   id: string,
 ): Promise<Classroom | undefined> => {

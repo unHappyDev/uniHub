@@ -7,20 +7,23 @@ interface Props {
 
 const dias = [
   "SEGUNDA",
-  "TERÇA",
+  "TERCA",
   "QUARTA",
   "QUINTA",
   "SEXTA",
-  "SÁBADO",
+  "SABADO",
   "DOMINGO",
 ];
 
 const FIXED_TIMES = [
-  "07:50", "08:40", "09:30", "09:45", "10:35", "11:25",
-  "18:30", "19:20", "20:10", "21:00", "21:50", "22:40",
+  "07:45", "08:35", "09:25", "09:40", "10:30", "11:20",
+  "19:00", "19:50", "20:40", "20:55", "21:45", "22:35",
 ];
 
 export default function ProfessorHorarioTable({ horarios, filtroPeriodo }: Props) {
+
+  console.log("HORARIOS RECEBIDOS:", horarios);
+
   const filteredTimes = FIXED_TIMES.filter((hora) => {
     const [h] = hora.split(":").map(Number);
     if (filtroPeriodo === "manhã") return h < 12;

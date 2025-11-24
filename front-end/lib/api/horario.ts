@@ -1,5 +1,5 @@
 import { Classroom } from "@/types/Classroom";
-import { getClassrooms } from "./classroom";
+import { getClassroomsByLoggedProfessor } from "./classroom";
 import apiSpring from "./clientSpring";
 
 export interface HorarioDTO {
@@ -24,33 +24,35 @@ export const getHorariosDoProfessor = async (professorId: string): Promise<Horar
   console.log("===============================================");
 
   // 1. Buscar todas as turmas
-  const allClassrooms: Classroom[] = await getClassrooms();
+  const allClassrooms: Classroom[] = await getClassroomsByLoggedProfessor();
 
-  console.log("📌 TOTAL DE TURMAS ENCONTRADAS NO SISTEMA:", allClassrooms.length);
-  console.log("📚 EXEMPLO DE TURMA BRUTA:", allClassrooms[0]);
+  // console.log("📌 TOTAL DE TURMAS ENCONTRADAS NO SISTEMA:", allClassrooms.length);
+  // console.log("📚 EXEMPLO DE TURMA BRUTA:", allClassrooms[0]);
 
-  // 2. Filtrar turmas do professor
-  const professorClassrooms: Classroom[] = allClassrooms.filter(
-    (c) => c.professorId === professorId
-  );
+  // console.log(professorId)
 
-  console.log("--------------------------------------------------");
-  console.log("🧑‍🏫 TURMAS DO PROFESSOR:", professorClassrooms.length);
-  professorClassrooms.forEach((c) => {
-    console.log("📘 Turma encontrada:", {
-      classroomId: c.classroomId,
-      semester: c.semester,
-      subject: c.subject,
-      professorName: c.professor,
-      schedules: c.schedules.length,
-    });
-  });
-  console.log("--------------------------------------------------");
+  // // 2. Filtrar turmas do professor
+  // const professorClassrooms: Classroom[] = allClassrooms.filter(
+  //   (c) => c.professorId === professorId
+  // );
+
+  // console.log("--------------------------------------------------");
+  // console.log("🧑‍🏫 TURMAS DO PROFESSOR:", professorClassrooms.length);
+  // professorClassrooms.forEach((c) => {
+  //   console.log("📘 Turma encontrada:", {
+  //     classroomId: c.classroomId,
+  //     semester: c.semester,
+  //     subject: c.subject,
+  //     professorName: c.professor,
+  //     schedules: c.schedules.length,
+  //   });
+  // });
+  // console.log("--------------------------------------------------");
 
   const horariosDoProfessor: HorarioDTO[] = [];
 
   // 3. Coletar horários reais
-  for (const classroom of professorClassrooms) {
+  for (const classroom of allClassrooms) {
     console.log(`\n🕒 PROCESSANDO TURMA: ${classroom.classroomId} - ${classroom.subject}`);
 
     if (!classroom.schedules || classroom.schedules.length === 0) {

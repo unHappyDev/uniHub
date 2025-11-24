@@ -36,8 +36,9 @@ export default function ProfessorSchedulePage() {
 
   // Verificando a filtragem de horários
   const horariosFiltrados = horarios.filter((h) => {
-    const hora = Number(h.startAt.substring(0, 2));
-    console.log("Hora:", hora, "Filtro Periodo:", filtroPeriodo); // Log da hora e filtro
+    const hora = Number(h.startAt.split(":")[0]);
+    console.log("Hora extraída:", hora, "Filtro:", filtroPeriodo);
+
     if (filtroPeriodo === "manhã") return hora < 12;
     if (filtroPeriodo === "noite") return hora >= 17;
     return true;
