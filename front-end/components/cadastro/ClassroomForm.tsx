@@ -61,12 +61,12 @@ const WEEK_DAYS = [
 ];
 
 const FIXED_TIMES = [
-  "07:50",
-  "08:40",
-  "09:30",
-  "09:45",
-  "10:35",
-  "11:25",
+  "07:45",
+  "08:35",
+  "09:25",
+  "09:40",
+  "10:30",
+  "11:20",
   "19:00",
   "19:50",
   "20:40",
@@ -89,8 +89,8 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
   const [students, setStudents] = useState<Student[]>([]);
   const [studentsDialogOpen, setStudentsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const [allClassrooms, setAllClassrooms] = useState<Classroom[]>([]);
+
   const initialScheduleIdsRef = useRef<string[]>([]);
   const errorToastRef = useRef(false);
 
@@ -131,36 +131,41 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [t, s, st, cls] = await Promise.all([
+        const [t, s, st] = await Promise.all([
           getTeachers(),
           getSubjects(),
           getStudents(),
-          getClassrooms(),
         ]);
 
-        setAllClassrooms(cls);
-
-        const mappedTeachers = t.map(
-          (teacher: any): Teacher => ({
-            id: teacher.id,
-            nome: teacher.username,
-            email: teacher.email,
-          }),
-        );
-
-        const mappedStudents = st.map(
-          (student: any): Student => ({
-            id: student.id,
-            nome: student.username,
-            email: student.email,
-            curso: student.courseName ?? "",
-            courseId: student.courseId ?? "",
-          }),
-        );
-
+        const mappedTeachers = t.map((teacher: any) => ({
+          id: teacher.id,
+          nome: teacher.username,
+          email: teacher.email,
+        }));
         setTeachers(mappedTeachers);
+
         setSubjects(s);
+
+        const mappedStudents: Student[] = st.map((student: any) => ({
+          id: student.id,
+          nome: student.username,
+          email: student.email,
+          curso: student.courseName ?? "",
+          courseId: student.courseId ?? "",
+        }));
         setStudents(mappedStudents);
+
+        try {
+          const cls = await getClassrooms();
+          setAllClassrooms(cls);
+        } catch (err: any) {
+          if (err?.response?.status === 404) {
+            setAllClassrooms([]);
+          } else {
+            console.error(err);
+            toast.error("Erro ao carregar turmas.");
+          }
+        }
 
         if (classroom) {
           initialScheduleIdsRef.current = classroom.schedules
@@ -177,15 +182,17 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
               : "";
 
           const matchedTeacher = mappedTeachers.find(
-            (t) => normalize(t.nome) === normalize(classroom.professor),
+            (teacher) =>
+              normalize(teacher.nome) === normalize(classroom.professor),
           );
+          const matchedTeacherId = matchedTeacher?.id ?? "";
 
           const matchedSubject = s.find(
             (sub: Subject) =>
               normalize(sub.subjectName) === normalize(classroom.subject),
           );
 
-          const matchedStudents = classroom.students
+          const matchedStudentsIds = classroom.students
             .map((st: ClassroomStudent) => {
               const found = mappedStudents.find(
                 (stu: Student) => normalize(stu.nome) === normalize(st.name),
@@ -195,7 +202,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
             .filter(Boolean) as string[];
 
           setFormData({
-            professorId: matchedTeacher?.id ?? "",
+            professorId: matchedTeacherId,
             subjectId: matchedSubject?.subjectId ?? "",
             semester: classroom.semester ?? "",
             schedules: classroom.schedules.map((sch) => ({
@@ -204,12 +211,13 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
               startAt: formatTime(sch.startAt),
               endAt: formatTime(sch.endAt),
             })),
-            studentsIds: matchedStudents,
+            studentsIds: matchedStudentsIds,
           });
         }
 
         errorToastRef.current = false;
       } catch (err) {
+        console.error(err);
         if (!errorToastRef.current) {
           toast.error("Erro ao carregar dados.");
           errorToastRef.current = true;
@@ -468,7 +476,6 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-7 text-white">
-
       <div>
         <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
           Professor
@@ -538,7 +545,6 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
 
         {formData.schedules.map((s, i) => (
           <div key={i} className="flex flex-wrap items-center gap-4 mb-3">
-
             <Select
               value={s.dayOfWeek}
               onValueChange={(value) =>

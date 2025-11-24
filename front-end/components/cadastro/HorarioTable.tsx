@@ -2,14 +2,32 @@ import { HorarioDTO } from "@/lib/api/horario";
 
 interface Props {
   horarios: HorarioDTO[];
-  filtroPeriodo: "manhã" | "noite" | "todos";
+  filtroPeriodo: "manhã" | "noite";
 }
 
-const dias = ["SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO", "DOMINGO"];
+const dias = [
+  "SEGUNDA",
+  "TERCA",
+  "QUARTA",
+  "QUINTA",
+  "SEXTA",
+  "SABADO",
+  "DOMINGO",
+];
 
 const FIXED_TIMES = [
-  "07:50","08:40","09:30","09:45","10:35","11:25",
-  "19:00","19:50","20:40","20:55","21:45","22:35",
+  "07:45",
+  "08:35",
+  "09:25",
+  "09:40",
+  "10:30",
+  "11:20",
+  "19:00",
+  "19:50",
+  "20:40",
+  "20:55",
+  "21:45",
+  "22:35",
 ];
 
 export default function HorarioTable({ horarios, filtroPeriodo }: Props) {
@@ -24,7 +42,7 @@ export default function HorarioTable({ horarios, filtroPeriodo }: Props) {
     horarios.find(
       (h) =>
         h.startAt?.substring(0, 5) === hora &&
-        h.dayOfWeek?.toUpperCase() === dia.toUpperCase()
+        h.dayOfWeek?.toUpperCase() === dia.toUpperCase(),
     );
 
   return (
@@ -34,29 +52,41 @@ export default function HorarioTable({ horarios, filtroPeriodo }: Props) {
         <table className="min-w-full text-white rounded-xl table-fixed">
           <thead>
             <tr className="text-orange-400 uppercase text-sm">
+
               <th className="px-4 py-3 text-left w-24">Horário</th>
+
               {dias.map((dia) => (
-                <th key={dia} className="px-4 py-3 text-center">{dia}</th>
+                <th key={dia} className="px-4 py-3 text-center w-32">
+                  {dia}
+                </th>
               ))}
             </tr>
           </thead>
           <tbody>
             {filteredTimes.map((hora) => (
               <tr key={hora} className="border-t border-orange-500/30">
-                <td className="px-4 py-3 font-semibold h-20">{hora}</td>
+                <td className="px-4 py-3 font-semibold h-20 w-24 truncate">
+                  {hora}
+                </td>
                 {dias.map((dia) => {
                   const aula = getAula(hora, dia);
                   return (
                     <td
                       key={dia}
-                      className="px-4 py-3 text-center align-top h-20 overflow-hidden"
+                      className="px-4 py-3 text-center align-center h-20 w-32 truncate overflow-hidden"
                     >
                       {aula ? (
                         <>
-                          <div className="font-semibold truncate">{aula.subjectName || "—"}</div>
-                          <div className="truncate">{aula.professorName || "—"}</div>
+                          <div className="font-semibold truncate uppercase">
+                            {aula.subjectName || "—"}
+                          </div>
+                          <div className="truncate text-orange-300">
+                            {aula.professorName || "—"}
+                          </div>
                         </>
-                      ) : "—"}
+                      ) : (
+                        <span className="text-gray-400">—</span>
+                      )}
                     </td>
                   );
                 })}
@@ -66,40 +96,55 @@ export default function HorarioTable({ horarios, filtroPeriodo }: Props) {
         </table>
       </div>
 
-      {/* Mobile - tabela horizontal rolável */}
-   <div className="md:hidden overflow-x-auto bg-glass border border-orange-400/40 rounded-2xl p-4 shadow-glow transition-all hover:shadow-orange-500/30
-                scrollbar-thin scrollbar-thumb-orange-500/70 scrollbar-track-orange-900/10 scrollbar-thumb-rounded-lg">
-  <table className="min-w-max text-white table-fixed">
-    <thead>
-      <tr className="text-orange-400 uppercase text-sm">
-        <th className="px-4 py-3 text-left w-20">Horário</th>
-        {dias.map((dia) => (
-          <th key={dia} className="px-4 py-3 text-center">{dia}</th>
-        ))}
-      </tr>
-    </thead>
-    <tbody>
-      {filteredTimes.map((hora) => (
-        <tr key={hora} className="border-t border-orange-500/30">
-          <td className="px-4 py-2 font-semibold">{hora}</td>
-          {dias.map((dia) => {
-            const aula = getAula(hora, dia);
-            return (
-              <td key={dia} className="px-4 py-2 text-center align-top max-w-[120px] overflow-hidden">
-                {aula ? (
-                  <>
-                    <div className="font-semibold truncate">{aula.subjectName || "—"}</div>
-                    <div className="truncate">{aula.professorName || "—"}</div>
-                  </>
-                ) : "—"}
-              </td>
-            );
-          })}
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
+      {/* Mobile*/}
+      <div
+        className="md:hidden overflow-x-auto bg-glass border border-orange-400/40 rounded-2xl p-4 shadow-glow transition-all hover:shadow-orange-500/30
+            scrollbar-thin scrollbar-thumb-orange-500/70 scrollbar-track-orange-900/10 scrollbar-thumb-rounded-lg"
+      >
+        <table className="min-w-max text-white table-fixed">
+          <thead>
+            <tr className="text-orange-400 uppercase text-sm">
+              <th className="px-4 py-3 text-left w-24">Horário</th>
+              {dias.map((dia) => (
+                <th key={dia} className="px-4 py-3 text-center w-32">
+                  {dia}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {filteredTimes.map((hora) => (
+              <tr key={hora} className="border-t border-orange-500/30">
+                <td className="px-4 py-2 font-semibold w-24 truncate">
+                  {hora}
+                </td>
+                {dias.map((dia) => {
+                  const aula = getAula(hora, dia);
+                  return (
+                    <td
+                      key={dia}
+                      className="px-4 py-2 text-center align-top w-32 truncate overflow-hidden"
+                    >
+                      {aula ? (
+                        <>
+                          <div className="font-semibold truncate">
+                            {aula.subjectName || "—"}
+                          </div>
+                          <div className="truncate">
+                            {aula.professorName || "—"}
+                          </div>
+                        </>
+                      ) : (
+                        <span className="text-gray-400">—</span>
+                      )}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

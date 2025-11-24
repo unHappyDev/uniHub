@@ -6,6 +6,7 @@ export interface HorarioDTO {
   scheduleId: string;
   classroomId: string;
   subjectName: string;
+  semester?: string;
   professorName: string;
   dayOfWeek: string;
   startAt: string;
@@ -68,6 +69,7 @@ export const getHorariosDoProfessor = async (professorId: string): Promise<Horar
         classroomId: classroom.classroomId,
         subjectName: classroom.subject,
         professorName: classroom.professor,
+        semester: classroom.semester,
         dayOfWeek: schedule.dayOfWeek,
         startAt: schedule.startAt,
         endAt: schedule.endAt,

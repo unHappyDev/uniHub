@@ -5,6 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { getClassroomsByProfessor } from "@/lib/api/classroom";
 import HorarioTable from "@/components/cadastro/HorarioTable";
 import { toast } from "sonner";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 
 export interface HorarioDTO {
   scheduleId: string;
@@ -21,7 +23,9 @@ export default function HorarioPorPage() {
   const { id } = useParams(); // semestre
   const [horarios, setHorarios] = useState<HorarioDTO[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filtroPeriodo, setFiltroPeriodo] = useState< "manhã" | "noite">("manhã");
+  const [filtroPeriodo, setFiltroPeriodo] = useState<"manhã" | "noite">(
+    "manhã",
+  );
 
   useEffect(() => {
     async function load() {
@@ -70,11 +74,10 @@ export default function HorarioPorPage() {
 
   return (
     <div className="p-8 text-white flex flex-col min-h-screen">
-
       <div className="flex items-center justify-between mb-10">
         <button
           onClick={() => router.back()}
-          className="px-4 py-2 bg-orange-500/80 hover:bg-orange-600 rounded-lg text-white font-semibold w-max transition-colors cursor-pointer"
+          className="hidden md:block px-4 py-2 bg-orange-500/80 hover:bg-orange-600 rounded-lg text-white font-semibold w-max transition-colors cursor-pointer"
         >
           Voltar
         </button>
@@ -84,27 +87,39 @@ export default function HorarioPorPage() {
         </h1>
       </div>
 
-      <div className="flex gap-3 mb-6">
-        {["manhã", "noite"].map((p) => (
-          <button
-            key={p}
-            onClick={() => setFiltroPeriodo(p as any)}
-            className={`px-4 py-2 cursor-pointer rounded ${
-              filtroPeriodo === p ? "bg-orange-400 text-white" : "bg-gray-200 text-black"
-            } transition-colors`}
-          >
-            {p.charAt(0).toUpperCase() + p.slice(1)}
-          </button>
-        ))}
+      <div className="bg-glass border border-orange-400/40 rounded-2xl p-6 mb-6 shadow-glow transition-all hover:shadow-orange-500/30">
+        <label className="block mb-2 text-orange-200 font-semibold uppercase tracking-wide">
+          Filtrar por período:
+        </label>
+
+        <Select
+          value={filtroPeriodo}
+          onValueChange={(value) =>
+            setFiltroPeriodo(value as "manhã" | "noite")
+          }
+        >
+          <SelectTrigger className="w-full bg-[#1a1a1dc3] border border-orange-400/20 py-3 text-white cursor-pointer rounded-xl shadow-inner cursor-pointer focus:ring-2 focus:ring-orange-500/40 transition-all">
+            <SelectValue placeholder="Selecione um período" />
+          </SelectTrigger>
+          <SelectContent className="bg-[#151a1b] text-white">
+            <SelectItem value="manhã" className="cursor-pointer">Manhã</SelectItem>
+            <SelectItem value="noite" className="cursor-pointer">Noite</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="bg-glass border border-orange-400/40 rounded-2xl p-6 shadow-glow transition-all hover:shadow-orange-500/30">
         {loading ? (
           <p className="text-gray-400">Carregando...</p>
         ) : horariosFiltrados.length === 0 ? (
-          <p className="text-gray-400">Nenhum horário encontrado para esse período.</p>
+          <p className="text-gray-400">
+            Nenhum horário encontrado para esse período.
+          </p>
         ) : (
-          <HorarioTable horarios={horariosFiltrados} filtroPeriodo={filtroPeriodo} />
+          <HorarioTable
+            horarios={horariosFiltrados}
+            filtroPeriodo={filtroPeriodo}
+          />
         )}
       </div>
     </div>

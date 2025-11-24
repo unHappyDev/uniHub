@@ -16,12 +16,24 @@ const dias = [
 ];
 
 const FIXED_TIMES = [
-  "07:45", "08:35", "09:25", "09:40", "10:30", "11:20",
-  "19:00", "19:50", "20:40", "20:55", "21:45", "22:35",
+  "07:45",
+  "08:35",
+  "09:25",
+  "09:40",
+  "10:30",
+  "11:20",
+  "19:00",
+  "19:50",
+  "20:40",
+  "20:55",
+  "21:45",
+  "22:35",
 ];
 
-export default function ProfessorHorarioTable({ horarios, filtroPeriodo }: Props) {
-
+export default function ProfessorHorarioTable({
+  horarios,
+  filtroPeriodo,
+}: Props) {
   console.log("HORARIOS RECEBIDOS:", horarios);
 
   const filteredTimes = FIXED_TIMES.filter((hora) => {
@@ -35,12 +47,11 @@ export default function ProfessorHorarioTable({ horarios, filtroPeriodo }: Props
     horarios.find(
       (h) =>
         h.startAt?.substring(0, 5) === hora &&
-        h.dayOfWeek?.toUpperCase() === dia.toUpperCase()
+        h.dayOfWeek?.toUpperCase() === dia.toUpperCase(),
     );
 
   return (
     <div className="flex flex-col gap-6 w-full">
-
       {/* DESKTOP */}
       <div className="hidden md:block overflow-x-auto bg-glass border border-orange-400/40 rounded-2xl p-6 shadow-glow transition-all hover:shadow-orange-500/30">
         <table className="min-w-full text-white rounded-xl table-fixed">
@@ -48,7 +59,9 @@ export default function ProfessorHorarioTable({ horarios, filtroPeriodo }: Props
             <tr className="text-orange-400 uppercase text-sm">
               <th className="px-4 py-3 text-left w-24">Horário</th>
               {dias.map((dia) => (
-                <th key={dia} className="px-4 py-3 text-center">{dia}</th>
+                <th key={dia} className="px-4 py-3 text-center w-32">
+                  {dia}
+                </th>
               ))}
             </tr>
           </thead>
@@ -56,22 +69,24 @@ export default function ProfessorHorarioTable({ horarios, filtroPeriodo }: Props
           <tbody>
             {filteredTimes.map((hora) => (
               <tr key={hora} className="border-t border-orange-500/30">
-                <td className="px-4 py-3 font-semibold h-20">{hora}</td>
+                <td className="px-4 py-3 font-semibold h-20 w-24 truncate">
+                  {hora}
+                </td>
 
                 {dias.map((dia) => {
                   const aula = getAula(hora, dia);
                   return (
                     <td
                       key={dia}
-                      className="px-4 py-3 text-center align-top h-20 overflow-hidden"
+                      className="px-4 py-3 text-center align-center h-20 w-32 truncate overflow-hidden"
                     >
                       {aula ? (
                         <>
-                          <div className="font-semibold truncate">
+                          <div className="font-semibold truncate uppercase">
                             {aula.subjectName || "—"}
                           </div>
                           <div className="text-sm text-orange-300 truncate">
-                            {aula.professorName || "—"}
+                            {`Semestre ${aula.semester || "—"}`}
                           </div>
                         </>
                       ) : (
@@ -87,38 +102,37 @@ export default function ProfessorHorarioTable({ horarios, filtroPeriodo }: Props
       </div>
 
       {/* MOBILE */}
-      <div className="md:hidden overflow-x-auto bg-glass border border-orange-400/40 rounded-2xl p-4 shadow-glow transition-all hover:shadow-orange-500/30
-                      scrollbar-thin scrollbar-thumb-orange-500/70 scrollbar-track-orange-900/10 scrollbar-thumb-rounded-lg">
+      <div className="md:hidden overflow-x-auto bg-glass border border-orange-400/40 rounded-2xl p-4 shadow-glow transition-all hover:shadow-orange-500/30 scrollbar-thin scrollbar-thumb-orange-500/70 scrollbar-track-orange-900/10 scrollbar-thumb-rounded-lg">
         <table className="min-w-max text-white table-fixed">
           <thead>
             <tr className="text-orange-400 uppercase text-sm">
-              <th className="px-4 py-3 text-left w-20">Horário</th>
+              <th className="px-4 py-3 text-left w-24">Horário</th>
               {dias.map((dia) => (
-                <th key={dia} className="px-4 py-3 text-center">{dia}</th>
+                <th key={dia} className="px-4 py-3 text-center w-32">
+                  {dia}
+                </th>
               ))}
             </tr>
           </thead>
-
           <tbody>
             {filteredTimes.map((hora) => (
               <tr key={hora} className="border-t border-orange-500/30">
-                <td className="px-4 py-2 font-semibold">{hora}</td>
-
+                <td className="px-4 py-2 font-semibold w-24 truncate">
+                  {hora}
+                </td>
                 {dias.map((dia) => {
                   const aula = getAula(hora, dia);
                   return (
                     <td
                       key={dia}
-                      className="px-4 py-2 text-center align-top max-w-[120px] overflow-hidden"
+                      className="px-4 py-2 text-center align-top w-32 max-w-[120px] truncate overflow-hidden"
                     >
                       {aula ? (
                         <>
-                          <div className="font-semibold truncate">
+                          <div className="font-semibold truncate uppercase">
                             {aula.subjectName || "—"}
                           </div>
-                          <div className="text-sm text-orange-300 truncate">
-                            {aula.professorName || "—"}
-                          </div>
+                          <div className="text-sm text-orange-300 truncate">{`Semestre ${aula.semester || "—"}`}</div>
                         </>
                       ) : (
                         <span className="text-gray-400">—</span>

@@ -10,26 +10,42 @@ export default function MinhasTurmasPage() {
   const [semesters, setSemesters] = useState<string[]>([]);
   const [filterSemester, setFilterSemester] = useState("");
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const data = await getClassroomsByProfessor();
+ useEffect(() => {
+  let mounted = true;
 
-        const uniqueSemesters = Array.from(
-          new Set(data.map((c: Classroom) => c.semester))
-        );
+  async function load() {
+    try {
+      const data = await getClassroomsByProfessor();
 
-        setSemesters(uniqueSemesters);
-      } catch (error) {
-        console.error(error);
-        toast.error("Erro ao carregar turmas");
+      const uniqueSemesters = Array.from(
+        new Set(data.map((c: Classroom) => c.semester)),
+      );
+
+      if (mounted) setSemesters(uniqueSemesters);
+    } catch (error: any) {
+      const status = error?.response?.status;
+
+      if (status === 404) {
+        if (mounted) {
+          setSemesters([]);
+          toast.error("Nenhuma turma cadastrada.");
+        }
+      } else {
+        console.error("Erro ao carregar turmas:", error?.message || error);
+        if (mounted) toast.error("Erro ao carregar turmas.");
       }
     }
-    load();
-  }, []);
+  }
+
+  load();
+
+  return () => {
+    mounted = false; 
+  };
+}, []);
 
   const filtered = semesters.filter((s) =>
-    s.toLowerCase().includes(filterSemester.toLowerCase())
+    s.toLowerCase().includes(filterSemester.toLowerCase()),
   );
 
   return (
@@ -39,7 +55,6 @@ export default function MinhasTurmasPage() {
           Horários das Turmas
         </h1>
 
-        {/* Filtros */}
         <div className="bg-glass border border-orange-400/40 rounded-2xl p-6 mb-10 shadow-glow transition-all hover:shadow-orange-500/30">
           <input
             className="w-full bg-[#1a1a1dc3] border border-orange-400/20 focus:ring-2 focus:ring-orange-500/40 transition-all text-white placeholder-gray-400 px-4 py-2.5 rounded-xl outline-none shadow-inner"
@@ -103,7 +118,9 @@ export default function MinhasTurmasPage() {
                 className="flex flex-col gap-2 bg-glass border border-orange-400/40 rounded-2xl p-6 text-gray-200 shadow-glow transition hover:shadow-orange-500/30"
               >
                 <p>
-                  <span className="font-semibold text-orange-500">Semestre:</span>{" "}
+                  <span className="font-semibold text-orange-500">
+                    Semestre:
+                  </span>{" "}
                   {semester}
                 </p>
 
