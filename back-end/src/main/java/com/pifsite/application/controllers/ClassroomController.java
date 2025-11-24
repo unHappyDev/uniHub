@@ -41,6 +41,14 @@ public class ClassroomController {
         Set<ClassroomDTO> Classrooms = classroomService.getAll();
         return ResponseEntity.ok(Classrooms);
     }
+    
+    @GetMapping("/professor")
+    @Operation(summary = "Get Classroom", description = "Get all Classrooms from database")
+    public ResponseEntity<?> getAllClassroomsByProfessor() {
+
+        Set<ClassroomDTO> Classrooms = classroomService.getByProfessorId();
+        return ResponseEntity.ok(Classrooms);
+    }
 
     @PostMapping
     @PreAuthorize("hasRole(T(com.pifsite.application.enums.UserRoles).ADMIN.toString())")

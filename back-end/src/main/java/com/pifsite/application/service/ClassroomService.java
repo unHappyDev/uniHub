@@ -35,6 +35,7 @@ public class ClassroomService {
     private final StudentRepository studentRepository;
     private final SubjectRepository subjectRepository;
     private final ScheduleService scheduleService;
+    private final UserService UserService;
 
     public Set<ClassroomDTO> getAll() {
 
@@ -42,6 +43,41 @@ public class ClassroomService {
 
         if (classrooms.isEmpty()) {
             throw new ResourceNotFoundException("there is no Classrooms in the database");
+        }
+
+        return classrooms.stream().map(c -> {
+            Set<ClassroomStudentDTO> studentDTOs = c.getStudents().stream()
+                    .map(s -> new ClassroomStudentDTO(s.getUser().getId(), s.getUser().getUsername(), s.getCourse().getCourseName()))
+                    .collect(Collectors.toSet());
+
+            Set<ClassroomScheduleDTO> scheduleDTOs = c.getSchedules().stream()
+                    .map(s -> new ClassroomScheduleDTO(
+                            s.getScheduleId(),
+                            s.getDayOfWeek(),
+                            s.getStartAt(),
+                            s.getEndAt()))
+                    .collect(Collectors.toSet());
+
+            return new ClassroomDTO(
+                    c.getClassroomId(),
+                    c.getProfessor().getUser().getId(),
+                    c.getProfessor().getUser().getUsername(),
+                    c.getSubject().getSubjectName(),
+                    c.getSemester(),
+                    scheduleDTOs,
+                    studentDTOs);
+        }).collect(Collectors.toSet());
+
+    }
+
+    public Set<ClassroomDTO> getByProfessorId() {
+
+        UUID professorId = UserService.getLoggedUser().id();
+
+        Set<Classroom> classrooms = this.classroomRepository.getByProfessorId(professorId);
+
+        if (classrooms.isEmpty()) {
+            throw new ResourceNotFoundException("there is no Classrooms with this professor in the database");
         }
 
         return classrooms.stream().map(c -> {
