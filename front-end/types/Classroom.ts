@@ -13,7 +13,8 @@ export interface ClassroomStudent {
 
 export interface Classroom {
   classroomId: string;
-  professor: string;
+  professorId: string; 
+  professor: string;  
   subject: string;
   semester: string;
   schedules: ClassroomSchedule[];

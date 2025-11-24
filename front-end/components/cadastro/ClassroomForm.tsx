@@ -16,6 +16,7 @@ import {
   updateClassroom,
   addStudentsToClassroom,
   removeStudentsFromClassroom,
+  getClassrooms,
 } from "@/lib/api/classroom";
 import {
   updateSchedule,
@@ -57,8 +58,21 @@ const WEEK_DAYS = [
   { value: "QUARTA", label: "Quarta-feira" },
   { value: "QUINTA", label: "Quinta-feira" },
   { value: "SEXTA", label: "Sexta-feira" },
-  { value: "SABADO", label: "Sábado" },
-  { value: "DOMINGO", label: "Domingo" },
+];
+
+const FIXED_TIMES = [
+  "07:50",
+  "08:40",
+  "09:30",
+  "09:45",
+  "10:35",
+  "11:25",
+  "19:00",
+  "19:50",
+  "20:40",
+  "20:55",
+  "21:45",
+  "22:35",
 ];
 
 export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
@@ -75,8 +89,9 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
   const [students, setStudents] = useState<Student[]>([]);
   const [studentsDialogOpen, setStudentsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const initialScheduleIdsRef = useRef<string[]>([]);
 
+  const [allClassrooms, setAllClassrooms] = useState<Classroom[]>([]);
+  const initialScheduleIdsRef = useRef<string[]>([]);
   const errorToastRef = useRef(false);
 
   const addSchedule = () => {
@@ -108,14 +123,22 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
     }));
   };
 
+  const formatTime = (time: string | null | undefined) => {
+    if (!time) return "";
+    return time.substring(0, 5);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [t, s, st] = await Promise.all([
+        const [t, s, st, cls] = await Promise.all([
           getTeachers(),
           getSubjects(),
           getStudents(),
+          getClassrooms(),
         ]);
+
+        setAllClassrooms(cls);
 
         const mappedTeachers = t.map(
           (teacher: any): Teacher => ({
@@ -178,8 +201,8 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
             schedules: classroom.schedules.map((sch) => ({
               scheduleId: sch.scheduleId ?? null,
               dayOfWeek: sch.dayOfWeek ?? "",
-              startAt: sch.startAt ?? "",
-              endAt: sch.endAt ?? "",
+              startAt: formatTime(sch.startAt),
+              endAt: formatTime(sch.endAt),
             })),
             studentsIds: matchedStudents,
           });
@@ -187,9 +210,8 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
 
         errorToastRef.current = false;
       } catch (err) {
-        
         if (!errorToastRef.current) {
-          toast.error("Nenhuma matéria encontrada.");
+          toast.error("Erro ao carregar dados.");
           errorToastRef.current = true;
         }
       }
@@ -212,32 +234,163 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
     if (isSubmitting) return;
     setIsSubmitting(true);
 
+    const classesInSemester = allClassrooms.filter(
+      (c) => c.semester === formData.semester.trim(),
+    );
+
+    if (!classroom && classesInSemester.length >= 5) {
+      toast.error("Limite de 5 matérias por semestre atingido.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (classroom && classroom.semester !== formData.semester.trim()) {
+      if (classesInSemester.length >= 5) {
+        toast.error("Este semestre já possui 5 matérias cadastradas.");
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
     if (!formData.professorId) {
       toast.error("Selecione um professor.");
       setIsSubmitting(false);
       return;
     }
+
     if (!formData.subjectId) {
       toast.error("Selecione uma matéria.");
       setIsSubmitting(false);
       return;
     }
+
     if (formData.schedules.length === 0) {
       toast.error("Adicione pelo menos um horário.");
       setIsSubmitting(false);
       return;
     }
 
+    const toMin = (t: string) => {
+      const [h, m] = t.split(":").map(Number);
+      return h * 60 + m;
+    };
+
+    for (const s of formData.schedules) {
+      if (!s.startAt || !s.endAt) {
+        toast.error("Preencha horário de início e fim.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const duration = toMin(s.endAt) - toMin(s.startAt);
+
+      if (duration <= 0) {
+        toast.error("O horário de fim deve ser maior que o horário de início.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (duration > 50) {
+        toast.error("A duração máxima permitida é de 50 minutos.");
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
+    for (const newSched of formData.schedules) {
+      const conflict = allClassrooms.some((c) => {
+        if (classroom && c.classroomId === classroom.classroomId) return false;
+
+        if (c.semester !== formData.semester.trim()) return false;
+
+        return c.schedules.some((oldSched) => {
+          if (oldSched.dayOfWeek !== newSched.dayOfWeek) return false;
+
+          const newStart = toMin(newSched.startAt);
+          const newEnd = toMin(newSched.endAt);
+
+          const oldStart = toMin(oldSched.startAt.substring(0, 5));
+          const oldEnd = toMin(oldSched.endAt.substring(0, 5));
+
+          return newStart < oldEnd && newEnd > oldStart;
+        });
+      });
+
+      if (conflict) {
+        toast.error(
+          "Já existe outra turma com esse dia e horário neste semestre.",
+        );
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
+    const selectedProfessorName = teachers.find(
+      (t) => t.id === formData.professorId,
+    )?.nome;
+
+    for (const newSched of formData.schedules) {
+      const conflictTeacher = allClassrooms.some((c) => {
+        if (classroom && c.classroomId === classroom.classroomId) return false;
+
+        if (c.professor !== selectedProfessorName) return false;
+
+        return c.schedules.some((oldSched) => {
+          if (oldSched.dayOfWeek !== newSched.dayOfWeek) return false;
+
+          const newStart = toMin(newSched.startAt);
+          const newEnd = toMin(newSched.endAt);
+
+          const oldStart = toMin(oldSched.startAt.substring(0, 5));
+          const oldEnd = toMin(oldSched.endAt.substring(0, 5));
+
+          return newStart < oldEnd && newEnd > oldStart;
+        });
+      });
+
+      if (conflictTeacher) {
+        toast.error("Este professor já possui uma aula neste horário.");
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
+    for (const newSched of formData.schedules) {
+      for (const studentId of formData.studentsIds) {
+        const conflict = allClassrooms.some((c) => {
+          if (classroom && c.classroomId === classroom.classroomId)
+            return false;
+
+          if (!c.students.some((s) => s.id === studentId)) return false;
+
+          return c.schedules.some((oldSched) => {
+            if (oldSched.dayOfWeek !== newSched.dayOfWeek) return false;
+
+            const newStart = toMin(newSched.startAt);
+            const newEnd = toMin(newSched.endAt);
+
+            const oldStart = toMin(oldSched.startAt.substring(0, 5));
+            const oldEnd = toMin(oldSched.endAt.substring(0, 5));
+
+            return newStart < oldEnd && newEnd > oldStart;
+          });
+        });
+
+        if (conflict) {
+          toast.error(
+            "Um aluno selecionado já tem uma aula nesse mesmo horário em outro semestre.",
+          );
+          setIsSubmitting(false);
+          return;
+        }
+      }
+    }
+
     const classroomPayload: CreateClassroomDTO = {
       professorId: formData.professorId,
       subjectId: formData.subjectId,
       semester: formData.semester.trim(),
-      schedules: formData.schedules.map((s) => ({
-        scheduleId: s.scheduleId ?? null,
-        dayOfWeek: s.dayOfWeek,
-        startAt: s.startAt,
-        endAt: s.endAt,
-      })),
+      schedules: formData.schedules,
       studentsIds: formData.studentsIds,
     };
 
@@ -253,11 +406,8 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
             endAt: sched.endAt,
           };
 
-          if (sched.scheduleId) {
-            await updateSchedule(sched.scheduleId, payload);
-          } else {
-            await createSchedules(classroom.classroomId, [payload]);
-          }
+          if (sched.scheduleId) await updateSchedule(sched.scheduleId, payload);
+          else await createSchedules(classroom.classroomId, [payload]);
         }
 
         const currentIds = formData.schedules
@@ -265,9 +415,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
           .filter((id): id is string => !!id);
 
         for (const origId of initialScheduleIdsRef.current) {
-          if (!currentIds.includes(origId)) {
-            await deleteSchedule(origId);
-          }
+          if (!currentIds.includes(origId)) await deleteSchedule(origId);
         }
 
         const initialStudentIds = classroom.students
@@ -304,21 +452,23 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
 
         toast.success("Turma atualizada com sucesso!");
       } else {
-        const created = await createClassroom(classroomPayload);
+        await createClassroom(classroomPayload);
         toast.success("Turma criada com sucesso!");
       }
 
       onSaved();
       onClose();
     } catch (err) {
-      console.error("Erro ao salvar turma:", err);
+      console.error(err);
       toast.error("Erro ao salvar turma.");
     } finally {
       setIsSubmitting(false);
     }
   };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-7 text-white">
+
       <div>
         <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
           Professor
@@ -334,7 +484,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
           </SelectTrigger>
           <SelectContent className="bg-[#151a1b] text-white">
             {teachers.map((t) => (
-              <SelectItem key={t.id} value={t.id} className="cursor-pointer">
+              <SelectItem key={t.id} value={t.id}>
                 {t.nome}
               </SelectItem>
             ))}
@@ -357,11 +507,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
           </SelectTrigger>
           <SelectContent className="bg-[#151a1b] text-white">
             {subjects.map((s) => (
-              <SelectItem
-                key={s.subjectId}
-                value={s.subjectId}
-                className="cursor-pointer"
-              >
+              <SelectItem key={s.subjectId} value={s.subjectId}>
                 {s.subjectName}
               </SelectItem>
             ))}
@@ -389,11 +535,10 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
           Horários
         </label>
+
         {formData.schedules.map((s, i) => (
-          <div
-            key={i}
-            className="flex flex-wrap items-center gap-4 mb-3 cursor-pointer"
-          >
+          <div key={i} className="flex flex-wrap items-center gap-4 mb-3">
+
             <Select
               value={s.dayOfWeek}
               onValueChange={(value) =>
@@ -405,37 +550,51 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
               </SelectTrigger>
               <SelectContent className="bg-[#151a1b] text-white">
                 {WEEK_DAYS.map((d) => (
-                  <SelectItem
-                    key={d.value}
-                    value={d.value}
-                    className="cursor-pointer"
-                  >
+                  <SelectItem key={d.value} value={d.value}>
                     {d.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
-            <input
-              type="time"
-              value={s.startAt}
-              onChange={(e) =>
-                updateScheduleField(i, "startAt", e.target.value)
+            <Select
+              value={formatTime(s.startAt)}
+              onValueChange={(value) =>
+                updateScheduleField(i, "startAt", value)
               }
-              className="w-24 bg-black/30 border border-orange-500/40 text-white px-3 py-2 rounded cursor-pointer"
-            />
+            >
+              <SelectTrigger className="w-24 bg-black/30 border border-orange-500/40 text-white px-3 py-2 rounded cursor-pointer">
+                <SelectValue placeholder="Início" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#151a1b] text-white">
+                {FIXED_TIMES.map((t) => (
+                  <SelectItem key={t} value={t}>
+                    {t}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-            <input
-              type="time"
-              value={s.endAt}
-              onChange={(e) => updateScheduleField(i, "endAt", e.target.value)}
-              className="w-24 bg-black/30 border border-orange-500/40 text-white px-3 py-2 rounded cursor-pointer"
-            />
+            <Select
+              value={formatTime(s.endAt)}
+              onValueChange={(value) => updateScheduleField(i, "endAt", value)}
+            >
+              <SelectTrigger className="w-24 bg-black/30 border border-orange-500/40 text-white px-3 py-2 rounded cursor-pointer">
+                <SelectValue placeholder="Fim" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#151a1b] text-white">
+                {FIXED_TIMES.map((t) => (
+                  <SelectItem key={t} value={t}>
+                    {t}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
             <Button
               type="button"
               onClick={() => removeScheduleField(i)}
-              className="bg-red-500/60 hover:bg-red-500/80 text-white rounded px-3 py-1 text-sm cursor-pointer"
+              className="bg-red-500/60 hover:bg-red-500/80 text-white rounded px-3 py-1 text-sm"
             >
               Remover
             </Button>
@@ -445,7 +604,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         <Button
           type="button"
           onClick={addSchedule}
-          className="mt-2 bg-orange-500/70 hover:bg-orange-600/70 text-white rounded px-4 py-2 cursor-pointer"
+          className="mt-2 bg-orange-500/70 hover:bg-orange-600/70 text-white rounded px-4 py-2"
         >
           + Adicionar horário
         </Button>
@@ -455,9 +614,10 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
           Alunos
         </label>
+
         <Dialog open={studentsDialogOpen} onOpenChange={setStudentsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="w-full bg-[#1a1a1dc3] hover:bg-[#222] border border-orange-400/40 text-white px-5 py-5 rounded-xl cursor-pointer">
+            <Button className="w-full bg-[#1a1a1dc3] hover:bg-[#222] border border-orange-400/40 text-white px-5 py-5 rounded-xl">
               {formData.studentsIds.length > 0
                 ? `${formData.studentsIds.length} aluno(s) selecionado(s)`
                 : "Selecionar alunos"}
@@ -469,11 +629,11 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
               <DialogTitle>Selecionar alunos</DialogTitle>
             </DialogHeader>
 
-            <div className="max-h-64 overflow-y-auto space-y-2 mt-4 cursor-pointer">
+            <div className="max-h-64 overflow-y-auto space-y-2 mt-4">
               {students.map((s) => (
                 <div
                   key={s.id}
-                  className="flex items-center space-x-3 rounded-md px-3 py-2 hover:bg-[#222] cursor-pointer"
+                  className="flex items-center space-x-3 rounded-md px-3 py-2 hover:bg-[#222]"
                 >
                   <Checkbox
                     id={s.id}
@@ -489,7 +649,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
               <Button
                 type="button"
                 onClick={() => setStudentsDialogOpen(false)}
-                className="bg-orange-500/50 hover:bg-orange-500/60 text-white px-4 py-2 rounded cursor-pointer"
+                className="bg-orange-500/50 hover:bg-orange-500/60 text-white px-4 py-2 rounded"
               >
                 Concluir
               </Button>
@@ -502,13 +662,14 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         <Button
           type="button"
           onClick={onClose}
-          className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-3 rounded-xl cursor-pointer"
+          className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-3 rounded-xl"
         >
           Cancelar
         </Button>
+
         <Button
           type="submit"
-          className="bg-orange-500/70 hover:bg-orange-600/70 text-white px-4 py-3 rounded-xl cursor-pointer"
+          className="bg-orange-500/70 hover:bg-orange-600/70 text-white px-4 py-3 rounded-xl"
         >
           {classroom ? "Salvar Alterações" : "Cadastrar Turma"}
         </Button>
