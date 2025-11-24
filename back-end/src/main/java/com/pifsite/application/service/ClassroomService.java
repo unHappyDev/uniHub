@@ -35,7 +35,7 @@ public class ClassroomService {
     private final StudentRepository studentRepository;
     private final SubjectRepository subjectRepository;
     private final ScheduleService scheduleService;
-    private final UserService UserService;
+    private final UserService userService;
 
     public Set<ClassroomDTO> getAll() {
 
@@ -72,7 +72,7 @@ public class ClassroomService {
 
     public Set<ClassroomDTO> getByProfessorId() {
 
-        UUID professorId = UserService.getLoggedUser().id();
+        UUID professorId = userService.getLoggedUser().id();
 
         Set<Classroom> classrooms = this.classroomRepository.getByProfessorId(professorId);
 
