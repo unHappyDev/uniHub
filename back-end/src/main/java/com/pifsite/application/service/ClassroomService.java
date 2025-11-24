@@ -9,6 +9,9 @@ import com.pifsite.application.repository.ClassroomRepository;
 import com.pifsite.application.repository.ProfessorRepository;
 import com.pifsite.application.repository.StudentRepository;
 import com.pifsite.application.repository.SubjectRepository;
+
+import jakarta.transaction.Transactional;
+
 import com.pifsite.application.entities.ClassroomSchedule;
 import com.pifsite.application.dto.ClassroomScheduleDTO;
 import com.pifsite.application.dto.ClassroomStudentDTO;
@@ -22,6 +25,7 @@ import com.pifsite.application.entities.Subject;
 import lombok.RequiredArgsConstructor;
 
 import java.util.stream.Collectors;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.Set;
@@ -35,14 +39,9 @@ public class ClassroomService {
     private final StudentRepository studentRepository;
     private final SubjectRepository subjectRepository;
     private final ScheduleService scheduleService;
+    private final UserService userService;
 
-    public Set<ClassroomDTO> getAll() {
-
-        Set<Classroom> classrooms = this.classroomRepository.getAll();
-
-        if (classrooms.isEmpty()) {
-            throw new ResourceNotFoundException("there is no Classrooms in the database");
-        }
+    public Set<ClassroomDTO> createDTO(Set<Classroom> classrooms){
 
         return classrooms.stream().map(c -> {
             Set<ClassroomStudentDTO> studentDTOs = c.getStudents().stream()
@@ -59,13 +58,54 @@ public class ClassroomService {
 
             return new ClassroomDTO(
                     c.getClassroomId(),
+                    c.getProfessor().getUser().getId(),
                     c.getProfessor().getUser().getUsername(),
                     c.getSubject().getSubjectName(),
                     c.getSemester(),
                     scheduleDTOs,
                     studentDTOs);
         }).collect(Collectors.toSet());
+    }
 
+    @Transactional
+    public Set<ClassroomDTO> getAll() {
+
+        List<Classroom> classrooms = this.classroomRepository.findAll();
+
+        if (classrooms.isEmpty()) {
+            throw new ResourceNotFoundException("there is no Classrooms in the database");
+        }
+
+        return createDTO(new HashSet<>(classrooms));
+
+    }
+
+    @Transactional
+    public Set<ClassroomDTO> getByProfessorId() {
+
+        UUID professorId = userService.getLoggedUser().id();
+
+        Set<Classroom> classrooms = this.classroomRepository.findByProfessor_User_Id(professorId);
+
+        if (classrooms.isEmpty()) {
+            throw new ResourceNotFoundException("there is no Classrooms with this professor in the database");
+        }
+
+        return createDTO(classrooms);
+    }
+
+    @Transactional
+    public Set<ClassroomDTO> getByStudentId() {
+
+        UUID studentId = userService.getLoggedUser().id();
+
+        Set<Classroom> classrooms = this.classroomRepository.findByStudents_User_Id(studentId);
+
+        if (classrooms.isEmpty()) {
+            throw new ResourceNotFoundException("there is no Classrooms with this professor in the database");
+        }
+
+        return createDTO(classrooms);
     }
 
     public void createClassroom(CreateClassroomDTO registerClassroomDTO) {

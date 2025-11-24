@@ -6,39 +6,53 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { useAuthSession } from "@/hooks/useAuthSession";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 
 import { Separator } from "@radix-ui/react-separator";
 import { Book, HomeIcon, AlertTriangle, CalendarDays } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const navMain = [
-  { title: "início", url: "/aluno", icon: HomeIcon },
-  { title: "notas", url: "/aluno/notas", icon: Book },
-  { title: "horário", url: "/aluno/horario", icon: CalendarDays},
-  { title: "avisos", url: "/aluno/avisos", icon: AlertTriangle },
+  { title: "Início", url: "/aluno", icon: HomeIcon },
+  { title: "Notas", url: "/aluno/notas", icon: Book },
+  { title: "Horário", url: "/aluno/horario", icon: CalendarDays },
+  { title: "Avisos", url: "/aluno/avisos", icon: AlertTriangle },
 ];
 
 const navSecondary = [{ title: "Ajuda", url: "/ajuda" }];
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-
-  const { user: sessionUser } = useAuthSession();
-
- 
-  const user = sessionUser || {
-    name: "",
-    email: "",
-    avatar: "",
-  };
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider>
-      <AppSidebar user={user} navMain={navMain} navSecondary={navSecondary}>
-        {children}
-      </AppSidebar>
+    <AuthProvider>
+      <AuthGuard>
+        <SidebarProvider>
+          <LayoutContent>{children}</LayoutContent>
+        </SidebarProvider>
+      </AuthGuard>
+    </AuthProvider>
+  );
+}
+
+function LayoutContent({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+
+  const safeUser = user
+    ? {
+        name: user.username,
+        email: user.email,
+        avatar: "/imagens/user.svg",
+      }
+    : {
+        name: "",
+        email: "",
+        avatar: "",
+      };
+
+  return (
+    <>
+      <AppSidebar user={safeUser} navMain={navMain} navSecondary={navSecondary}> {children} </AppSidebar>
 
       <SidebarInset>
         <header className="relative flex h-25 items-center px-4 bg-[#0d0d0f] border-b border-orange-500/20">
@@ -56,6 +70,26 @@ export default function DashboardLayout({
 
         <main>{children}</main>
       </SidebarInset>
-    </SidebarProvider>
+    </>
   );
+}
+
+function AuthGuard({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const { isAuthenticated, isLoading, user } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading) {
+      // Redireciona se não estiver autenticado ou se não for ALUNO
+      if (!isAuthenticated || user?.role !== "USER") {
+        router.replace("/login");
+      }
+    }
+  }, [isAuthenticated, isLoading, user, router]);
+
+  if (isLoading || !isAuthenticated || user?.role !== "USER") {
+    return null; // nada é renderizado até a validação
+  }
+
+  return <>{children}</>;
 }

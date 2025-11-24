@@ -3,17 +3,17 @@ package com.pifsite.application.service;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import com.pifsite.application.repository.ClassroomScheduleRepository;
 import com.pifsite.application.exceptions.ResourceNotFoundException;
 import com.pifsite.application.exceptions.EntityInUseException;
 import com.pifsite.application.repository.AttendanceRepository;
 import com.pifsite.application.repository.ClassroomRepository;
-import com.pifsite.application.repository.ClassroomScheduleRepository;
 import com.pifsite.application.repository.StudentRepository;
-import com.pifsite.application.dto.CreateAttendanceDTO;
+import com.pifsite.application.entities.ClassroomSchedule;
 import com.pifsite.application.dto.StudentsAttendanceDTO;
+import com.pifsite.application.dto.CreateAttendanceDTO;
 import com.pifsite.application.entities.Attendance;
 import com.pifsite.application.entities.Classroom;
-import com.pifsite.application.entities.ClassroomSchedule;
 import com.pifsite.application.dto.AttendanceDTO;
 import com.pifsite.application.entities.Student;
 
@@ -30,6 +30,7 @@ public class AttendanceService {
     private final AttendanceRepository attendanceRepository;
     private final ClassroomRepository classroomRepository;
     private final StudentRepository studentRepository;
+    private final UserService userService;
 
     public List<AttendanceDTO> getAll() {
 
@@ -41,7 +42,20 @@ public class AttendanceService {
 
         return Attendances;
     }
-    
+
+    public List<AttendanceDTO> getByStudentId() {
+
+        UUID studentId = userService.getLoggedUser().id();
+
+        List<AttendanceDTO> Attendances = this.attendanceRepository.getByStudentId(studentId);
+
+        if (Attendances.isEmpty()) {
+            throw new ResourceNotFoundException("there is no Attendances for this student in the database");
+        }
+
+        return Attendances;
+    }
+
     public List<StudentsAttendanceDTO> getStudentsAttendancesNumber() {
 
         List<StudentsAttendanceDTO> Attendances = this.attendanceRepository.getStudentsAttendancesNumber();
@@ -52,7 +66,7 @@ public class AttendanceService {
 
         return Attendances;
     }
-    
+
     public List<AttendanceDTO> getAttendancesByClassroomId(UUID id) {
 
         List<AttendanceDTO> Attendances = this.attendanceRepository.getByClassroomId(id);

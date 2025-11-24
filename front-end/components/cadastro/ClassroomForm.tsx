@@ -16,6 +16,7 @@ import {
   updateClassroom,
   addStudentsToClassroom,
   removeStudentsFromClassroom,
+  getClassrooms,
 } from "@/lib/api/classroom";
 import {
   updateSchedule,
@@ -57,8 +58,17 @@ const WEEK_DAYS = [
   { value: "QUARTA", label: "Quarta-feira" },
   { value: "QUINTA", label: "Quinta-feira" },
   { value: "SEXTA", label: "Sexta-feira" },
-  { value: "SABADO", label: "Sábado" },
-  { value: "DOMINGO", label: "Domingo" },
+];
+
+const FIXED_INTERVALS = [
+  "07:45 → 08:35",
+  "08:35 → 09:25",
+  "09:40 → 10:30",
+  "10:30 → 11:20",
+  "19:00 → 19:50",
+  "19:50 → 20:40",
+  "20:55 → 21:45",
+  "21:45 → 22:35",
 ];
 
 export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
@@ -75,8 +85,9 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
   const [students, setStudents] = useState<Student[]>([]);
   const [studentsDialogOpen, setStudentsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const initialScheduleIdsRef = useRef<string[]>([]);
+  const [allClassrooms, setAllClassrooms] = useState<Classroom[]>([]);
 
+  const initialScheduleIdsRef = useRef<string[]>([]);
   const errorToastRef = useRef(false);
 
   const addSchedule = () => {
@@ -108,7 +119,12 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
     }));
   };
 
-  useEffect(() => {
+  const formatTime = (time: string | null | undefined) => {
+    if (!time) return "";
+    return time.substring(0, 5);
+  };
+
+   useEffect(() => {
     const fetchData = async () => {
       try {
         const [t, s, st] = await Promise.all([
@@ -117,27 +133,35 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
           getStudents(),
         ]);
 
-        const mappedTeachers = t.map(
-          (teacher: any): Teacher => ({
-            id: teacher.id,
-            nome: teacher.username,
-            email: teacher.email,
-          }),
-        );
-
-        const mappedStudents = st.map(
-          (student: any): Student => ({
-            id: student.id,
-            nome: student.username,
-            email: student.email,
-            curso: student.courseName ?? "",
-            courseId: student.courseId ?? "",
-          }),
-        );
-
+        const mappedTeachers = t.map((teacher: any) => ({
+          id: teacher.id,
+          nome: teacher.username,
+          email: teacher.email,
+        }));
         setTeachers(mappedTeachers);
+
         setSubjects(s);
+
+        const mappedStudents: Student[] = st.map((student: any) => ({
+          id: student.id,
+          nome: student.username,
+          email: student.email,
+          curso: student.courseName ?? "",
+          courseId: student.courseId ?? "",
+        }));
         setStudents(mappedStudents);
+
+        try {
+          const cls = await getClassrooms();
+          setAllClassrooms(cls);
+        } catch (err: any) {
+          if (err?.response?.status === 404) {
+            setAllClassrooms([]);
+          } else {
+            console.error(err);
+            toast.error("Erro ao carregar turmas.");
+          }
+        }
 
         if (classroom) {
           initialScheduleIdsRef.current = classroom.schedules
@@ -154,15 +178,17 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
               : "";
 
           const matchedTeacher = mappedTeachers.find(
-            (t) => normalize(t.nome) === normalize(classroom.professor),
+            (teacher) =>
+              normalize(teacher.nome) === normalize(classroom.professor),
           );
+          const matchedTeacherId = matchedTeacher?.id ?? "";
 
           const matchedSubject = s.find(
             (sub: Subject) =>
               normalize(sub.subjectName) === normalize(classroom.subject),
           );
 
-          const matchedStudents = classroom.students
+          const matchedStudentsIds = classroom.students
             .map((st: ClassroomStudent) => {
               const found = mappedStudents.find(
                 (stu: Student) => normalize(stu.nome) === normalize(st.name),
@@ -172,22 +198,22 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
             .filter(Boolean) as string[];
 
           setFormData({
-            professorId: matchedTeacher?.id ?? "",
+            professorId: matchedTeacherId,
             subjectId: matchedSubject?.subjectId ?? "",
             semester: classroom.semester ?? "",
             schedules: classroom.schedules.map((sch) => ({
               scheduleId: sch.scheduleId ?? null,
               dayOfWeek: sch.dayOfWeek ?? "",
-              startAt: sch.startAt ?? "",
-              endAt: sch.endAt ?? "",
+              startAt: formatTime(sch.startAt),
+              endAt: formatTime(sch.endAt),
             })),
-            studentsIds: matchedStudents,
+            studentsIds: matchedStudentsIds,
           });
         }
 
         errorToastRef.current = false;
       } catch (err) {
-        console.error("Erro ao carregar dados:", err);
+        console.error(err);
         if (!errorToastRef.current) {
           toast.error("Erro ao carregar dados.");
           errorToastRef.current = true;
@@ -212,32 +238,163 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
     if (isSubmitting) return;
     setIsSubmitting(true);
 
+    const classesInSemester = allClassrooms.filter(
+      (c) => c.semester === formData.semester.trim(),
+    );
+
+    if (!classroom && classesInSemester.length >= 5) {
+      toast.error("Limite de 5 matérias por semestre atingido.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (classroom && classroom.semester !== formData.semester.trim()) {
+      if (classesInSemester.length >= 5) {
+        toast.error("Este semestre já possui 5 matérias cadastradas.");
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
     if (!formData.professorId) {
       toast.error("Selecione um professor.");
       setIsSubmitting(false);
       return;
     }
+
     if (!formData.subjectId) {
       toast.error("Selecione uma matéria.");
       setIsSubmitting(false);
       return;
     }
+
     if (formData.schedules.length === 0) {
       toast.error("Adicione pelo menos um horário.");
       setIsSubmitting(false);
       return;
     }
 
+    const toMin = (t: string) => {
+      const [h, m] = t.split(":").map(Number);
+      return h * 60 + m;
+    };
+
+    for (const s of formData.schedules) {
+      if (!s.startAt || !s.endAt) {
+        toast.error("Preencha horário de início e fim.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const duration = toMin(s.endAt) - toMin(s.startAt);
+
+      if (duration <= 0) {
+        toast.error("O horário de fim deve ser maior que o horário de início.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (duration > 50) {
+        toast.error("A duração máxima permitida é de 50 minutos.");
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
+    for (const newSched of formData.schedules) {
+      const conflict = allClassrooms.some((c) => {
+        if (classroom && c.classroomId === classroom.classroomId) return false;
+
+        if (c.semester !== formData.semester.trim()) return false;
+
+        return c.schedules.some((oldSched) => {
+          if (oldSched.dayOfWeek !== newSched.dayOfWeek) return false;
+
+          const newStart = toMin(newSched.startAt);
+          const newEnd = toMin(newSched.endAt);
+
+          const oldStart = toMin(oldSched.startAt.substring(0, 5));
+          const oldEnd = toMin(oldSched.endAt.substring(0, 5));
+
+          return newStart < oldEnd && newEnd > oldStart;
+        });
+      });
+
+      if (conflict) {
+        toast.error(
+          "Já existe outra turma com esse dia e horário neste semestre.",
+        );
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
+    const selectedProfessorName = teachers.find(
+      (t) => t.id === formData.professorId,
+    )?.nome;
+
+    for (const newSched of formData.schedules) {
+      const conflictTeacher = allClassrooms.some((c) => {
+        if (classroom && c.classroomId === classroom.classroomId) return false;
+
+        if (c.professor !== selectedProfessorName) return false;
+
+        return c.schedules.some((oldSched) => {
+          if (oldSched.dayOfWeek !== newSched.dayOfWeek) return false;
+
+          const newStart = toMin(newSched.startAt);
+          const newEnd = toMin(newSched.endAt);
+
+          const oldStart = toMin(oldSched.startAt.substring(0, 5));
+          const oldEnd = toMin(oldSched.endAt.substring(0, 5));
+
+          return newStart < oldEnd && newEnd > oldStart;
+        });
+      });
+
+      if (conflictTeacher) {
+        toast.error("Este professor já possui uma aula neste horário.");
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
+    for (const newSched of formData.schedules) {
+      for (const studentId of formData.studentsIds) {
+        const conflict = allClassrooms.some((c) => {
+          if (classroom && c.classroomId === classroom.classroomId)
+            return false;
+
+          if (!c.students.some((s) => s.id === studentId)) return false;
+
+          return c.schedules.some((oldSched) => {
+            if (oldSched.dayOfWeek !== newSched.dayOfWeek) return false;
+
+            const newStart = toMin(newSched.startAt);
+            const newEnd = toMin(newSched.endAt);
+
+            const oldStart = toMin(oldSched.startAt.substring(0, 5));
+            const oldEnd = toMin(oldSched.endAt.substring(0, 5));
+
+            return newStart < oldEnd && newEnd > oldStart;
+          });
+        });
+
+        if (conflict) {
+          toast.error(
+            "Um aluno selecionado já tem uma aula nesse mesmo horário em outro semestre.",
+          );
+          setIsSubmitting(false);
+          return;
+        }
+      }
+    }
+
     const classroomPayload: CreateClassroomDTO = {
       professorId: formData.professorId,
       subjectId: formData.subjectId,
       semester: formData.semester.trim(),
-      schedules: formData.schedules.map((s) => ({
-        scheduleId: s.scheduleId ?? null,
-        dayOfWeek: s.dayOfWeek,
-        startAt: s.startAt,
-        endAt: s.endAt,
-      })),
+      schedules: formData.schedules,
       studentsIds: formData.studentsIds,
     };
 
@@ -253,11 +410,8 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
             endAt: sched.endAt,
           };
 
-          if (sched.scheduleId) {
-            await updateSchedule(sched.scheduleId, payload);
-          } else {
-            await createSchedules(classroom.classroomId, [payload]);
-          }
+          if (sched.scheduleId) await updateSchedule(sched.scheduleId, payload);
+          else await createSchedules(classroom.classroomId, [payload]);
         }
 
         const currentIds = formData.schedules
@@ -265,9 +419,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
           .filter((id): id is string => !!id);
 
         for (const origId of initialScheduleIdsRef.current) {
-          if (!currentIds.includes(origId)) {
-            await deleteSchedule(origId);
-          }
+          if (!currentIds.includes(origId)) await deleteSchedule(origId);
         }
 
         const initialStudentIds = classroom.students
@@ -304,19 +456,20 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
 
         toast.success("Turma atualizada com sucesso!");
       } else {
-        const created = await createClassroom(classroomPayload);
+        await createClassroom(classroomPayload);
         toast.success("Turma criada com sucesso!");
       }
 
       onSaved();
       onClose();
     } catch (err) {
-      console.error("Erro ao salvar turma:", err);
+      console.error(err);
       toast.error("Erro ao salvar turma.");
     } finally {
       setIsSubmitting(false);
     }
   };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-7 text-white">
       <div>
@@ -334,7 +487,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
           </SelectTrigger>
           <SelectContent className="bg-[#151a1b] text-white">
             {teachers.map((t) => (
-              <SelectItem key={t.id} value={t.id} className="cursor-pointer">
+              <SelectItem key={t.id} value={t.id}>
                 {t.nome}
               </SelectItem>
             ))}
@@ -357,11 +510,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
           </SelectTrigger>
           <SelectContent className="bg-[#151a1b] text-white">
             {subjects.map((s) => (
-              <SelectItem
-                key={s.subjectId}
-                value={s.subjectId}
-                className="cursor-pointer"
-              >
+              <SelectItem key={s.subjectId} value={s.subjectId}>
                 {s.subjectName}
               </SelectItem>
             ))}
@@ -389,11 +538,9 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
           Horários
         </label>
+
         {formData.schedules.map((s, i) => (
-          <div
-            key={i}
-            className="flex flex-wrap items-center gap-4 mb-3 cursor-pointer"
-          >
+          <div key={i} className="flex flex-wrap items-center gap-4 mb-3">
             <Select
               value={s.dayOfWeek}
               onValueChange={(value) =>
@@ -405,32 +552,32 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
               </SelectTrigger>
               <SelectContent className="bg-[#151a1b] text-white">
                 {WEEK_DAYS.map((d) => (
-                  <SelectItem
-                    key={d.value}
-                    value={d.value}
-                    className="cursor-pointer"
-                  >
+                  <SelectItem key={d.value} value={d.value}>
                     {d.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
-            <input
-              type="time"
-              value={s.startAt}
-              onChange={(e) =>
-                updateScheduleField(i, "startAt", e.target.value)
-              }
-              className="w-24 bg-black/30 border border-orange-500/40 text-white px-3 py-2 rounded cursor-pointer"
-            />
-
-            <input
-              type="time"
-              value={s.endAt}
-              onChange={(e) => updateScheduleField(i, "endAt", e.target.value)}
-              className="w-24 bg-black/30 border border-orange-500/40 text-white px-3 py-2 rounded cursor-pointer"
-            />
+            <Select
+              value={s.startAt ? `${s.startAt} → ${s.endAt}` : ""}
+              onValueChange={(value) => {
+                const [start, end] = value.split(" → ");
+                updateScheduleField(i, "startAt", start);
+                updateScheduleField(i, "endAt", end);
+              }}
+            >
+              <SelectTrigger className="w-48 bg-black/30 border border-orange-500/40 text-white px-3 py-2 rounded cursor-pointer">
+                <SelectValue placeholder="Selecione o horário" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#151a1b] text-white">
+                {FIXED_INTERVALS.map((interval) => (
+                  <SelectItem key={interval} value={interval}>
+                    {interval}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
             <Button
               type="button"
@@ -455,6 +602,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         <label className="block text-sm font-medium uppercase text-orange-300/80 tracking-wide">
           Alunos
         </label>
+
         <Dialog open={studentsDialogOpen} onOpenChange={setStudentsDialogOpen}>
           <DialogTrigger asChild>
             <Button className="w-full bg-[#1a1a1dc3] hover:bg-[#222] border border-orange-400/40 text-white px-5 py-5 rounded-xl cursor-pointer">
@@ -469,11 +617,11 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
               <DialogTitle>Selecionar alunos</DialogTitle>
             </DialogHeader>
 
-            <div className="max-h-64 overflow-y-auto space-y-2 mt-4 cursor-pointer">
+            <div className="max-h-64 overflow-y-auto space-y-2 mt-4">
               {students.map((s) => (
                 <div
                   key={s.id}
-                  className="flex items-center space-x-3 rounded-md px-3 py-2 hover:bg-[#222] cursor-pointer"
+                  className="flex items-center space-x-3 rounded-md px-3 py-2 hover:bg-[#222]"
                 >
                   <Checkbox
                     id={s.id}
@@ -506,6 +654,7 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
         >
           Cancelar
         </Button>
+
         <Button
           type="submit"
           className="bg-orange-500/70 hover:bg-orange-600/70 text-white px-4 py-3 rounded-xl cursor-pointer"

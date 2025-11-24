@@ -64,7 +64,7 @@ export default function MateriasPage() {
         <div className="flex justify-end gap-3">
           <button
             onClick={() => toast.dismiss(t)}
-            className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-md text-sm"
+            className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-md text-sm cursor-pointer"
           >
             Cancelar
           </button>
@@ -75,12 +75,19 @@ export default function MateriasPage() {
                 toast.dismiss(t);
                 toast.success("Matéria excluída com sucesso!");
                 await fetchSubjects();
-              } catch (error) {
-                console.error("Erro ao excluir matéria:", error);
-                toast.error("Erro ao excluir matéria.");
+              } catch (error: any) {
+                toast.dismiss(t);
+                if (error.response?.status === 409) {
+                  toast.error(
+                    "Não é possível excluir esta matéria pois ela está vinculada a uma turma.",
+                  );
+                } else {
+                  console.error("Erro ao excluir matéria:", error);
+                  toast.error("Erro ao excluir matéria.");
+                }
               }
             }}
-            className="bg-red-600 hover:bg-red-500 px-3 py-1 rounded-md text-sm"
+            className="bg-red-600 hover:bg-red-500 px-3 py-1 rounded-md text-sm cursor-pointer"
           >
             Excluir
           </button>

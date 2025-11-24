@@ -41,7 +41,15 @@ public class AttendanceController {
         List<AttendanceDTO> attendances = attendanceService.getAll();
         return ResponseEntity.ok(attendances);
     }
-    
+
+    @GetMapping("/student")
+    @Operation(summary = "Get Attendance", description = "Get all Attendances from database")
+    public ResponseEntity<?> getAttendancesByLoggedStudent() {
+
+        List<AttendanceDTO> attendances = attendanceService.getByStudentId();
+        return ResponseEntity.ok(attendances);
+    }
+
     @GetMapping("/number")
     @Operation(summary = "Get Attendance", description = "Get all Attendances from database")
     public ResponseEntity<?> getStudentsAttendances() {
@@ -49,7 +57,7 @@ public class AttendanceController {
         List<StudentsAttendanceDTO> attendances = attendanceService.getStudentsAttendancesNumber();
         return ResponseEntity.ok(attendances);
     }
-    
+
     @GetMapping("/{id}")
     @Operation(summary = "Get Attendance", description = "Get all Attendances from database")
     public ResponseEntity<?> getAttendancesByClassroomId(@PathVariable UUID id) {

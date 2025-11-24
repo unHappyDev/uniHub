@@ -41,8 +41,16 @@ public class GradeController {
         return ResponseEntity.ok(grades);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/student")
     @Operation(summary = "Get Grade", description = "Get all Grades from database")
+    public ResponseEntity<?> getAllStudentGrades() {
+
+        List<GradeDTO> grades = gradeService.getAllGrades();
+        return ResponseEntity.ok(grades);
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Get Grade", description = "Get all Grades from one classroom database")
     public ResponseEntity<?> getGradesByClassroom(@PathVariable UUID id) {
 
         List<GradeDTO> grades = gradeService.getClassroomGrades(id);

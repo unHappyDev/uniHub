@@ -43,4 +43,21 @@ public interface GradeRepository extends JpaRepository<Grade, UUID> {
             "WHERE c.id=:classroomId")
     List<GradeDTO> getByClassroomId(@Param("classroomId") UUID classroomId);
 
+    @Query("SELECT new com.pifsite.application.dto.GradeDTO(" +
+                "g.gradeId, " +
+                "u.id, " +
+                "u.username, " +
+                "c.classroomId, " +
+                "sub.subjectName, " +
+                "g.activity, " +
+                "g.grade, " +
+                "g.bimester) " +
+            "FROM Grade g " +
+            "JOIN g.student s " +
+            "JOIN s.user u " +
+            "JOIN g.classroom c " +
+            "JOIN c.subject sub " +
+            "WHERE u.id=:studentId")
+    List<GradeDTO> getByStudentId(@Param("studentId") UUID studentId);
+
 }

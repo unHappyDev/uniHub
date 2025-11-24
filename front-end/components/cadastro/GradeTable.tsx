@@ -84,14 +84,14 @@ export default function GradeTable({ students, grades, onEdit }: Props) {
   };
 
   const getTotalColor = (b1: number | null, b2: number | null) => {
-  if (b1 === null || b2 === null) return "text-gray-400";
+    if (b1 === null || b2 === null) return "text-gray-400";
 
-  const media = (b1 + b2) / 2;
+    const media = (b1 + b2) / 2;
 
-  return media >= 7
-    ? "text-green-500 font-semibold"
-    : "text-red-500 font-semibold";
-};
+    return media >= 7
+      ? "text-green-500 font-semibold"
+      : "text-red-500 font-semibold";
+  };
 
   const columns: { activity: Activity; bimester?: number }[] = [
     { activity: "prova", bimester: 1 },
@@ -176,73 +176,80 @@ export default function GradeTable({ students, grades, onEdit }: Props) {
         </table>
       </div>
 
-      {/* Mobile */}
-      <div className="md:hidden flex flex-col gap-6">
-        {sortedStudents.map((student) => {
-          const studentGrades = grades.filter(
-            (g) => g.studentId === student.id,
-          );
-          const averages = calculateBimesterAverages(studentGrades);
+      {/* Mobile*/}
+      <div className="md:hidden overflow-x-auto bg-glass border border-orange-400/40 rounded-2xl p-4 shadow-glow scrollbar-thin scrollbar-thumb-orange-500/70 scrollbar-track-orange-900/10">
+        <table className="min-w-max text-white table-auto">
+          <thead>
+            <tr className="text-orange-400 uppercase text-sm">
+              <th className="px-4 py-2">Aluno</th>
+              {columns.map((col, idx) => (
+                <th key={idx} className="px-4 py-2">
+                  {col.activity === "extra"
+                    ? "Extra"
+                    : `${activityLabels[col.activity]} B${col.bimester}`}
+                </th>
+              ))}
+              <th className="px-4 py-2">MB1</th>
+              <th className="px-4 py-2">MB2</th>
+              <th className="px-4 py-2">Média Total</th>
+              <th className="px-4 py-2">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedStudents.map((student) => {
+              const studentGrades = grades.filter(
+                (g) => g.studentId === student.id,
+              );
+              const averages = calculateBimesterAverages(studentGrades);
 
-          return (
-            <div
-              key={student.id}
-              className="bg-glass border border-orange-400/40 rounded-2xl p-6 text-gray-200 shadow-glow transition hover:shadow-orange-500/30"
-            >
-              <p className="font-semibold text-orange-500 mb-2">
-                {student.nome}
-              </p>
-              <div className="flex flex-col gap-2">
-                {columns.map((col, idx) => {
-                  const grade = studentGrades.find(
-                    (g) =>
-                      g.activity === col.activity &&
-                      (col.bimester ? g.bimester === col.bimester : true),
-                  );
-                  return (
-                    <div
-                      key={idx}
-                      className="flex justify-between items-center bg-[#121212b0] p-2 rounded-md"
+              return (
+                <tr
+                  key={student.id}
+                  className="bg-[#121212b0] transition"
+                >
+                  <td className="px-4 py-2 font-semibold text-white">
+                    {student.nome}
+                  </td>
+                  {columns.map((col, idx) => {
+                    const grade = studentGrades.find(
+                      (g) =>
+                        g.activity === col.activity &&
+                        (col.bimester ? g.bimester === col.bimester : true),
+                    );
+                    return (
+                      <td key={idx} className="px-4 py-2 text-center">
+                        {grade ? grade.grade.toFixed(1) : "-"}
+                      </td>
+                    );
+                  })}
+                  <td className="px-4 py-2 text-center">
+                    {averages[1]?.toFixed(1) ?? "-"}
+                  </td>
+                  <td className="px-4 py-2 text-center">
+                    {averages[2]?.toFixed(1) ?? "-"}
+                  </td>
+                  <td
+                    className={`px-4 py-2 text-center ${getTotalColor(
+                      averages[1] ?? null,
+                      averages[2] ?? null,
+                    )}`}
+                  >
+                    {averages.total?.toFixed(1) ?? "-"}
+                  </td>
+                  <td className="px-4 py-2 text-center">
+                    <Button
+                      size="sm"
+                      className="bg-orange-500/70 hover:bg-orange-600/70 text-white cursor-pointer transition-all"
+                      onClick={() => onEdit(student)}
                     >
-                      <span className="capitalize font-medium">
-                        {col.activity === "extra"
-                          ? "Extra"
-                          : `${activityLabels[col.activity]} B${col.bimester}`}
-                      </span>
-                      <span>{grade ? grade.grade.toFixed(1) : "-"}</span>
-                    </div>
-                  );
-                })}
-
-                <div className="flex justify-between items-center bg-[#1a1a1ab0] p-2 rounded-md mt-2">
-                  <span>MB1</span>
-                  <span>{averages[1]?.toFixed(1) ?? "-"}</span>
-                </div>
-                <div className="flex justify-between items-center bg-[#1a1a1ab0] p-2 rounded-md mt-1">
-                  <span>MB2</span>
-                  <span>{averages[2]?.toFixed(1) ?? "-"}</span>
-                </div>
-                <div
-                  className={`flex justify-between items-center bg-[#1a1a1ab0] p-2 rounded-md mt-1 ${getTotalColor(
-                    averages[1] ?? null,
-                    averages[2] ?? null,
-                  )}`}
-                >
-                  <span>Média Total</span>
-                  <span>{averages.total?.toFixed(1) ?? "-"}</span>
-                </div>
-
-                <Button
-                  size="sm"
-                  className="mt-2 bg-orange-500/70 hover:bg-orange-600/70 text-white cursor-pointer transition-all"
-                  onClick={() => onEdit(student)}
-                >
-                  Editar Nota
-                </Button>
-              </div>
-            </div>
-          );
-        })}
+                      Editar
+                    </Button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   );

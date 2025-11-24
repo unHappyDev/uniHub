@@ -79,7 +79,7 @@ export default function PostsPage() {
         <div className="flex justify-end gap-3">
           <button
             onClick={() => toast.dismiss(t)}
-            className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-md text-sm"
+            className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-md text-sm cursor-pointer"
           >
             Cancelar
           </button>
@@ -96,7 +96,7 @@ export default function PostsPage() {
                 return;
               }
             }}
-            className="bg-red-600 hover:bg-red-500 px-3 py-1 rounded-md text-sm"
+            className="bg-red-600 hover:bg-red-500 px-3 py-1 rounded-md text-sm cursor-pointer"
           >
             Excluir
           </button>
@@ -137,7 +137,7 @@ export default function PostsPage() {
   return (
     <div className="p-8 text-white flex flex-col min-h-screen">
       <div className="max-w-6xl mx-auto w-full">
-        <h1 className="text-3xl font-medium mb-8 text-center uppercase">
+        <h1 className="text-3xl text-orange-300 font-medium mb-8 text-center uppercase">
           Gerenciamento de Posts
         </h1>
 
@@ -159,7 +159,7 @@ export default function PostsPage() {
             />
             <button
               onClick={() => setIsModalOpen(true)}
-              className="w-full sm:w-auto bg-gradient-to-r from-orange-500/50 to-yellow-400/30 hover:from-orange-500/60 hover:to-yellow-400/40 text-white font-medium px-6 py-2.5 rounded-xl shadow-md transition-all uppercase cursor-pointer"
+              className="w-full sm:w-auto bg-orange-500/70 hover:bg-orange-600/70 text-white font-medium px-6 py-2.5 rounded-xl shadow-md transition-all uppercase cursor-pointer"
             >
               + Criar Post
             </button>

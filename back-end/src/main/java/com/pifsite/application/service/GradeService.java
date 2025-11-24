@@ -25,10 +25,24 @@ public class GradeService {
     private final ClassroomRepository classroomRepository;
     private final StudentRepository studentRepository;
     private final GradeRepository gradeRepository;
+    private final UserService userService;
 
     public List<GradeDTO> getAllGrades() {
 
         List<GradeDTO> grades = this.gradeRepository.getAll();
+
+        // if (grades.isEmpty()) {
+        //     throw new ResourceNotFoundException("No Grades found");
+        // }
+
+        return grades;
+    }
+
+    public List<GradeDTO> getAllStudentsGrades() {
+
+        UUID studentId = userService.getLoggedUser().id();
+
+        List<GradeDTO> grades = this.gradeRepository.getByStudentId(studentId);
 
         // if (grades.isEmpty()) {
         //     throw new ResourceNotFoundException("No Grades found");

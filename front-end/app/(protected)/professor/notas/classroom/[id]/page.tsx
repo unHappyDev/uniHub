@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation"; // <-- import useRouter
+import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Modal } from "@/components/ui/modal";
 import {
@@ -21,7 +21,7 @@ interface Student {
 
 export default function ClassroomGradesPage() {
   const params = useParams();
-  const router = useRouter(); // <-- initialize router
+  const router = useRouter();
   const classroomId = params?.id as string;
 
   const [classroom, setClassroom] = useState<any>(null);
@@ -108,16 +108,18 @@ export default function ClassroomGradesPage() {
   return (
     <div className="p-8 text-white flex flex-col min-h-screen">
      
-      <button
-        onClick={() => router.back()}
-        className="mb-6 px-4 py-2 bg-orange-500/80 hover:bg-orange-600 rounded-lg text-white font-semibold w-max transition-colors cursor-pointer"
-      >
-        Voltar
-      </button>
+      <div className="flex items-center justify-between mb-10">
+        <button
+          onClick={() => router.back()}
+          className="hidden md:block px-4 py-2 bg-orange-500/80 hover:bg-orange-600 rounded-lg text-white font-semibold w-max transition-colors cursor-pointer"
+        >
+          Voltar
+        </button>
 
-      <h1 className="text-2xl font-semibold text-orange-300/90 uppercase tracking-wide text-center mb-10">
-        Notas da Turma {classroom?.subject ?? ""}
-      </h1>
+        <h1 className="text-2xl font-semibold text-orange-300/90 uppercase tracking-wide text-center flex-1 ml-6">
+          Notas da Turma {classroom?.subject ?? ""}
+        </h1>
+      </div>
 
       <div className="bg-glass border border-orange-400/40 rounded-2xl p-6 mb-10 shadow-glow transition-all hover:shadow-orange-500/30">
         <input

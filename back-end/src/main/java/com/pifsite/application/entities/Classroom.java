@@ -49,8 +49,8 @@ public class Classroom {
 
     @ManyToMany
     @JoinTable(
-        name = "classrooms_students", 
-        joinColumns = @JoinColumn(name = "fk_classroom_id"), 
+        name = "classrooms_students",
+        joinColumns = @JoinColumn(name = "fk_classroom_id"),
         inverseJoinColumns = @JoinColumn(name = "fk_student_id"))
     private Set<Student> students = new HashSet<>();
 

@@ -24,7 +24,7 @@ export default function AttendanceTable({
   showAbsencesOnly = false,
 }: Props) {
   const sorted = [...students].sort((a, b) =>
-    a.nome.localeCompare(b.nome, "pt", { sensitivity: "base" })
+    a.nome.localeCompare(b.nome, "pt", { sensitivity: "base" }),
   );
 
   return (
@@ -57,7 +57,7 @@ export default function AttendanceTable({
                           type="checkbox"
                           checked={presence[s.id]?.present ?? false}
                           onChange={() => togglePresence(s.id, "present")}
-                          className="w-5 h-5 accent-green-500"
+                          className="w-5 h-5 accent-green-500 cursor-pointer"
                         />
                         <span>Presença</span>
                       </label>
@@ -68,7 +68,7 @@ export default function AttendanceTable({
                           type="checkbox"
                           checked={presence[s.id]?.absent ?? false}
                           onChange={() => togglePresence(s.id, "absent")}
-                          className="w-5 h-5 accent-red-500"
+                          className="w-5 h-5 accent-red-500 cursor-pointer"
                         />
                         <span>Falta</span>
                       </label>
@@ -84,52 +84,59 @@ export default function AttendanceTable({
       </div>
 
       {/* Mobile */}
-      <div className="md:hidden flex flex-col gap-6">
-        {sorted.map((s) => (
-          <div
-            key={s.id}
-            className="bg-glass border border-orange-400/40 rounded-2xl p-6 text-gray-200 shadow-glow transition hover:shadow-orange-500/30"
-          >
-            <p className="font-semibold text-orange-500 mb-3">{s.nome}</p>
+      <div className="md:hidden overflow-x-auto bg-glass border border-orange-400/40 rounded-2xl p-4 shadow-glow scrollbar-thin scrollbar-thumb-orange-500/70 scrollbar-track-orange-900/10">
+        <table className="min-w-max text-white table-auto">
+          <thead>
+            <tr className="text-orange-400 uppercase text-sm">
+              <th className="px-4 py-2">Aluno</th>
+              {showAbsencesOnly ? (
+                <th className="px-4 py-2">Total de Faltas</th>
+              ) : scheduleId && togglePresence ? (
+                <>
+                  <th className="px-4 py-2">Presença</th>
+                  <th className="px-4 py-2">Falta</th>
+                </>
+              ) : null}
+            </tr>
+          </thead>
+          <tbody>
+            {sorted.map((s) => (
+              <tr
+                key={s.id}
+                className="bg-[#121212b0] transition"
+              >
+                <td className="px-4 py-2 font-semibold text-white">
+                  {s.nome}
+                </td>
 
-            {showAbsencesOnly ? (
-              <div className="flex justify-between items-center bg-[#121212b0] p-2 rounded-md">
-                <span>Total de Faltas</span>
-                <span>{s.totalAbsences ?? 0}</span>
-              </div>
-            ) : (
-              scheduleId &&
-              togglePresence && (
-                <div className="flex justify-between items-center bg-[#121212b0] p-2 rounded-md">
-                  <div className="flex flex-col gap-2">
-
-                    {/* Presença */}
-                    <label className="flex items-center gap-2">
+                {showAbsencesOnly ? (
+                  <td className="px-4 py-2 text-center">
+                    {s.totalAbsences ?? 0}
+                  </td>
+                ) : scheduleId && togglePresence ? (
+                  <>
+                    <td className="px-4 py-2 text-center">
                       <input
                         type="checkbox"
                         checked={presence[s.id]?.present ?? false}
                         onChange={() => togglePresence(s.id, "present")}
-                        className="w-6 h-6 accent-green-500"
+                        className="w-6 h-6 accent-green-500 mx-auto cursor-pointer"
                       />
-                      <span>Presença</span>
-                    </label>
-
-                    {/* Falta */}
-                    <label className="flex items-center gap-2">
+                    </td>
+                    <td className="px-4 py-2 text-center">
                       <input
                         type="checkbox"
                         checked={presence[s.id]?.absent ?? false}
                         onChange={() => togglePresence(s.id, "absent")}
-                        className="w-6 h-6 accent-red-500"
+                        className="w-6 h-6 accent-red-500 mx-auto cursor-pointer"
                       />
-                      <span>Falta</span>
-                    </label>
-                  </div>
-                </div>
-              )
-            )}
-          </div>
-        ))}
+                    </td>
+                  </>
+                ) : null}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

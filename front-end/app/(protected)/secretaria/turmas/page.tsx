@@ -11,7 +11,9 @@ import { toast } from "sonner";
 export default function ClassroomsPage() {
   const [classrooms, setClassrooms] = useState<Classroom[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingClassroom, setEditingClassroom] = useState<Classroom | null>(null);
+  const [editingClassroom, setEditingClassroom] = useState<Classroom | null>(
+    null,
+  );
   const [filterProfessor, setFilterProfessor] = useState("");
   const [filterSubject, setFilterSubject] = useState("");
 
@@ -42,7 +44,7 @@ export default function ClassroomsPage() {
         <div className="flex justify-end gap-3">
           <button
             onClick={() => toast.dismiss(t)}
-            className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-md text-sm cursor-pointer"
+            className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-md text-sm cursor-pointer cursor-pointer"
           >
             Cancelar
           </button>
@@ -53,12 +55,19 @@ export default function ClassroomsPage() {
                 toast.dismiss(t);
                 toast.success("Turma excluída com sucesso!");
                 await loadData();
-              } catch (error) {
-                console.error("Erro ao excluir turma:", error);
-                toast.error("Erro ao excluir turma.");
+              } catch (error: any) {
+                toast.dismiss(t);
+                if (error.response?.status === 409) {
+                  toast.error(
+                    "Não é possível excluir esta turma. Existem alunos com presenças ou notas registradas.",
+                  );
+                } else {
+                  console.error("Erro ao excluir turma:", error);
+                  toast.error("Erro ao excluir turma.");
+                }
               }
             }}
-            className="bg-red-600 hover:bg-red-500 px-3 py-1 rounded-md text-sm cursor-pointer"
+            className="bg-red-600 hover:bg-red-500 px-3 py-1 rounded-md text-sm cursor-pointer cursor-pointer"
           >
             Excluir
           </button>
@@ -73,7 +82,7 @@ export default function ClassroomsPage() {
   };
 
   const handleCreateNew = () => {
-    // Garantir que não há turma sendo editada
+
     setEditingClassroom(null);
     setIsModalOpen(true);
   };
@@ -135,7 +144,7 @@ export default function ClassroomsPage() {
           isOpen={isModalOpen}
           onClose={() => {
             setIsModalOpen(false);
-            setEditingClassroom(null); // Limpar turma ao fechar modal
+            setEditingClassroom(null);
           }}
         >
           <h2 className="text-xl font-semibold mb-4 text-center text-orange-300/80 uppercase">
@@ -146,7 +155,7 @@ export default function ClassroomsPage() {
             onSaved={handleSaved}
             onClose={() => {
               setIsModalOpen(false);
-              setEditingClassroom(null); // Garantir limpeza também aqui
+              setEditingClassroom(null);
             }}
           />
         </Modal>

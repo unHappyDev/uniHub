@@ -42,6 +42,22 @@ public class ClassroomController {
         return ResponseEntity.ok(Classrooms);
     }
 
+    @GetMapping("/professor")
+    @Operation(summary = "Get Classroom", description = "Get all Classrooms from database")
+    public ResponseEntity<?> getAllClassroomsByProfessorId() {
+
+        Set<ClassroomDTO> Classrooms = classroomService.getByProfessorId();
+        return ResponseEntity.ok(Classrooms);
+    }
+
+    @GetMapping("/student")
+    @Operation(summary = "Get Classroom", description = "Get all Classrooms from database")
+    public ResponseEntity<?> getAllClassroomsByStudentId() {
+
+        Set<ClassroomDTO> Classrooms = classroomService.getByStudentId();
+        return ResponseEntity.ok(Classrooms);
+    }
+
     @PostMapping
     @PreAuthorize("hasRole(T(com.pifsite.application.enums.UserRoles).ADMIN.toString())")
     @Operation(summary = "Create Classroom", description = "Create a Classroom save on the database")
