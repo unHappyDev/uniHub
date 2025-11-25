@@ -293,12 +293,12 @@ export default function CadastroUnificado() {
         Gerenciamento de Cadastros
       </h1>
       <div className="flex flex-col gap-5 bg-glass border border-orange-400/40 rounded-2xl p-6 mb-10 shadow-glow">
-        <div className="flex gap-4">
+        <div className="flex flex-wrap gap-4">
           <Select
             value={selectedType}
             onValueChange={(value) => setSelectedType(value)}
           >
-            <SelectTrigger className=" bg-[#1a1a1dc3] border border-orange-400/20 text-white cursor-pointer rounded-xl px-10 py-3">
+            <SelectTrigger className="bg-[#1a1a1dc3] border border-orange-400/20 text-white cursor-pointer rounded-xl px-4 py-3 w-full sm:w-auto">
               <SelectValue placeholder="Selecione um tipo" />
             </SelectTrigger>
 
@@ -329,13 +329,12 @@ export default function CadastroUnificado() {
           {selectedType !== "" && (
             <button
               onClick={openModal}
-              className="bg-orange-500/70 hover:bg-orange-600/70 text-white font-medium px-6 py-2 rounded-xl shadow-md uppercase cursor-pointer"
+              className="bg-orange-500/70 hover:bg-orange-600/70 text-white font-medium px-3 py-2 rounded-xl shadow-md uppercase cursor-pointer text-sm w-full sm:w-auto"
             >
               + Cadastrar
             </button>
           )}
         </div>
-
         {selectedType === "student" && (
           <div className="flex flex-col sm:flex-row gap-4 mt-4">
             <input

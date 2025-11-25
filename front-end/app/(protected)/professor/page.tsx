@@ -39,7 +39,7 @@ export default function ProfessorBody() {
         const sorted = data
           .sort(
             (a, b) =>
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
           )
           .slice(0, MAX_AVISOS);
 
@@ -122,7 +122,7 @@ export default function ProfessorBody() {
       acc[h.dayOfWeek].push(h);
       return acc;
     },
-    {} as Record<string, HorarioDTO[]>
+    {} as Record<string, HorarioDTO[]>,
   );
 
   const diasDaSemana = [
@@ -136,20 +136,23 @@ export default function ProfessorBody() {
   return (
     <div className="p-4 bg-[#141414] text-white min-h-screen">
       <div className="flex flex-col gap-8 p-2 sm:p-4">
-
-        <div className="md:hidden grid grid-cols-4 gap-3 mb-4">
-          {professorQuickAccessCards.map((item, idx) => (
-            <Link key={idx} href={item.href}>
-              <div className="bg-[#1a1a1dc3] border border-orange-400/20 p-3 rounded-xl flex flex-col items-center justify-center hover:border-orange-400/50 transition-all w-25 h-25">
-                {React.cloneElement(item.icon, {
-                  className: "w-7 h-7 text-orange-400 mb-2",
-                })}
-                <span className="text-xs text-white text-center">
-                  {item.title}
-                </span>
-              </div>
-            </Link>
-          ))}
+        <div className="md:hidden overflow-x-auto pb-2 -mx-2">
+          <div className="flex gap-3 min-w-max px-2">
+            {professorQuickAccessCards.map((item, idx) => (
+              <Link key={idx} href={item.href}>
+                <div className="bg-[#1a1a1dc3] border border-orange-400/20 p-3 rounded-xl flex flex-col justify-between items-center hover:border-orange-400/50 transition-all flex-shrink-0 w-28 h-32">
+                  <div className="flex flex-col items-center justify-center h-full">
+                    {React.cloneElement(item.icon, {
+                      className: "w-7 h-7 text-orange-400 mb-2",
+                    })}
+                    <span className="text-xs text-white text-center">
+                      {item.title}
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
 
         <div className="md:hidden bg-[#1a1a1dc3] border border-orange-400/20 rounded-xl p-4 shadow-glow">
@@ -238,7 +241,6 @@ export default function ProfessorBody() {
         </div>
 
         <div className="hidden md:block">
- 
           {loadingHorarios ? (
             <p className="text-gray-300 mb-6">Carregando horários...</p>
           ) : (
@@ -313,7 +315,7 @@ export default function ProfessorBody() {
                                 day: "2-digit",
                                 month: "2-digit",
                                 year: "numeric",
-                              }
+                              },
                             )}
                           </span>
                         </div>

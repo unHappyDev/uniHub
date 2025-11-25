@@ -102,7 +102,7 @@ export default function Body() {
       iconColor: "text-blue-400",
     },
     {
-      href: "/secretaria/horarios",
+      href: "/secretaria/horario",
       icon: <Clock />,
       title: "Horários",
       iconColor: "text-yellow-400",
