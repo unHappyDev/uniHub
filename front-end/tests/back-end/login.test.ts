@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
 
-const BASE_URL = "http://localhost:8443";
+const BASE_URL = "http://18.188.33.134:8080";
 
 describe("POST /user", () => {
   it("should create user successfully", async () => {

@@ -43,7 +43,7 @@ async function waitForAllServices() {
             `> Trying to connect to Webserver #${tries}. Are you running the server with "npm run dev"?`,
           );
         }
-        await fetch(`http://localhost:8443/user`);
+        await fetch(`http://18.188.33.134:8080/user`);
       },
       {
         retries: 50,
