@@ -83,7 +83,7 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!isLoading) {
-      // Redireciona se não estiver autenticado ou se não for ADMIN
+      
       if (!isAuthenticated || user?.role !== "ADMIN") {
         router.replace("/login");
       }
@@ -91,7 +91,7 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   }, [isAuthenticated, isLoading, user, router]);
 
   if (isLoading || !isAuthenticated || user?.role !== "ADMIN") {
-    return null; // nada é renderizado até validação
+    return null; 
   }
 
   return <>{children}</>;

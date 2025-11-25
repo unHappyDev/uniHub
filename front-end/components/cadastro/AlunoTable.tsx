@@ -14,42 +14,45 @@ import {
 interface Props {
   notas: NotaDTO[];
   chamada: ChamadaDTO[];
+  materiasDoAluno?: string[]; 
   filtroMateria?: string;
 }
 
 export default function AlunoNotasChamadaTable({
   notas,
   chamada,
+  materiasDoAluno,
   filtroMateria,
 }: Props) {
   const [modalAberto, setModalAberto] = useState(false);
   const [faltasSelecionadas, setFaltasSelecionadas] = useState<ChamadaDTO[]>(
-    []
+    [],
   );
   const [materiaSelecionada, setMateriaSelecionada] = useState("");
 
-  // Normaliza atividades
   const notasNormalizadas = notas.map((n) => ({
     ...n,
     activity: n.activity.toLowerCase(),
   }));
 
-  // 🔥 Junta matérias vindas de NOTAS + CHAMADA
   const materias = Array.from(
     new Set([
+      ...(materiasDoAluno ?? []),
       ...notasNormalizadas.map((n) => n.subject),
       ...chamada.map((c) => c.subjectName),
-    ])
-  ).filter(Boolean); // Remove itens undefined
+    ]),
+  ).filter(Boolean);
 
-  // Filtro de matéria
-  const materiasFiltradas = filtroMateria
+  let materiasFiltradas = filtroMateria
     ? materias.filter((m) =>
-        m.toLowerCase().includes(filtroMateria.toLowerCase())
+        m.toLowerCase().includes(filtroMateria.toLowerCase()),
       )
     : materias;
 
-  // Colunas da tabela
+  materiasFiltradas = materiasFiltradas.sort((a, b) =>
+    a.localeCompare(b, "pt-BR"),
+  );
+
   const columns = [
     { activity: "prova", bimester: 1 },
     { activity: "recuperacao", bimester: 1 },
@@ -67,12 +70,17 @@ export default function AlunoNotasChamadaTable({
     extra: "Extra",
   };
 
+  const formatarNota = (valor: number | null | undefined) => {
+    if (valor === null || valor === undefined || isNaN(valor)) return "—";
+    return valor.toFixed(1);
+  };
+
   const totalFaltas = (materia: string) =>
     chamada.filter((c) => c.subjectName === materia && !c.presence).length;
 
   const abrirDetalhes = (materia: string) => {
     const faltas = chamada.filter(
-      (c) => c.subjectName === materia && !c.presence
+      (c) => c.subjectName === materia && !c.presence,
     );
     setFaltasSelecionadas(faltas);
     setMateriaSelecionada(materia);
@@ -83,23 +91,16 @@ export default function AlunoNotasChamadaTable({
     const provas = notasMateria.filter(
       (n) =>
         n.bimester === b &&
-        (n.activity === "prova" || n.activity === "recuperacao")
+        (n.activity === "prova" || n.activity === "recuperacao"),
     );
-
     const trabalhos = notasMateria.filter(
-      (n) => n.bimester === b && n.activity === "trabalho"
+      (n) => n.bimester === b && n.activity === "trabalho",
     );
-
     const extra = notasMateria.filter((n) => n.activity === "extra");
 
     const maiorProva =
       provas.length > 0 ? Math.max(...provas.map((n) => Number(n.grade))) : 0;
-
-    const somaTrabalho = trabalhos.reduce(
-      (acc, n) => acc + Number(n.grade),
-      0
-    );
-
+    const somaTrabalho = trabalhos.reduce((acc, n) => acc + Number(n.grade), 0);
     const bonusExtra = extra.reduce((a, b) => a + Number(b.grade), 0) / 2;
 
     return Number((maiorProva + somaTrabalho + bonusExtra).toFixed(1));
@@ -116,13 +117,11 @@ export default function AlunoNotasChamadaTable({
     const temProvaOuRec = notasMateria.some(
       (n) =>
         n.bimester === b &&
-        (n.activity === "prova" || n.activity === "recuperacao")
+        (n.activity === "prova" || n.activity === "recuperacao"),
     );
-
     const temTrabalho = notasMateria.some(
-      (n) => n.bimester === b && n.activity === "trabalho"
+      (n) => n.bimester === b && n.activity === "trabalho",
     );
-
     return temProvaOuRec && temTrabalho;
   };
 
@@ -134,7 +133,6 @@ export default function AlunoNotasChamadaTable({
           <thead>
             <tr className="text-orange-400 uppercase text-sm">
               <th className="px-4 py-3 text-left">Matéria</th>
-
               {columns.map((c, i) => (
                 <th key={i} className="px-4 py-3 text-center">
                   {c.activity === "extra"
@@ -142,7 +140,6 @@ export default function AlunoNotasChamadaTable({
                     : `${label[c.activity as keyof typeof label]} B${c.bimester}`}
                 </th>
               ))}
-
               <th className="px-4 py-3 text-center">MB1</th>
               <th className="px-4 py-3 text-center">MB2</th>
               <th className="px-4 py-3 text-center">Média</th>
@@ -150,16 +147,13 @@ export default function AlunoNotasChamadaTable({
               <th className="px-4 py-3 text-center">Ações</th>
             </tr>
           </thead>
-
           <tbody>
             {materiasFiltradas.map((materia) => {
               const notasMateria = notasNormalizadas.filter(
-                (n) => n.subject === materia
+                (n) => n.subject === materia,
               );
-
               const mb1 = calcularMb(notasMateria, 1);
               const mb2 = calcularMb(notasMateria, 2);
-
               const mediaTotal =
                 bimestreCompleto(notasMateria, 1) &&
                 bimestreCompleto(notasMateria, 2)
@@ -169,31 +163,28 @@ export default function AlunoNotasChamadaTable({
               return (
                 <tr key={materia} className="border-t border-orange-500/30">
                   <td className="px-4 py-3">{materia}</td>
-
                   {columns.map((col, idx) => {
                     const nota = notasMateria.find(
                       (n) =>
                         n.activity === col.activity &&
-                        (col.bimester ? n.bimester === col.bimester : true)
+                        (col.bimester ? n.bimester === col.bimester : true),
                     );
                     return (
                       <td key={idx} className="px-4 py-3 text-center">
-                        {nota ? Number(nota.grade).toFixed(1) : "-"}
+                        {nota ? Number(nota.grade).toFixed(1) : "—"}
                       </td>
                     );
                   })}
-
-                  <td className="px-4 py-3 text-center">{mb1.toFixed(1)}</td>
-                  <td className="px-4 py-3 text-center">{mb2.toFixed(1)}</td>
-
-                  <td className={`px-4 py-3 text-center ${corMedia(mediaTotal)}`}>
-                    {mediaTotal !== null ? mediaTotal.toFixed(1) : "—"}
+                  <td className="px-4 py-3 text-center">{formatarNota(mb1)}</td>
+                  <td className="px-4 py-3 text-center">{formatarNota(mb2)}</td>
+                  <td
+                    className={`px-4 py-3 text-center ${corMedia(mediaTotal)}`}
+                  >
+                    {formatarNota(mediaTotal)}
                   </td>
-
                   <td className="px-4 py-3 text-center text-red-400 font-semibold">
                     {totalFaltas(materia)}
                   </td>
-
                   <td className="px-4 py-3 text-center">
                     <Button
                       size="sm"
@@ -216,7 +207,6 @@ export default function AlunoNotasChamadaTable({
           <thead>
             <tr className="text-orange-400 uppercase text-sm">
               <th className="px-4 py-2">Matéria</th>
-
               {columns.map((c, i) => (
                 <th key={i} className="px-4 py-2">
                   {c.activity === "extra"
@@ -224,7 +214,6 @@ export default function AlunoNotasChamadaTable({
                     : `${label[c.activity as keyof typeof label]} B${c.bimester}`}
                 </th>
               ))}
-
               <th className="px-4 py-2">MB1</th>
               <th className="px-4 py-2">MB2</th>
               <th className="px-4 py-2">Total</th>
@@ -232,16 +221,13 @@ export default function AlunoNotasChamadaTable({
               <th className="px-4 py-2">Ações</th>
             </tr>
           </thead>
-
           <tbody>
             {materiasFiltradas.map((materia) => {
               const notasMateria = notasNormalizadas.filter(
-                (n) => n.subject === materia
+                (n) => n.subject === materia,
               );
-
               const mb1 = calcularMb(notasMateria, 1);
               const mb2 = calcularMb(notasMateria, 2);
-
               const mediaTotal =
                 bimestreCompleto(notasMateria, 1) &&
                 bimestreCompleto(notasMateria, 2)
@@ -251,31 +237,28 @@ export default function AlunoNotasChamadaTable({
               return (
                 <tr key={materia} className="bg-[#121212b0]">
                   <td className="px-4 py-2 font-semibold">{materia}</td>
-
                   {columns.map((col, idx) => {
                     const nota = notasMateria.find(
                       (n) =>
                         n.activity === col.activity &&
-                        (col.bimester ? n.bimester === col.bimester : true)
+                        (col.bimester ? n.bimester === col.bimester : true),
                     );
                     return (
                       <td key={idx} className="px-4 py-2 text-center">
-                        {nota ? Number(nota.grade).toFixed(1) : "-"}
+                        {nota ? Number(nota.grade).toFixed(1) : "—"}
                       </td>
                     );
                   })}
-
-                  <td className="px-4 py-2 text-center">{mb1.toFixed(1)}</td>
-                  <td className="px-4 py-2 text-center">{mb2.toFixed(1)}</td>
-
-                  <td className={`px-4 py-2 text-center ${corMedia(mediaTotal)}`}>
-                    {mediaTotal !== null ? mediaTotal.toFixed(1) : "—"}
+                  <td className="px-4 py-2 text-center">{formatarNota(mb1)}</td>
+                  <td className="px-4 py-2 text-center">{formatarNota(mb2)}</td>
+                  <td
+                    className={`px-4 py-2 text-center ${corMedia(mediaTotal)}`}
+                  >
+                    {formatarNota(mediaTotal)}
                   </td>
-
                   <td className="px-4 py-2 text-center text-red-500 font-bold">
                     {totalFaltas(materia)}
                   </td>
-
                   <td className="px-4 py-2 text-center">
                     <Button
                       size="sm"
@@ -300,7 +283,6 @@ export default function AlunoNotasChamadaTable({
               Detalhes de Faltas — {materiaSelecionada}
             </DialogTitle>
           </DialogHeader>
-
           {faltasSelecionadas.length === 0 ? (
             <p className="text-center text-gray-400 mt-3">
               Nenhuma falta registrada.
@@ -321,14 +303,12 @@ export default function AlunoNotasChamadaTable({
                         year: "numeric",
                       })}
                     </p>
-
                     <p className="text-gray-300 text-sm">
                       Dia da semana:{" "}
                       <span className="text-white">
                         {f.schedule?.dayOfWeek ?? "—"}
                       </span>
                     </p>
-
                     <p className="text-gray-300 text-sm">
                       Horário:{" "}
                       <span className="text-white">
@@ -336,7 +316,6 @@ export default function AlunoNotasChamadaTable({
                         {f.schedule?.endAt ?? "??"}
                       </span>
                     </p>
-
                     <p className="text-gray-300 text-sm">
                       Status:{" "}
                       <span className="text-red-400 font-semibold">Falta</span>

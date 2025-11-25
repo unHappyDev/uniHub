@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, CalendarCheck, Clock, Bell } from "lucide-react";
+import { FileText, Clock, Bell } from "lucide-react";
 import { getPosts } from "@/lib/api/post";
 import { getClassroomsByLoggedStudent } from "@/lib/api/classroom";
 import { Post } from "@/types/Post";

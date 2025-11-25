@@ -51,7 +51,7 @@ export default function AttendanceTable({
                     <span>{s.totalAbsences ?? 0}</span>
                   ) : scheduleId && togglePresence ? (
                     <div className="flex justify-center items-center gap-6">
-                      {/* Presença */}
+
                       <label className="flex items-center gap-2">
                         <input
                           type="checkbox"
@@ -62,7 +62,6 @@ export default function AttendanceTable({
                         <span>Presença</span>
                       </label>
 
-                      {/* Falta */}
                       <label className="flex items-center gap-2">
                         <input
                           type="checkbox"

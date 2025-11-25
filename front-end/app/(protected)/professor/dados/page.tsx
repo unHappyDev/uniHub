@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { toast } from "sonner";
 import { getLoggedUser, updateUser } from "@/lib/api/user";

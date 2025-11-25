@@ -124,105 +124,112 @@ export default function ClassroomForm({ classroom, onSaved, onClose }: Props) {
     return time.substring(0, 5);
   };
 
-   useEffect(() => {
-    const fetchData = async () => {
+const subjectsToastShownRef = useRef(false);
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const [t, st] = await Promise.all([getTeachers(), getStudents()]);
+
+      const mappedTeachers = t.map((teacher: any) => ({
+        id: teacher.id,
+        nome: teacher.username,
+        email: teacher.email,
+      }));
+      setTeachers(mappedTeachers);
+
+      const mappedStudents: Student[] = st.map((student: any) => ({
+        id: student.id,
+        nome: student.username,
+        email: student.email,
+        curso: student.courseName ?? "",
+        courseId: student.courseId ?? "",
+      }));
+      setStudents(mappedStudents);
+
+      // Matérias
+      let subjectsData: Subject[] = [];
       try {
-        const [t, s, st] = await Promise.all([
-          getTeachers(),
-          getSubjects(),
-          getStudents(),
-        ]);
-
-        const mappedTeachers = t.map((teacher: any) => ({
-          id: teacher.id,
-          nome: teacher.username,
-          email: teacher.email,
-        }));
-        setTeachers(mappedTeachers);
-
-        setSubjects(s);
-
-        const mappedStudents: Student[] = st.map((student: any) => ({
-          id: student.id,
-          nome: student.username,
-          email: student.email,
-          curso: student.courseName ?? "",
-          courseId: student.courseId ?? "",
-        }));
-        setStudents(mappedStudents);
-
-        try {
-          const cls = await getClassrooms();
-          setAllClassrooms(cls);
-        } catch (err: any) {
-          if (err?.response?.status === 404) {
-            setAllClassrooms([]);
-          } else {
-            console.error(err);
-            toast.error("Erro ao carregar turmas.");
+        subjectsData = await getSubjects();
+      } catch (err: any) {
+        if (err?.response?.status === 404) {
+          subjectsData = [];
+          if (!subjectsToastShownRef.current) {
+            toast.error("Nenhuma matéria cadastrada no sistema.");
+            subjectsToastShownRef.current = true; 
           }
-        }
-
-        if (classroom) {
-          initialScheduleIdsRef.current = classroom.schedules
-            .map((sch) => sch.scheduleId)
-            .filter((id): id is string => !!id);
-
-          const normalize = (str: string) =>
-            str
-              ? str
-                  .normalize("NFD")
-                  .replace(/[\u0300-\u036f]/g, "")
-                  .toLowerCase()
-                  .trim()
-              : "";
-
-          const matchedTeacher = mappedTeachers.find(
-            (teacher) =>
-              normalize(teacher.nome) === normalize(classroom.professor),
-          );
-          const matchedTeacherId = matchedTeacher?.id ?? "";
-
-          const matchedSubject = s.find(
-            (sub: Subject) =>
-              normalize(sub.subjectName) === normalize(classroom.subject),
-          );
-
-          const matchedStudentsIds = classroom.students
-            .map((st: ClassroomStudent) => {
-              const found = mappedStudents.find(
-                (stu: Student) => normalize(stu.nome) === normalize(st.name),
-              );
-              return found?.id;
-            })
-            .filter(Boolean) as string[];
-
-          setFormData({
-            professorId: matchedTeacherId,
-            subjectId: matchedSubject?.subjectId ?? "",
-            semester: classroom.semester ?? "",
-            schedules: classroom.schedules.map((sch) => ({
-              scheduleId: sch.scheduleId ?? null,
-              dayOfWeek: sch.dayOfWeek ?? "",
-              startAt: formatTime(sch.startAt),
-              endAt: formatTime(sch.endAt),
-            })),
-            studentsIds: matchedStudentsIds,
-          });
-        }
-
-        errorToastRef.current = false;
-      } catch (err) {
-        console.error(err);
-        if (!errorToastRef.current) {
-          toast.error("Erro ao carregar dados.");
-          errorToastRef.current = true;
+        } else {
+          console.error(err);
+          toast.error("Erro ao carregar matérias.");
         }
       }
-    };
+      setSubjects(subjectsData);
 
-    fetchData();
-  }, [classroom]);
+      try {
+        const cls = await getClassrooms();
+        setAllClassrooms(cls);
+      } catch (err: any) {
+        if (err?.response?.status === 404) {
+          setAllClassrooms([]);
+        } else {
+          console.error(err);
+          toast.error("Erro ao carregar turmas.");
+        }
+      }
+
+      if (classroom) {
+        const normalize = (str: string) =>
+          str
+            ? str
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .toLowerCase()
+                .trim()
+            : "";
+
+        const matchedTeacher = mappedTeachers.find(
+          (teacher) => normalize(teacher.nome) === normalize(classroom.professor)
+        );
+        const matchedTeacherId = matchedTeacher?.id ?? "";
+
+        const matchedSubject = subjectsData.find(
+          (sub: Subject) => normalize(sub.subjectName) === normalize(classroom.subject)
+        );
+
+        const matchedStudentsIds = classroom.students
+          .map((st: ClassroomStudent) => {
+            const found = mappedStudents.find(
+              (stu: Student) => normalize(stu.nome) === normalize(st.name)
+            );
+            return found?.id;
+          })
+          .filter(Boolean) as string[];
+
+        setFormData({
+          professorId: matchedTeacherId,
+          subjectId: matchedSubject?.subjectId ?? "",
+          semester: classroom.semester ?? "",
+          schedules: classroom.schedules.map((sch) => ({
+            scheduleId: sch.scheduleId ?? null,
+            dayOfWeek: sch.dayOfWeek ?? "",
+            startAt: formatTime(sch.startAt),
+            endAt: formatTime(sch.endAt),
+          })),
+          studentsIds: matchedStudentsIds,
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      if (!errorToastRef.current) {
+        toast.error("Erro ao carregar dados.");
+        errorToastRef.current = true;
+      }
+    }
+  };
+
+  fetchData();
+}, [classroom]);
+
 
   const toggleStudentSelection = (id: string) => {
     setFormData((prev) => ({

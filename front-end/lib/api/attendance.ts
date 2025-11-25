@@ -90,10 +90,12 @@ export const getChamadaDoEstudante = async (): Promise<ChamadaDTO[]> => {
     console.log("Data retornada da API:", response.data);
     return response.data ?? [];
   } catch (err) {
-    console.error("Erro ao buscar chamada do estudante:", err);
-    throw err;
+    console.warn("Nenhuma chamada encontrada ou erro na API:", err);
+
+    return [];
   }
 };
+
 export const createAttendance = async (data: CreateAttendanceDTO) => {
   try {
     const response = await apiSpring.post("/attendance", data);

@@ -34,8 +34,8 @@ export const getGradesByClassroom = async (classroomId: string) => {
 export const getNotasDoEstudante = async (): Promise<NotaDTO[]> => {
   try {
     const response = await apiSpring.get("/grade/student");
-    console.log("Resposta da API /grade/student:", response);       // log completo do axios
-    console.log("Data retornada da API:", response.data);          // apenas o payload
+    console.log("Resposta da API /grade/student:", response);  
+    console.log("Data retornada da API:", response.data);     
     return response.data ?? [];
   } catch (err) {
     console.error("Erro ao buscar notas do estudante:", err);

@@ -4,25 +4,30 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ChamadaDTO, getChamadaDoEstudante } from "@/lib/api/attendance";
 import { getNotasDoEstudante, NotaDTO } from "@/lib/api/grade";
+import { getClassroomsByLoggedStudent } from "@/lib/api/classroom";
 import AlunoNotasChamadaTable from "@/components/cadastro/AlunoTable";
 
 export default function EstudanteNotasPage() {
   const [notas, setNotas] = useState<NotaDTO[]>([]);
   const [chamada, setChamada] = useState<ChamadaDTO[]>([]);
   const [filtroMateria, setFiltroMateria] = useState<string>("");
+  const [materiasDoAluno, setMateriasDoAluno] = useState<string[]>([]);
 
   useEffect(() => {
     async function carregarDados() {
       try {
-        // API já retorna apenas os dados do aluno logado
         const minhasNotas = await getNotasDoEstudante();
         const minhaChamada = await getChamadaDoEstudante();
 
         setNotas(minhasNotas);
         setChamada(minhaChamada);
+
+        const turmas = await getClassroomsByLoggedStudent();
+        const todasMaterias = turmas.map((t) => t.subject);
+        setMateriasDoAluno(todasMaterias);
       } catch (err) {
         console.error(err);
-        toast.error("Erro ao carregar notas ou presença.");
+        toast.error("Erro ao carregar notas, presença ou matérias.");
       }
     }
 
@@ -39,6 +44,7 @@ export default function EstudanteNotasPage() {
         <AlunoNotasChamadaTable
           notas={notas}
           chamada={chamada}
+          materiasDoAluno={materiasDoAluno}
           filtroMateria={filtroMateria}
         />
       </div>
