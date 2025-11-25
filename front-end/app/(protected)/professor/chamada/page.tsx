@@ -11,40 +11,44 @@ import { toast } from "sonner";
 export default function GradePage() {
   const [classrooms, setClassrooms] = useState<Classroom[]>([]);
   const [filteredClassrooms, setFilteredClassrooms] = useState<Classroom[]>([]);
-  const [viewingClassroom, setViewingClassroom] = useState<Classroom | null>(null);
+  const [viewingClassroom, setViewingClassroom] = useState<Classroom | null>(
+    null,
+  );
 
   const [filterSubject, setFilterSubject] = useState("");
   const [filterSemester, setFilterSemester] = useState("");
 
   useEffect(() => {
-  async function load() {
-    try {
-      const data = await getClassroomsByLoggedProfessor();
+    async function load() {
+      try {
+        const data = await getClassroomsByLoggedProfessor();
 
-      const list = Array.isArray(data) ? data : [];
+        const list = Array.isArray(data) ? data : [];
 
-      setClassrooms(list);
-      setFilteredClassrooms(list);
-    } catch (error: any) {
-      if (error.response?.status === 404) {
- 
-        setClassrooms([]);
-        setFilteredClassrooms([]);
-      } else {
-        console.error("Erro ao buscar turmas:", error);
-        toast.error("Erro ao carregar turmas.");
+        setClassrooms(list);
+        setFilteredClassrooms(list);
+      } catch (error: any) {
+        if (error.response?.status === 404) {
+          setClassrooms([]);
+          setFilteredClassrooms([]);
+        } else {
+          console.error("Erro ao buscar turmas:", error);
+          toast.error("Erro ao carregar turmas.");
+        }
       }
     }
-  }
 
-  load();
-}, []);
+    load();
+  }, []);
   useEffect(() => {
-    const filtered = classrooms.filter(
-      (c) =>
-        c.subject.toLowerCase().includes(filterSubject.toLowerCase()) &&
-        c.semester.toLowerCase().includes(filterSemester.toLowerCase())
-    );
+    const filtered = classrooms
+      .filter(
+        (c) =>
+          c.subject.toLowerCase().includes(filterSubject.toLowerCase()) &&
+          c.semester.toLowerCase().includes(filterSemester.toLowerCase()),
+      )
+      .sort((a, b) => a.subject.localeCompare(b.subject, "pt-BR"));
+
     setFilteredClassrooms(filtered);
   }, [filterSubject, filterSemester, classrooms]);
 
@@ -135,11 +139,15 @@ export default function GradePage() {
                   className="flex flex-col gap-2 bg-glass border border-orange-400/40 rounded-2xl p-6 text-gray-200 shadow-glow transition hover:shadow-orange-500/30"
                 >
                   <p>
-                    <span className="font-semibold text-orange-500">Turma:</span>{" "}
+                    <span className="font-semibold text-orange-500">
+                      Turma:
+                    </span>{" "}
                     {c.subject}
                   </p>
                   <p>
-                    <span className="font-semibold text-orange-500">Semestre:</span>{" "}
+                    <span className="font-semibold text-orange-500">
+                      Semestre:
+                    </span>{" "}
                     {c.semester}
                   </p>
                   <div className="flex justify-end gap-2 mt-3">

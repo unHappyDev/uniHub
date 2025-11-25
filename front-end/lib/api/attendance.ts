@@ -23,14 +23,32 @@ const normalizeAttendance = (a: any): Attendance => ({
     : null,
 });
 
-export const getStudentsAbsences = async (): Promise<
-  StudentsAttendanceDTO[]
-> => {
+
+export interface ChamadaDTO {
+  attendanceId: string;
+  studentId: string;
+  studentName: string;
+  classroomId: string;
+  subjectName: string;
+  schedule: {
+    scheduleId: string;
+    dayOfWeek: string;
+    startAt: string;
+    endAt: string;
+  };
+  attendanceDate: string;
+  presence: boolean;
+}
+
+export const getStudentsAbsences = async (): Promise<StudentsAttendanceDTO[]> => {
   const url = `/attendance/number`;
   try {
     const response = await apiSpring.get(url);
+    console.log("Resposta da API /attendance/number:", response);
+    console.log("Data retornada da API:", response.data);
     return response.data as StudentsAttendanceDTO[];
   } catch (error: any) {
+    
     return [];
   }
 };
@@ -61,6 +79,20 @@ export const getAttendanceByStudent = async (
     return response.data.map((x: any) => normalizeAttendance(x));
   } catch (error: any) {
     throw error;
+  }
+};
+
+
+export const getChamadaDoEstudante = async (): Promise<ChamadaDTO[]> => {
+  try {
+    const response = await apiSpring.get("/attendance/student");
+    console.log("Resposta da API /attendance/student:", response);
+    console.log("Data retornada da API:", response.data);
+    return response.data ?? [];
+  } catch (err) {
+    console.warn("Nenhuma chamada encontrada ou erro na API:", err);
+
+    return [];
   }
 };
 

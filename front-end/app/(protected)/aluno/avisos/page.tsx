@@ -9,21 +9,25 @@ export default function Avisos() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchPosts() {
-      try {
-        const data = await getPosts();
-        setPosts(data);
-      } catch (err) {
-        console.error(err);
+ useEffect(() => {
+  async function fetchPosts() {
+    try {
+      const data = await getPosts();
+      setPosts(data ?? []);
+    } catch (err: any) {
+      
+      if (err?.response?.status === 404) {
+        setPosts([]);
+      } else {
         setError("Erro ao carregar os avisos");
-      } finally {
-        setLoading(false);
       }
+    } finally {
+      setLoading(false);
     }
+  }
 
-    fetchPosts();
-  }, []);
+  fetchPosts();
+}, []);
 
   if (loading) return <p className="text-center text-gray-400 mt-10">Carregando avisos...</p>;
   if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
@@ -35,7 +39,6 @@ export default function Avisos() {
         Avisos
       </h1>
 
-      {/* Caixa que envolve todos os avisos */}
       <div className="w-full bg-[#1a1a1dc3] border border-orange-400/40 rounded-2xl p-6 shadow-glow transition-all">
         <div className="space-y-6">
           {posts.map((post) => (

@@ -39,7 +39,7 @@ export default function ProfessorBody() {
         const sorted = data
           .sort(
             (a, b) =>
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           )
           .slice(0, MAX_AVISOS);
 
@@ -122,7 +122,7 @@ export default function ProfessorBody() {
       acc[h.dayOfWeek].push(h);
       return acc;
     },
-    {} as Record<string, HorarioDTO[]>,
+    {} as Record<string, HorarioDTO[]>
   );
 
   const diasDaSemana = [
@@ -136,6 +136,7 @@ export default function ProfessorBody() {
   return (
     <div className="p-4 bg-[#141414] text-white min-h-screen">
       <div className="flex flex-col gap-8 p-2 sm:p-4">
+
         <div className="md:hidden grid grid-cols-4 gap-3 mb-4">
           {professorQuickAccessCards.map((item, idx) => (
             <Link key={idx} href={item.href}>
@@ -151,51 +152,7 @@ export default function ProfessorBody() {
           ))}
         </div>
 
-        <div className="md:hidden bg-[#1a1a1dc3] border border-orange-400/20 rounded-xl p-4 min-h-[220px] flex flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <Bell className="w-5 h-5 text-yellow-400" />
-              <h2 className="text-lg font-semibold">Avisos</h2>
-            </div>
-
-            {loadingPosts ? (
-              <p className="text-gray-300 text-sm">Carregando avisos...</p>
-            ) : posts.length === 0 ? (
-              <div className="text-center text-gray-400 mt-4 flex flex-col items-center gap-4">
-                <p>Nenhum aviso disponível</p>
-              </div>
-            ) : (
-              <>
-                {posts.slice(0, 2).map((post) => (
-                  <Link key={post.postId} href="/professor/avisos">
-                    <div className="p-3 bg-[#1a1a1d] border border-orange-400/20 rounded-lg mb-3">
-                      <h3 className="text-base font-semibold">{post.title}</h3>
-                      <p className="text-gray-300 text-sm mt-1">{post.body}</p>
-                    </div>
-                  </Link>
-                ))}
-              </>
-            )}
-          </div>
-
-          <div>
-            {posts.length === 0 ? (
-              <Link href="/professor/avisos">
-                <Button className="w-full bg-orange-500/70 hover:bg-orange-600/70 text-white rounded-xl text-xs py-2 cursor-pointer">
-                  Cadastrar Aviso
-                </Button>
-              </Link>
-            ) : posts.length > 2 ? (
-              <Link href="/professor/avisos">
-                <Button className="w-full bg-orange-500/70 hover:bg-orange-600/70 text-white rounded-xl text-xs py-2 cursor-pointer">
-                  Ver mais avisos
-                </Button>
-              </Link>
-            ) : null}
-          </div>
-        </div>
-
-        <div className="md:hidden bg-[#1a1a1dc3] border border-orange-400/20 rounded-xl p-4 shadow-glow mt-6">
+        <div className="md:hidden bg-[#1a1a1dc3] border border-orange-400/20 rounded-xl p-4 shadow-glow">
           <h2 className="text-orange-300 font-semibold text-lg text-center mb-3">
             Horário da Semana
           </h2>
@@ -205,8 +162,7 @@ export default function ProfessorBody() {
               {diasDaSemana.map((dia) => (
                 <div
                   key={dia.key}
-                  className="bg-[#1a1a1d] border border-orange-400/30 rounded-xl p-4 w-52 flex-shrink-0 shadow-sm 
-             hover:border-orange-500/70 transition-all"
+                  className="bg-[#1a1a1d] border border-orange-400/30 rounded-xl p-4 w-52 flex-shrink-0 shadow-sm hover:border-orange-500/70 transition-all"
                 >
                   <p className="text-orange-400 font-semibold text-center mb-3 uppercase tracking-wide">
                     {dia.label}
@@ -239,7 +195,50 @@ export default function ProfessorBody() {
           </div>
         </div>
 
+        <div className="md:hidden bg-[#1a1a1dc3] border border-orange-400/20 rounded-xl p-4 min-h-[220px] flex flex-col justify-between">
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <Bell className="w-5 h-5 text-yellow-400" />
+              <h2 className="text-lg font-semibold">Avisos</h2>
+            </div>
+
+            {loadingPosts ? (
+              <p className="text-gray-300 text-sm">Carregando avisos...</p>
+            ) : posts.length === 0 ? (
+              <div className="text-center text-gray-400 mt-4 flex flex-col items-center gap-4">
+                <p>Nenhum aviso disponível</p>
+              </div>
+            ) : (
+              posts.slice(0, 2).map((post) => (
+                <Link key={post.postId} href="/professor/avisos">
+                  <div className="p-3 bg-[#1a1a1d] border border-orange-400/20 rounded-lg mb-3">
+                    <h3 className="text-base font-semibold">{post.title}</h3>
+                    <p className="text-gray-300 text-sm mt-1">{post.body}</p>
+                  </div>
+                </Link>
+              ))
+            )}
+          </div>
+
+          <div>
+            {posts.length === 0 ? (
+              <Link href="/professor/avisos">
+                <Button className="w-full bg-orange-500/70 hover:bg-orange-600/70 text-white rounded-xl text-xs py-2 cursor-pointer">
+                  Cadastrar Aviso
+                </Button>
+              </Link>
+            ) : posts.length > 2 ? (
+              <Link href="/professor/avisos">
+                <Button className="w-full bg-orange-500/70 hover:bg-orange-600/70 text-white rounded-xl text-xs py-2 cursor-pointer">
+                  Ver mais avisos
+                </Button>
+              </Link>
+            ) : null}
+          </div>
+        </div>
+
         <div className="hidden md:block">
+ 
           {loadingHorarios ? (
             <p className="text-gray-300 mb-6">Carregando horários...</p>
           ) : (
@@ -247,20 +246,19 @@ export default function ProfessorBody() {
               {diasDaSemana.map((dia) => (
                 <Card
                   key={dia.key}
-                  className="bg-[#1a1a1dc3] border border-orange-400/20 rounded-xl p-4 shadow-glow 
-                 hover:border-orange-500/70 transition-all"
+                  className="bg-[#1a1a1dc3] border border-orange-400/20 rounded-xl p-4 shadow-glow hover:border-orange-500/70 transition-all"
                 >
                   <CardHeader className="text-lg font-semibold text-orange-500 uppercase">
                     {dia.label}
                   </CardHeader>
+
                   <div className="mt-2 space-y-2">
                     {horariosPorDia[dia.key] &&
                     horariosPorDia[dia.key].length > 0 ? (
                       horariosPorDia[dia.key].map((h, idx) => (
                         <div
                           key={idx}
-                          className="bg-[#1a1a1d] p-2 rounded-lg border border-orange-400/20 shadow-sm
-                         hover:border-orange-500/50 transition-all"
+                          className="bg-[#1a1a1d] p-2 rounded-lg border border-orange-400/20 shadow-sm hover:border-orange-500/50 transition-all"
                         >
                           <p className="font-medium text-gray-200 uppercase text-orange-300">
                             {h.subjectName}
@@ -315,7 +313,7 @@ export default function ProfessorBody() {
                                 day: "2-digit",
                                 month: "2-digit",
                                 year: "numeric",
-                              },
+                              }
                             )}
                           </span>
                         </div>

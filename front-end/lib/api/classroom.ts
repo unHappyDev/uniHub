@@ -9,7 +9,7 @@ import {
 export const getClassrooms = async (): Promise<Classroom[]> => {
   const response = await apiSpring.get("/classroom");
 
-  console.log("Resposta da API de turmas:", response.data); // Log da resposta da API
+  console.log("Resposta da API de turmas:", response.data);
 
   return (response.data ?? []).map((c: any): Classroom => ({
     classroomId: c.classroomId,
@@ -34,7 +34,7 @@ export const getClassrooms = async (): Promise<Classroom[]> => {
 export const getClassroomsByLoggedProfessor = async (): Promise<Classroom[]> => {
   const response = await apiSpring.get("/classroom/professor");
 
-  console.log("Resposta da API de turmas:", response.data); // Log da resposta da API
+  console.log("Resposta da API de turmas:", response.data);
 
   return (response.data ?? []).map((c: any): Classroom => ({
     classroomId: c.classroomId,

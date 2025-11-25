@@ -14,31 +14,30 @@ export default function EstudanteSchedulePage() {
   const [horarios, setHorarios] = useState<HorarioDTO[]>([]);
   const [filtroPeriodo, setFiltroPeriodo] = useState<"manhã" | "noite">("manhã");
 
-  useEffect(() => {
-    async function carregar() {
-      try {
-        const dados = await getHorariosDoEstudante();
-        setHorarios(dados);
-        console.log("Horários do estudante logado:", dados);
-      } catch (err) {
-        console.error(err);
-        toast.error("Erro ao carregar horários do estudante.");
+ useEffect(() => {
+  async function carregar() {
+    try {
+      const dados = await getHorariosDoEstudante();
+      setHorarios(dados ?? []);
+      console.log("Horários do estudante logado:", dados);
+    } catch (err: any) {
+      
+      if (err?.response?.status === 404) {
+        setHorarios([]);
+        return; 
       }
-    }
 
-    carregar();
-  }, []);
+      toast.error("Erro ao carregar horários do estudante.");
+    }
+  }
+
+  carregar();
+}, []);
 
   return (
     <div className="p-8 text-white flex flex-col min-h-screen">
       <div className="flex items-center justify-between mb-10">
-        <button
-          onClick={() => router.back()}
-          className="hidden md:block px-4 py-2 bg-orange-500/80 hover:bg-orange-600 rounded-lg text-white font-semibold w-max transition-colors cursor-pointer"
-        >
-          Voltar
-        </button>
-
+        
         <h1 className="text-2xl font-semibold text-orange-300/90 uppercase tracking-wide text-center flex-1 ml-6">
           Meu Horário
         </h1>

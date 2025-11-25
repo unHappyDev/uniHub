@@ -39,15 +39,17 @@ export default function GradePage() {
 
   load();
 }, []);
-  useEffect(() => {
-    const filtered = classrooms.filter(
+ useEffect(() => {
+  const filtered = classrooms
+    .filter(
       (c) =>
         c.subject.toLowerCase().includes(filterSubject.toLowerCase()) &&
         c.semester.toLowerCase().includes(filterSemester.toLowerCase())
-    );
-    setFilteredClassrooms(filtered);
-  }, [filterSubject, filterSemester, classrooms]);
+    )
+    .sort((a, b) => a.subject.localeCompare(b.subject, "pt-BR")); 
 
+  setFilteredClassrooms(filtered);
+}, [filterSubject, filterSemester, classrooms]);
   const closeModal = () => setViewingClassroom(null);
 
   return (

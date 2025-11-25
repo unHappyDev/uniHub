@@ -6,41 +6,47 @@ import { toast } from "sonner";
 
 import { getHorariosDoProfessor, HorarioDTO } from "@/lib/api/horario";
 import ProfessorHorarioTable from "@/components/cadastro/ProfessorHorarioTable";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function ProfessorSchedulePage() {
   const { id } = useParams();
   const router = useRouter();
   const professorId = String(id);
 
-  console.log("ID da Página:", id); 
-  console.log("Professor ID:", professorId);
-
   const [horarios, setHorarios] = useState<HorarioDTO[]>([]);
   const [filtroPeriodo, setFiltroPeriodo] = useState<"manhã" | "noite">(
     "manhã",
   );
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function carregar() {
       try {
         const dados = await getHorariosDoProfessor(professorId);
         setHorarios(dados);
-        console.log("Horários do professor:", dados);
-      } catch (err) {
-        console.error(err);
-        toast.error("Erro ao carregar horários do professor.");
+      } catch (err: any) {
+        if (err.response?.status === 404) {
+          setHorarios([]);
+        } else {
+          console.error(err);
+          toast.error("Erro ao carregar horários do professor.");
+        }
+      } finally {
+        setLoading(false);
       }
     }
 
     carregar();
   }, [professorId]);
 
-
   const horariosFiltrados = horarios.filter((h) => {
     const hora = Number(h.startAt.split(":")[0]);
-    console.log("Hora extraída:", hora, "Filtro:", filtroPeriodo);
-
     if (filtroPeriodo === "manhã") return hora < 12;
     if (filtroPeriodo === "noite") return hora >= 17;
     return true;
@@ -48,9 +54,7 @@ export default function ProfessorSchedulePage() {
 
   return (
     <div className="p-8 text-white flex flex-col min-h-screen">
-   
       <div className="flex items-center justify-between mb-10">
-        
         <h1 className="text-2xl font-semibold text-orange-300/90 uppercase tracking-wide text-center flex-1 ml-6">
           Meu Horário
         </h1>
@@ -67,7 +71,7 @@ export default function ProfessorSchedulePage() {
             setFiltroPeriodo(value as "manhã" | "noite")
           }
         >
-          <SelectTrigger className="w-full bg-[#1a1a1dc3] border border-orange-400/20 py-3 text-white cursor-pointer rounded-xl shadow-inner cursor-pointer focus:ring-2 focus:ring-orange-500/40 transition-all">
+          <SelectTrigger className="w-full bg-[#1a1a1dc3] border border-orange-400/20 py-3 text-white cursor-pointer rounded-xl shadow-inner focus:ring-2 focus:ring-orange-500/40 transition-all">
             <SelectValue placeholder="Selecione um período" />
           </SelectTrigger>
           <SelectContent className="bg-[#151a1b] text-white">
@@ -82,10 +86,18 @@ export default function ProfessorSchedulePage() {
       </div>
 
       <div className="bg-glass border border-orange-400/40 rounded-2xl p-4 shadow-glow overflow-auto">
-        <ProfessorHorarioTable
-          horarios={horariosFiltrados}
-          filtroPeriodo={filtroPeriodo}
-        />
+        {loading ? (
+          <p className="text-center text-orange-200">Carregando horários...</p>
+        ) : horariosFiltrados.length === 0 ? (
+          <p className="text-center text-orange-200">
+            Nenhum horário cadastrado para este período.
+          </p>
+        ) : (
+          <ProfessorHorarioTable
+            horarios={horariosFiltrados}
+            filtroPeriodo={filtroPeriodo}
+          />
+        )}
       </div>
     </div>
   );
