@@ -75,7 +75,7 @@ export default function AlunoHorarioTable({ horarios, filtroPeriodo }: Props) {
                             {aula.subjectName || "—"}
                           </div>
                           <div className="text-sm text-orange-300 truncate">
-                            {`Professor: ${aula.professorName || "—"}`}
+                            {`Prof: ${aula.professorName || "—"}`}
                           </div>
                           <div className="text-sm text-orange-300 truncate">
                             {`Semestre ${aula.semester || "—"}`}

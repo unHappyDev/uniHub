@@ -29,7 +29,7 @@ export interface ChamadaDTO {
   studentId: string;
   studentName: string;
   classroomId: string;
-  subject: string;
+  subjectName: string;
   schedule: {
     scheduleId: string;
     dayOfWeek: string;
